@@ -19,6 +19,8 @@ import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
+import frc.robot.subsystems.Intake.Intake;
+import frc.robot.subsystems.Shooter.Flywheel;
 import frc.robot.util.OCXboxController;
 
 public class RobotContainer {
@@ -26,8 +28,10 @@ public class RobotContainer {
     
     private final OCXboxController driver = new OCXboxController(0);
 
-    public final OCDrivetrain drivetrain = (OCDrivetrain) TunerConstants.createDrivetrain();
+    public final OCDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final Telemetry logger = new Telemetry(MaxSpeed);
+    public final Intake intake = new Intake();
+    public final Flywheel flywheel = new Flywheel();
 
     public RobotContainer() {
         configureDefaultCommands();

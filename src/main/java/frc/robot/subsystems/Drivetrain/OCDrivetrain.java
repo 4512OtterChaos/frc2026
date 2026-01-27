@@ -15,17 +15,15 @@ import frc.robot.util.OCXboxController;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain{
     
-    private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
-                                                                                        // speed
-    private static double MaxAngularRate = RotationsPerSecond.of(2).in(RadiansPerSecond); // 3/4 of a rotation per second
-                                                                                      // max angular velocity
+    private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // desired top speed
+    private static double MaxAngularRate = RotationsPerSecond.of(2).in(RadiansPerSecond); // max angular velocity
     
     // Normal driving speed at 100% controller input
     public static final double kDriveSpeed = 0.5 * MaxSpeed;
     public static final double kTurnSpeed = 0.5 * MaxAngularRate;
 
     // Normal driving acceleration limits
-    public static final double kLinearAccel = FeetPerSecondPerSecond.of(30).in(MetersPerSecondPerSecond); //m/s/s
+    public static final double kLinearAccel = FeetPerSecondPerSecond.of(30).in(MetersPerSecondPerSecond);
     public static final double kLinearDecel = FeetPerSecondPerSecond.of(40).in(MetersPerSecondPerSecond);
     public static final double kAngularAccel = RotationsPerSecondPerSecond.of(6).in(RadiansPerSecondPerSecond);
     public static final double kAngularDecel = RotationsPerSecondPerSecond.of(10).in(RadiansPerSecondPerSecond);
@@ -59,9 +57,9 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
         return applyRequest(() -> {
                 ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate), lastTargetSpeeds, Robot.kDefaultPeriod);
                 lastTargetSpeeds = targetSpeeds;
-                return drive.withVelocityX(-targetSpeeds.vxMetersPerSecond) // Drive forward with negative Y (forward)
-                            .withVelocityY(-targetSpeeds.vyMetersPerSecond) // Drive left with negative X (left)
-                            .withRotationalRate(targetSpeeds.omegaRadiansPerSecond); // Drive counterclockwise with negative X (left)
+                return drive.withVelocityX(-targetSpeeds.vxMetersPerSecond)
+                            .withVelocityY(-targetSpeeds.vyMetersPerSecond)
+                            .withRotationalRate(targetSpeeds.omegaRadiansPerSecond);
                 }
             );
     }

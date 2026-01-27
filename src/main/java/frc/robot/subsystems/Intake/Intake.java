@@ -58,7 +58,7 @@ public class Intake extends SubsystemBase{
         return intakeStatorStatus.getValue();
     }
 
-     public Angle getFourBarAngle() {
+    public Angle getFourBarAngle(){
         return fourBarPositionStatus.getValue();
     }
 
