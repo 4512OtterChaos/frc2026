@@ -8,9 +8,13 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
+import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain{
@@ -43,6 +47,10 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+    private final SwerveRequest.RobotCentricFacingAngle face = new SwerveRequest.RobotCentricFacingAngle()
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
+            .withHeadingPID(3, 0, 0); // TODO: tune PID
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     
@@ -55,13 +63,35 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
 
     public Command drive(OCXboxController controller){
         return applyRequest(() -> {
-                ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate), lastTargetSpeeds, Robot.kDefaultPeriod);
-                lastTargetSpeeds = targetSpeeds;
-                return drive.withVelocityX(-targetSpeeds.vxMetersPerSecond)
-                            .withVelocityY(-targetSpeeds.vyMetersPerSecond)
-                            .withRotationalRate(targetSpeeds.omegaRadiansPerSecond);
-                }
-            );
+            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate), lastTargetSpeeds, Robot.kDefaultPeriod);
+            lastTargetSpeeds = targetSpeeds;
+            return drive.withVelocityX(-targetSpeeds.vxMetersPerSecond)
+                        .withVelocityY(-targetSpeeds.vyMetersPerSecond)
+                        .withRotationalRate(targetSpeeds.omegaRadiansPerSecond);
+        });
+    }
+    
+    public Command faceAngle(Angle angle){
+        return applyRequest(() -> face.withTargetDirection(Rotation2d.fromDegrees(angle.in(Degrees))));
+    }
+    
+    public Command faceHub(){
+        return applyRequest(() -> face.withTargetDirection(getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle())); // TODO: (maybe) switch directions €
+    }
+
+    public Command driveFacingHub(OCXboxController controller){
+        return applyRequest(() -> {
+            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate), lastTargetSpeeds, Robot.kDefaultPeriod);
+            lastTargetSpeeds = targetSpeeds;
+            return face.withVelocityX(-targetSpeeds.vxMetersPerSecond)
+                        .withVelocityY(-targetSpeeds.vyMetersPerSecond)
+                        .withTargetDirection(getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle()); 
+        });
+    }
+
+    public Trigger facingHubT() {
+        return new Trigger(() -> getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle().getDegrees() == getState().Pose.getRotation().getDegrees())
+                                    .debounce(0.25);// TODO: Tune
     }
     
 }

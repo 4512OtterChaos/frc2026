@@ -97,7 +97,7 @@ public class Flywheel extends SubsystemBase {
     }
 
     public Command setVelocityC(AngularVelocity velocity){
-        return runOnce(()-> setVelocity(velocity))/*.until(upToSpeedT()) */.withName("Set velocity: " + velocity);
+        return runOnce(()-> setVelocity(velocity)).until(upToSpeedT()).withName("Set velocity: " + velocity);
     }
 
     public Trigger upToSpeedT(){
