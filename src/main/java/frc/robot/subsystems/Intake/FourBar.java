@@ -1,11 +1,11 @@
 package frc.robot.subsystems.Intake;
 
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.Intake.IntakeConstants.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
-
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Intake extends SubsystemBase{
-    private TalonFX motor = new TalonFX(kIntakeMotorID);
+public class FourBar extends SubsystemBase {
+    private TalonFX motor = new TalonFX(kFourBarMotorID);
 
     private final StatusSignal<Angle> positionStatus = motor.getPosition();
     private final StatusSignal<AngularVelocity> velocityStatus = motor.getVelocity();
@@ -28,13 +28,13 @@ public class Intake extends SubsystemBase{
         BaseStatusSignal.refreshAll(positionStatus, velocityStatus, voltageStatus, statorStatus);
         log();
     }
-
-    public Intake(){
-        motor.getConfigurator().apply(kIntakeConfig);
-        SmartDashboard.putData("Intake/Roller/Subsystem", this);
+    
+    public FourBar(){
+        motor.getConfigurator().apply(kFourBarConfig);
+        SmartDashboard.putData("Intake/Four Bar/Subsystem", this);
     }
 
-    public Angle getAngle() {
+    public Angle getAngle(){
         return positionStatus.getValue();
     }
 
@@ -52,25 +52,24 @@ public class Intake extends SubsystemBase{
 
     public void setVoltage(double voltage){
         motor.setVoltage(voltage);
-    }
+    }  
 
     public Command setVoltageC(double voltage){
         return runOnce(()-> setVoltage(voltage)).withName("Set Voltage: " + voltage);    
     }
 
     public Command setVoltageInC(){
-        return setVoltageC(kIntakeVoltageIn).withName("Voltage In");
+        return setVoltageC(kFourBarVoltageIn).withName("Voltage In");
     }
 
     public Command setVoltageOutC(){
-        return setVoltageC(kIntakeVoltageOut).withName("Voltage Out");
+        return setVoltageC(kFourBarVoltageOut).withName("Voltage Out");
     }
 
     public void log(){
-        SmartDashboard.putNumber("Intake/Roller/Angle Degrees", getAngle().in(Degrees));
-        SmartDashboard.putNumber("Intake/Roller/RPM", getVelocity().in(RPM));
-        SmartDashboard.putNumber("Intake/Roller/Voltage", getVoltage().in(Volts));
-        SmartDashboard.putNumber("Intake/Roller/Current", getCurrent().in(Amps));
-
+        SmartDashboard.putNumber("Intake/Four Bar/Angle Degrees", getAngle().in(Degrees));
+        SmartDashboard.putNumber("Intake/Four Bar/RPM", getVelocity().in(RPM));
+        SmartDashboard.putNumber("Intake/Four Bar/Voltage", getVoltage().in(Volts));
+        SmartDashboard.putNumber("Intake/Four Bar/Current", getCurrent().in(Amps));
     }
 }

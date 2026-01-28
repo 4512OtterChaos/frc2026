@@ -43,10 +43,10 @@ public final class ShooterConstants {
         current.StatorCurrentLimitEnable = true;
         current.StatorCurrentLimit = 40; 
 
-        Slot0Configs control = kFlywheelConfig.Slot0;
+        Slot0Configs control = kFlywheelConfig.Slot0;// TODO: Tune PID
         control.kP = 0.1; 
         control.kI = 0;
-        control.kD = 0.1;
+        control.kD = 0;
         
         control.kS = 0.1;
         control.kV = 0.01;
@@ -67,10 +67,10 @@ public final class ShooterConstants {
         current.StatorCurrentLimitEnable = true;
         current.StatorCurrentLimit = 40; 
 
-        Slot0Configs control = kHoodConfig.Slot0;
+        Slot0Configs control = kHoodConfig.Slot0;// TODO: Tune PID
         control.kP = 0.1; 
         control.kI = 0;
-        control.kD = 0.1;
+        control.kD = 0;
         
         control.kS = 0.1;
         control.kV = 0.01;
