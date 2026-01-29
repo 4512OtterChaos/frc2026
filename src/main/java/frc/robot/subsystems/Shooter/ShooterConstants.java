@@ -22,8 +22,10 @@ public final class ShooterConstants {
     public static double kFlywheelGearRatio = 1; // TODO: Get Later
     public static double kHoodGearRatio = 1; // TODO: Get Later
 
+    public static AngularVelocity flywheelIdleVelocity = RPM.of(500);// TODO: Tune
+
     public static Angle kHoodMinAngle = Degrees.of(0);
-    public static Angle kHoodMaxAngle = Degrees.of(30);
+    public static Angle kHoodMaxAngle = Degrees.of(30);// TODO: Tune
 
     public static final double kDebounceTime = 0.25;
     

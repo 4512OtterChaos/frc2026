@@ -87,6 +87,10 @@ public class Hood extends SubsystemBase {
         return run(()-> setAngle(angle)).until(atAngleT()).withName("Set angle: " + angle);
     }
 
+    public Command setMinAngleC(){
+        return setAngleC(kHoodMinAngle);
+    }
+
     public Trigger atAngleT(){
         return new Trigger(()-> atAngle()).debounce(kDebounceTime);
     }

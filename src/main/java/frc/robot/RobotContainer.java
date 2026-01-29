@@ -6,21 +6,23 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
+import frc.robot.subsystems.Indexer.Feeder;
+import frc.robot.subsystems.Indexer.Spindexer;
+import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Flywheel;
+import frc.robot.subsystems.Shooter.Hood;
+import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.util.OCXboxController;
 
 public class RobotContainer {
@@ -28,10 +30,16 @@ public class RobotContainer {
     
     private final OCXboxController driver = new OCXboxController(0);
 
-    public final OCDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    private final OCDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final Telemetry logger = new Telemetry(MaxSpeed);
-    public final Intake intake = new Intake();
-    public final Flywheel flywheel = new Flywheel();
+    private final Intake intake = new Intake();
+    private final FourBar fourBar = new FourBar();
+    private final Spindexer spindexer = new Spindexer();
+    private final Feeder feeder = new Feeder();
+    private final Flywheel flywheel = new Flywheel();
+    private final Hood hood = new Hood();
+
+    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, flywheel, hood);
 
     public RobotContainer() {
         configureDefaultCommands();
@@ -40,6 +48,10 @@ public class RobotContainer {
 
     public void configureDefaultCommands(){
         drivetrain.setDefaultCommand(drivetrain.drive(driver));
+        spindexer.setDefaultCommand(superstructure.passiveSpindexC());
+        feeder.setDefaultCommand(feeder.passiveIndexC());
+        flywheel.setDefaultCommand(flywheel.setVelocityC(ShooterConstants.flywheelIdleVelocity));
+        hood.setDefaultCommand(hood.setMinAngleC());
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
