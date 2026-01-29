@@ -1,0 +1,92 @@
+package frc.robot.subsystems.Indexer;
+
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.Indexer.IndexerConstants.*;
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
+public class Feeder extends SubsystemBase{
+    private TalonFX motor = new TalonFX(kFeederID);
+
+    private DigitalInput bottomSensor = new DigitalInput(0);
+    private DigitalInput topSensor = new DigitalInput(1);
+
+    private final StatusSignal<Angle> positionStatus = motor.getPosition();
+    private final StatusSignal<AngularVelocity> velocityStatus = motor.getVelocity();
+    private final StatusSignal<Voltage> voltageStatus = motor.getMotorVoltage();
+    private final StatusSignal<Current> statorStatus = motor.getStatorCurrent();
+
+    public Feeder(){
+        motor.getConfigurator().apply(kFeederConfig);
+        SmartDashboard.putData("Indexer/Feeder/Subsystem", this);
+    }
+
+    @Override
+    public void periodic(){
+        BaseStatusSignal.refreshAll(positionStatus, velocityStatus, voltageStatus, statorStatus);
+        log();
+    }
+
+    public Angle getAngle() {
+        return positionStatus.getValue();
+    }
+
+    public AngularVelocity getVelocity(){
+        return velocityStatus.getValue();
+    }
+
+    public Voltage getVoltage(){
+        return voltageStatus.getValue();
+    }
+
+    public Current getCurrent(){
+        return statorStatus.getValue();
+    }
+
+    public void setVoltage(double voltage){
+        motor.setVoltage(voltage);
+    }
+
+    public Command setVoltageC(double voltage){
+        return runOnce(()-> setVoltage(voltage)).withName("Set Voltage: " + voltage);    
+    }
+
+    public Command feedC(){
+        return setVoltageC(kFeederVoltage).withName("Feed");
+    }
+
+    public Trigger bottomSensorT(){ // same as topSensorT
+        return new Trigger(()-> bottomSensor.get());
+    }
+
+    public Trigger topSensorT(){ // might change to boolean to make indexC short :)
+        return new Trigger(()-> topSensor.get());
+    }
+
+    public Command passiveIndexC(){
+        return Commands.either(
+            setVoltageC(kFeedSlowVoltage),
+            setVoltageC(0),
+            ()-> !topSensorT().getAsBoolean() && bottomSensorT().getAsBoolean()
+        ).withName("Passively Index");
+    }
+
+    public void log(){
+        SmartDashboard.putNumber("Indexer/Feeder/Angle Degrees", getAngle().in(Degrees));
+        SmartDashboard.putNumber("Indexer/Feeder/RPM", getVelocity().in(RPM));
+        SmartDashboard.putNumber("Indexer/Feeder/Voltage", getVoltage().in(Volts));
+        SmartDashboard.putNumber("Indexer/Feeder/Current", getCurrent().in(Amps));
+    }
+}
