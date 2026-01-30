@@ -9,9 +9,11 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DSControlWord;
 import edu.wpi.first.wpilibj2.command.Command;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
@@ -28,6 +30,8 @@ import frc.robot.util.OCXboxController;
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     
+    private final DSControlWord driverStation = new DSControlWord(); 
+
     private final OCXboxController driver = new OCXboxController(0);
 
     private final OCDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -80,4 +84,7 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle)
         );
     }
+
+    Trigger isAutonomous = new Trigger(()-> driverStation.isAutonomous())
+        .onTrue(fourBar.lower()); //TODO: test if this works
 }

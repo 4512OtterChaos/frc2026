@@ -38,7 +38,7 @@ public class IndexerConstants {
         Slot0Configs control = kSpindexerConfig.Slot0;// TODO: Tune PID
         control.kP = 0.1; 
         control.kI = 0;
-        control.kD = 0.1;
+        control.kD = 0;
         
         control.kS = 0.1;
         control.kV = 0.01;
