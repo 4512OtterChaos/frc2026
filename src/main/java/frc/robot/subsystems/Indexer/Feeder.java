@@ -35,7 +35,12 @@ public class Feeder extends SubsystemBase{
 
     @Override
     public void periodic(){
-        BaseStatusSignal.refreshAll(positionStatus, velocityStatus, voltageStatus, statorStatus);
+        BaseStatusSignal.refreshAll(
+            positionStatus, 
+            velocityStatus,
+            voltageStatus,
+            statorStatus
+        );
         log();
     }
 
@@ -64,7 +69,7 @@ public class Feeder extends SubsystemBase{
     }
 
     public Command feedC(){
-        return setVoltageC(kFeederVoltage).withName("Feed");
+        return setVoltageC(feederVoltage.get()).withName("Feed");
     }
 
     public Trigger bottomSensorT(){ // same as topSensorT
@@ -77,16 +82,40 @@ public class Feeder extends SubsystemBase{
 
     public Command passiveIndexC(){
         return Commands.either(
-            setVoltageC(kFeedSlowVoltage),
+            setVoltageC(feedSlowVoltage.get()),
             setVoltageC(0),
             ()-> !topSensorT().getAsBoolean() && bottomSensorT().getAsBoolean()
         ).withName("Passively Index");
     }
 
+    public void changeTunable(){
+        feederVoltage.poll();
+        feedSlowVoltage.poll();
+        feederkP.poll();
+        feederkI.poll();
+        feederkD.poll();
+        feederkS.poll();
+        feederkV.poll();
+        feederkA.poll();
+        int hash = hashCode();
+
+
+        if (feederkP.hasChanged(hash) || feederkI.hasChanged(hash) || feederkD.hasChanged(hash) || feederkS.hasChanged(hash) || feederkV.hasChanged(hash) || feederkA.hasChanged(hash)) {
+            kFeederConfig.Slot0.kP = feederkP.get();
+            kFeederConfig.Slot0.kI = feederkI.get();
+            kFeederConfig.Slot0.kD = feederkD.get(); 
+            kFeederConfig.Slot0.kS = feederkS.get();
+            kFeederConfig.Slot0.kV = feederkV.get();
+            kFeederConfig.Slot0.kA = feederkA.get();
+            motor.getConfigurator().apply(kFeederConfig.Slot0);
+        }
+    }
+        
     public void log(){
         SmartDashboard.putNumber("Indexer/Feeder/Angle Degrees", getAngle().in(Degrees));
         SmartDashboard.putNumber("Indexer/Feeder/RPM", getVelocity().in(RPM));
         SmartDashboard.putNumber("Indexer/Feeder/Voltage", getVoltage().in(Volts));
         SmartDashboard.putNumber("Indexer/Feeder/Current", getCurrent().in(Amps));
     }
+    
 }

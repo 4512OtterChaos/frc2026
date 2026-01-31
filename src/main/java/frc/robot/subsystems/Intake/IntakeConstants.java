@@ -10,22 +10,32 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
+import frc.robot.util.TunableNumber;
 
 public class IntakeConstants {
     public static final int kIntakeMotorID = 21;
     public static final int kFourBarMotorID = 22;
 
+    public static final double kIntakeGearRatio = 1; //TODO: Use Real
+    public static final double kFourBarGearRatio = 1; //TODO: Use Real
+
     public static final Angle kFourBarMinAngle = Degrees.of(15); //TODO: tune
     public static final Angle kFourBarMaxAngle = Degrees.of(85); //TODO: tune
-    public static final Angle kAngleTolernce = Degrees.of(2); //TODO: tune
+    public static final Angle kAngleTolerance = Degrees.of(2); //TODO: tune
+
+    public static final TunableNumber fourBarMinDegrees = new TunableNumber("Intake/Four Bar/Min Degrees", kFourBarMinAngle.in(Degrees));
+    public static final TunableNumber fourBarMaxDegrees = new TunableNumber("Intake/Four Bar/Max Degrees", kFourBarMaxAngle.in(Degrees));
+    public static final TunableNumber degreeTolerance = new TunableNumber("Intake/Four Bar/Degrees Tolerance", kFourBarMinAngle.in(Degrees));
 
     public static final double kIntakeVoltageIn = 2.5; //TODO: Tune
     public static final double kIntakeVoltageOut = -2.5; //TODO: Tune
     public static final double kFourBarVoltageIn = 2.5; //TODO: Tune
     public static final double kFourBarVoltageOut = -2.5; //TODO: Tune
 
-    public static final double kIntakeGearRatio = 1; //TODO: Use Real
-    public static final double kFourBarGearRatio = 1; //TODO: Use Real
+    public static final TunableNumber intakeVoltageIn = new TunableNumber("Intake/Roller/Voltage In", kIntakeVoltageIn);
+    public static final TunableNumber intakeVoltageOut = new TunableNumber("Intake/Roller/Voltage Out", kIntakeVoltageOut);
+    public static final TunableNumber fourBarVoltageIn = new TunableNumber("Intake/Four Bar/Voltage In", kFourBarVoltageIn);
+    public static final TunableNumber fourBarVoltageOut = new TunableNumber("Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
 
     public static final TalonFXConfiguration kIntakeConfig = new TalonFXConfiguration();
     static { 

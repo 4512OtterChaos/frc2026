@@ -14,6 +14,7 @@ import frc.robot.subsystems.Shooter.Flywheel;
 import frc.robot.subsystems.Shooter.Hood;
 import frc.robot.subsystems.Shooter.Shotmap;
 
+
 public class Superstructure {
     private OCDrivetrain drivetrain;
     private Intake intake;
@@ -35,7 +36,7 @@ public class Superstructure {
 
     public Command passiveSpindexC(){
         return either(
-            spindexer.setVoltageC(IndexerConstants.kSpindexSlowVoltage),
+            spindexer.setVoltageC(IndexerConstants.spindexSlowVoltage.get()),
             spindexer.setVoltageC(0),
             feeder.topSensorT().negate()
         ).withName("Index");

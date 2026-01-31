@@ -31,7 +31,12 @@ public class Spindexer extends SubsystemBase {
 
     @Override
     public void periodic(){
-        BaseStatusSignal.refreshAll(positionStatus, velocityStatus, voltageStatus, statorStatus);
+        BaseStatusSignal.refreshAll(
+            positionStatus, 
+            velocityStatus,
+            voltageStatus,
+            statorStatus
+        );
         log();
     }
 
@@ -61,7 +66,30 @@ public class Spindexer extends SubsystemBase {
     }
 
     public Command spindexC(){
-        return setVoltageC(kSpindexerVoltage).withName("Spindex");
+        return setVoltageC(spindexerVoltage.get()).withName("Spindex");
+    }
+
+    public void changeTunable(){
+        spindexerVoltage.poll();
+        spindexSlowVoltage.poll();
+        spindexerkP.poll();
+        spindexerkI.poll();
+        spindexerkD.poll();
+        spindexerkS.poll();
+        spindexerkV.poll();
+        spindexerkA.poll();
+
+        int hash = hashCode();
+
+        if (spindexerkP.hasChanged(hash) || spindexerkI.hasChanged(hash) || spindexerkD.hasChanged(hash) || spindexerkS.hasChanged(hash) || spindexerkV.hasChanged(hash) || spindexerkA.hasChanged(hash)) {
+            kSpindexerConfig.Slot0.kP = spindexerkP.get();
+            kSpindexerConfig.Slot0.kI = spindexerkI.get();
+            kSpindexerConfig.Slot0.kD = spindexerkD.get(); 
+            kSpindexerConfig.Slot0.kS = spindexerkS.get();
+            kSpindexerConfig.Slot0.kV = spindexerkV.get();
+            kSpindexerConfig.Slot0.kA = spindexerkA.get();
+            motor.getConfigurator().apply(kSpindexerConfig.Slot0);
+        }
     }
 
     public void log(){

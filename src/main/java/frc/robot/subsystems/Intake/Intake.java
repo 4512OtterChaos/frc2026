@@ -25,7 +25,12 @@ public class Intake extends SubsystemBase{
 
     @Override
     public void periodic(){
-        BaseStatusSignal.refreshAll(positionStatus, velocityStatus, voltageStatus, statorStatus);
+        BaseStatusSignal.refreshAll(
+            positionStatus,
+            velocityStatus,
+            voltageStatus,
+            statorStatus
+        );
         log();
     }
 
@@ -59,11 +64,16 @@ public class Intake extends SubsystemBase{
     }
 
     public Command setVoltageInC(){
-        return setVoltageC(kIntakeVoltageIn).withName("Voltage In");
+        return setVoltageC(intakeVoltageIn.get()).withName("Voltage In");
     }
 
     public Command setVoltageOutC(){
-        return setVoltageC(kIntakeVoltageOut).withName("Voltage Out");
+        return setVoltageC(intakeVoltageOut.get()).withName("Voltage Out");
+    }
+
+    public void changeTunable(){
+        intakeVoltageIn.poll();
+        intakeVoltageOut.poll();
     }
 
     public void log(){
@@ -71,6 +81,5 @@ public class Intake extends SubsystemBase{
         SmartDashboard.putNumber("Intake/Roller/RPM", getVelocity().in(RPM));
         SmartDashboard.putNumber("Intake/Roller/Voltage", getVoltage().in(Volts));
         SmartDashboard.putNumber("Intake/Roller/Current", getCurrent().in(Amps));
-
     }
 }

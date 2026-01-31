@@ -30,12 +30,17 @@ public class FourBar extends SubsystemBase {
     public FourBar(){
         motor.getConfigurator().apply(kFourBarConfig);
         SmartDashboard.putData("Intake/Four Bar/Subsystem", this);
-        resetAngle(kFourBarMaxAngle);
+        resetAngle(Degrees.of(fourBarMaxDegrees.get()));
     }
 
     @Override
     public void periodic(){
-        BaseStatusSignal.refreshAll(positionStatus, velocityStatus, voltageStatus, statorStatus);
+        BaseStatusSignal.refreshAll(
+            positionStatus,
+            velocityStatus,
+            voltageStatus,
+            statorStatus
+        );
         log();
     }
 
@@ -60,10 +65,10 @@ public class FourBar extends SubsystemBase {
     }
 
     public void setVoltage(double voltage){
-        if (getAngle().in(Degrees) >= kFourBarMaxAngle.in(Degrees)){
+        if (getAngle().in(Degrees) >= fourBarMaxDegrees.get()){
             voltage = MathUtil.clamp(voltage, -12, 0);
         }
-        if (getAngle().in(Degrees) <= kFourBarMinAngle.in(Degrees)){
+        if (getAngle().in(Degrees) <= fourBarMinDegrees.get()){
             voltage = MathUtil.clamp(voltage, 0, 12);
         }
         motor.setVoltage(voltage);
@@ -74,23 +79,31 @@ public class FourBar extends SubsystemBase {
     }
 
     public Command setVoltageInC(){
-        return setVoltageC(kFourBarVoltageIn).withName("Voltage In");
+        return setVoltageC(fourBarVoltageIn.get()).withName("Voltage In");
     }
 
     public Command setVoltageOutC(){
-        return setVoltageC(kFourBarVoltageOut).withName("Voltage Out");
+        return setVoltageC(fourBarVoltageOut.get()).withName("Voltage Out");
     }
 
     public Command lower(){
         return sequence(
-            setVoltageC(kFourBarVoltageOut),
-            waitUntil(atAngle(kFourBarMinAngle)),
+            setVoltageC(fourBarVoltageOut.get()),
+            waitUntil(atAngle(Degrees.of(fourBarMinDegrees.get()))),
             setVoltageC(0)
         );
     }
 
     public Trigger atAngle(Angle angle){
-        return new Trigger(()-> (getAngle().in(Degrees) - angle.in(Degrees)) <= kAngleTolernce.in(Degrees));
+        return new Trigger(()-> (getAngle().in(Degrees) - angle.in(Degrees)) <= degreeTolerance.get());
+    }
+
+    public void changeTunable(){
+        fourBarVoltageIn.poll();
+        fourBarVoltageOut.poll();
+        fourBarMinDegrees.poll();
+        fourBarMaxDegrees.poll();
+        degreeTolerance.poll();
     }
 
     public void log(){

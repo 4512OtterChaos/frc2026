@@ -2,6 +2,8 @@ package frc.robot.subsystems.Climber;
 
 import static edu.wpi.first.units.Units.Inches;
 
+import frc.robot.util.TunableNumber;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -19,7 +21,13 @@ public class ClimberConstants {
     public static final Distance kMinHeight = Inches.of(23); //TODO: tune
     public static final Distance kHeightTolerance = Inches.of(0.25); //TODO: tune
 
+    public static final TunableNumber maxHeight = new TunableNumber("Climber/Max Height", kMaxHeight.in(Inches));
+    public static final TunableNumber minHeight = new TunableNumber("Climber/Max Height", kMinHeight.in(Inches));
+    public static final TunableNumber heightTolerance = new TunableNumber("Climber/Height Tolerance", kHeightTolerance.in(Inches));
+
     public static final double kDebounceTime = 0.25;
+
+    public static final TunableNumber debounceTime = new TunableNumber("Climber/Debounce Time", kDebounceTime);
 
     public static final int kGearRatio = 1; //TODO: tune
 
@@ -45,5 +53,14 @@ public class ClimberConstants {
         control.kV = 0.01;
         control.kA = 0;
     }
+
+    public static final TunableNumber kP = new TunableNumber("Intake/Climber/PID/P", kConfig.Slot0.kP);
+    public static final TunableNumber kI = new TunableNumber("Intake/Climber/PID/I", kConfig.Slot0.kI);
+    public static final TunableNumber kD = new TunableNumber("Intake/Climber/PID/D", kConfig.Slot0.kD);
+    
+    public static final TunableNumber kS = new TunableNumber("Intake/Climber/Feed Forward/S", kConfig.Slot0.kS);
+    public static final TunableNumber kV = new TunableNumber("Intake/Climber/Feed Forward/V", kConfig.Slot0.kV);
+    public static final TunableNumber kA = new TunableNumber("Intake/Climber/Feed Forward/A", kConfig.Slot0.kA);
+
 
 }

@@ -16,15 +16,18 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
+import frc.robot.util.TunableNumber;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain{
-    
     private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // desired top speed
     private static double MaxAngularRate = RotationsPerSecond.of(2).in(RadiansPerSecond); // max angular velocity
-    
+
     // Normal driving speed at 100% controller input
-    public static final double kDriveSpeed = 0.5 * MaxSpeed;
-    public static final double kTurnSpeed = 0.5 * MaxAngularRate;
+    public static final double kDriveSpeedRatio = 0.5;
+    public static final double kTurnSpeedRatio = 0.5;
+
+    public static final TunableNumber driveSpeedRatio = new TunableNumber("Drivetrain/Drive Speed", kDriveSpeedRatio);
+    public static final TunableNumber turnSpeedRatio = new TunableNumber("Drivetrain/Turn Speed", kTurnSpeedRatio);
 
     // Normal driving acceleration limits
     public static final double kLinearAccel = FeetPerSecondPerSecond.of(30).in(MetersPerSecondPerSecond);
@@ -32,16 +35,19 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
     public static final double kAngularAccel = RotationsPerSecondPerSecond.of(6).in(RadiansPerSecondPerSecond);
     public static final double kAngularDecel = RotationsPerSecondPerSecond.of(10).in(RadiansPerSecondPerSecond);
     
-    public static final SwerveDriveLimiter kStandardLimiter = new SwerveDriveLimiter(
-        MetersPerSecond.of(kDriveSpeed),
-        MetersPerSecondPerSecond.of(kLinearAccel),
-        MetersPerSecondPerSecond.of(kLinearDecel),
-        RadiansPerSecond.of(kTurnSpeed),
-        RadiansPerSecondPerSecond.of(kAngularAccel),
-        RadiansPerSecondPerSecond.of(kAngularDecel)
-    );
+    public static final TunableNumber linearAccel = new TunableNumber("Drivetrain/Linear Acceleration", kLinearAccel);
+    public static final TunableNumber linearDecel = new TunableNumber("Drivetrain/Linear Deceleration", kLinearDecel);
+    public static final TunableNumber angularAccel = new TunableNumber("Drivetrain/Angular Acceleration", kAngularAccel);
+    public static final TunableNumber angularDecel = new TunableNumber("Drivetrain/Angular Deceleration", kAngularDecel);
 
-    ChassisSpeeds lastTargetSpeeds = new ChassisSpeeds();
+    public final SwerveDriveLimiter kStandardLimiter = new SwerveDriveLimiter(
+        MetersPerSecond.of(getDriveSpeed()),
+        MetersPerSecondPerSecond.of(linearAccel.get()),
+        MetersPerSecondPerSecond.of(linearDecel.get()),
+        RadiansPerSecond.of(getTurnSpeed()),
+        RadiansPerSecondPerSecond.of(angularAccel.get()),
+        RadiansPerSecondPerSecond.of(angularAccel.get())
+    );
     
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -53,12 +59,22 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
             .withHeadingPID(3, 0, 0); // TODO: tune PID
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+
+    public ChassisSpeeds lastTargetSpeeds = new ChassisSpeeds();
     
     public OCDrivetrain(
         SwerveDrivetrainConstants drivetrainConstants,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, modules);
+    }
+
+    public double getDriveSpeed(){
+        return driveSpeedRatio.get() * MaxSpeed;
+    }
+
+    public double getTurnSpeed(){
+        return turnSpeedRatio.get() * MaxAngularRate;
     }
 
     public Command drive(OCXboxController controller){
@@ -94,4 +110,24 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
                                     .debounce(0.25);// TODO: Tune
     }
     
+    public void changeTunable(){
+        driveSpeedRatio.poll();
+        turnSpeedRatio.poll();
+        linearAccel.poll();
+        linearDecel.poll();
+        angularAccel.poll();
+        angularDecel.poll();
+        
+        int hash = hashCode();
+        
+        //Standard limiter
+        if (driveSpeedRatio.hasChanged(hash) || turnSpeedRatio.hasChanged(hash) || linearAccel.hasChanged(hash) || linearDecel.hasChanged(hash) || angularAccel.hasChanged(hash) || angularDecel.hasChanged(hash)) {
+            kStandardLimiter.linearTopSpeed = MetersPerSecond.of(getDriveSpeed());
+            kStandardLimiter.angularTopSpeed = RadiansPerSecond.of(getTurnSpeed());
+            kStandardLimiter.linearAcceleration = MetersPerSecondPerSecond.of(linearAccel.get());
+            kStandardLimiter.linearDeceleration = MetersPerSecondPerSecond.of(linearDecel.get());
+            kStandardLimiter.angularAcceleration = RadiansPerSecondPerSecond.of(angularAccel.get());
+            kStandardLimiter.angularDeceleration = RadiansPerSecondPerSecond.of(angularDecel.get());
+        }
+    }
 }

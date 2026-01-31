@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import frc.robot.util.TunableNumber;
 
 public final class ShooterConstants {
     
@@ -22,15 +23,28 @@ public final class ShooterConstants {
     public static double kFlywheelGearRatio = 1; // TODO: Get Later
     public static double kHoodGearRatio = 1; // TODO: Get Later
 
-    public static AngularVelocity flywheelIdleVelocity = RPM.of(500);// TODO: Tune
+    public static final AngularVelocity flywheelIdleVelocity = RPM.of(500);// TODO: Tune
 
-    public static Angle kHoodMinAngle = Degrees.of(0);
-    public static Angle kHoodMaxAngle = Degrees.of(30);// TODO: Tune
+    public static final TunableNumber flywheelIdleRPM = new TunableNumber("Shooter/Flywheel/Idle RPM", flywheelIdleVelocity.in(RPM));
 
-    public static final double kDebounceTime = 0.25;
-    
+    public static final Angle kHoodMinAngle = Degrees.of(0);
+    public static final Angle kHoodMaxAngle = Degrees.of(30);// TODO: Tune
+
+    public static final TunableNumber hoodMinAngle = new TunableNumber("Shooter/Hood/Min Angle", kHoodMinAngle.in(Degrees)); 
+    public static final TunableNumber hoodMaxAngle = new TunableNumber("Shooter/Hood/Max Angle", kHoodMaxAngle.in(Degrees));
+
+    public static final double kFlywheelDebounceTime = 0.25;
+    public static final double kHoodDebounceTime = 0.25;
+
+    public static final TunableNumber flywheelDebounceTime = new TunableNumber("Shooter/Flywheel/Debounce Time", kFlywheelDebounceTime);
+    public static final TunableNumber hoodDebounceTime = new TunableNumber("Shooter/Hood/Debounce Time", kHoodDebounceTime);
+
     public static final AngularVelocity kVelocityTolerance = RPM.of(100); // TODO: tune tolerance
     public static final Angle kAngleTolerance = Degrees.of(1.5); // TODO: tune tolerance
+
+    public static final TunableNumber RPMTolerance = new TunableNumber("Shooter/Flywheel/RPM Tolerance", kVelocityTolerance.in(RPM));
+    public static final TunableNumber degreesTolerance = new TunableNumber("Shooter/Hood/Degrees Tolerance", kAngleTolerance.in(Degrees));
+
 
     public static final TalonFXConfiguration kFlywheelConfig = new TalonFXConfiguration();
     static {
@@ -55,6 +69,14 @@ public final class ShooterConstants {
         control.kA = 0;
     }
 
+    public static final TunableNumber flywheelkP = new TunableNumber("Intake/Flywheel/PID/P", kFlywheelConfig.Slot0.kP);
+    public static final TunableNumber flywheelkI = new TunableNumber("Intake/Flywheel/PID/I", kFlywheelConfig.Slot0.kI);
+    public static final TunableNumber flywheelkD = new TunableNumber("Intake/Flywheel/PID/D", kFlywheelConfig.Slot0.kD);
+
+    public static final TunableNumber flywheelkS = new TunableNumber("Intake/Flywheel/Feed Forward/S", kFlywheelConfig.Slot0.kS);
+    public static final TunableNumber flywheelkV = new TunableNumber("Intake/Flywheel/Feed Forward/V", kFlywheelConfig.Slot0.kV);
+    public static final TunableNumber flywheelkA = new TunableNumber("Intake/Flywheel/Feed Forward/A", kFlywheelConfig.Slot0.kA);
+
     
     public static final TalonFXConfiguration kHoodConfig = new TalonFXConfiguration();
     static {
@@ -78,5 +100,13 @@ public final class ShooterConstants {
         control.kV = 0.01;
         control.kA = 0;
     }
+    
+    public static final TunableNumber hoodkP = new TunableNumber("Intake/Hood/PID/P", kHoodConfig.Slot0.kP);
+    public static final TunableNumber hoodkI = new TunableNumber("Intake/Hood/PID/I", kHoodConfig.Slot0.kI);
+    public static final TunableNumber hoodkD = new TunableNumber("Intake/Climber/PID/D", kHoodConfig.Slot0.kD);
+
+    public static final TunableNumber hoodkS = new TunableNumber("Intake/Hood/Feed Forward/S", kHoodConfig.Slot0.kS);
+    public static final TunableNumber hoodkV = new TunableNumber("Intake/Hood/Feed Forward/V", kHoodConfig.Slot0.kV);
+    public static final TunableNumber hoodkA = new TunableNumber("Intake/Hood/Feed Forward/A", kHoodConfig.Slot0.kA);
 
 }

@@ -4,11 +4,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kFlywheelConfig;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kDebounceTime;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kLeftMotorID;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kRightMotorID;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kVelocityTolerance;
+import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -88,7 +84,7 @@ public class Flywheel extends SubsystemBase {
     }
 
     public boolean upToSpeed(){
-        return Math.abs(targetVelocity.in(RPM) - getAngularVelocity().in(RPM)) < kVelocityTolerance.in(RPM);
+        return Math.abs(targetVelocity.in(RPM) - getAngularVelocity().in(RPM)) < RPMTolerance.get();
     }
 
     public Command setVoltageC(double voltage){
@@ -100,7 +96,32 @@ public class Flywheel extends SubsystemBase {
     }
 
     public Trigger upToSpeedT(){
-        return new Trigger(()-> upToSpeed()).debounce(kDebounceTime);
+        return new Trigger(()-> upToSpeed()).debounce(flywheelDebounceTime.get());
+    }
+
+
+     public void changeTunable(){
+        flywheelIdleRPM.poll();
+        flywheelDebounceTime.poll();
+        RPMTolerance.poll();
+        flywheelkP.poll();
+        flywheelkI.poll();
+        flywheelkD.poll();
+        flywheelkS.poll();
+        flywheelkV.poll();
+        flywheelkA.poll();
+
+        int hash = hashCode();
+
+        if (flywheelkP.hasChanged(hash) || flywheelkI.hasChanged(hash) || flywheelkD.hasChanged(hash) || flywheelkS.hasChanged(hash) || flywheelkV.hasChanged(hash) ||flywheelkA.hasChanged(hash)) {
+            kFlywheelConfig.Slot0.kP = flywheelkP.get();
+            kFlywheelConfig.Slot0.kI = flywheelkI.get();
+            kFlywheelConfig.Slot0.kD = flywheelkD.get(); 
+            kFlywheelConfig.Slot0.kS = flywheelkS.get();
+            kFlywheelConfig.Slot0.kV = flywheelkV.get();
+            kFlywheelConfig.Slot0.kA = flywheelkA.get(); 
+            leftMotor.getConfigurator().apply(kFlywheelConfig.Slot0);
+        }
     }
 
     public void log(){
@@ -111,6 +132,6 @@ public class Flywheel extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/Flywheel/Target RPM", targetVelocity.in(RPM));
         SmartDashboard.putNumber("Shooter/Flywheel/Current", getCurrent().in(Amps));
         SmartDashboard.putBoolean("Shooter/Flywheel/Up to speed", upToSpeedT().getAsBoolean());
-        SmartDashboard.putNumber("Shooter/Flywheel/Velocity Tolerance", ShooterConstants.kVelocityTolerance.in(RPM));
+        SmartDashboard.putNumber("Shooter/Flywheel/Velocity Tolerance", RPMTolerance.get());
     }
 }

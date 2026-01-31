@@ -34,7 +34,7 @@ public class Hood extends SubsystemBase {
     public Hood(){
         motor.getConfigurator().apply(kHoodConfig);
         SmartDashboard.putData("Shooter/Flywheel/Subsystem", this);
-        resetAngle(kHoodMinAngle);
+        resetAngle(Degrees.of(hoodMinAngle.get()));
     }
 
     @Override
@@ -77,13 +77,13 @@ public class Hood extends SubsystemBase {
     }
 
     public void setAngle(Angle angle){
-        angle = Degrees.of(MathUtil.clamp(angle.in(Degrees), kHoodMinAngle.in(Degrees), kHoodMaxAngle.in(Degrees)));
+        angle = Degrees.of(MathUtil.clamp(angle.in(Degrees), hoodMinAngle.get(), hoodMaxAngle.get()));
         motor.setControl(mmRequest.withPosition(angle));
         targetAngle = angle;
     }
     
     public boolean atAngle(){
-        return Math.abs(targetAngle.in(Degrees) - getAngle().in(Degrees)) < kAngleTolerance.in(Degrees);
+        return Math.abs(targetAngle.in(Degrees) - getAngle().in(Degrees)) < degreesTolerance.get();
     }
 
     public Command setVoltageC(double voltage){
@@ -95,11 +95,37 @@ public class Hood extends SubsystemBase {
     }
 
     public Command setMinAngleC(){
-        return setAngleC(kHoodMinAngle);
+        return setAngleC(Degrees.of(hoodMinAngle.get()));
     }
 
     public Trigger atAngleT(){
-        return new Trigger(()-> atAngle()).debounce(kDebounceTime);
+        return new Trigger(()-> atAngle()).debounce(hoodDebounceTime.get());
+    }
+
+    public void changeTunable() {
+        hoodMinAngle.poll();
+        hoodMaxAngle.poll();
+        hoodDebounceTime.poll();
+        degreesTolerance.poll();
+        hoodkP.poll();
+        hoodkI.poll();
+        hoodkD.poll();
+        hoodkS.poll();
+        hoodkV.poll();
+        hoodkA.poll();
+
+        int hash = hashCode();
+
+        if (hoodkP.hasChanged(hash) || hoodkI.hasChanged(hash) || hoodkD.hasChanged(hash) || hoodkS.hasChanged(hash) || hoodkV.hasChanged(hash) || hoodkA.hasChanged(hash)) {
+            kHoodConfig.Slot0.kP = hoodkP.get();
+            kHoodConfig.Slot0.kI = hoodkI.get();
+            kHoodConfig.Slot0.kD = hoodkD.get();
+            kHoodConfig.Slot0.kS = hoodkS.get();
+            kHoodConfig.Slot0.kV = hoodkV.get();
+            kHoodConfig.Slot0.kA = hoodkA.get();
+            motor.getConfigurator().apply(kHoodConfig.Slot0);
+        }
+
     }
 
     public void log(){
@@ -110,6 +136,6 @@ public class Hood extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/Hood/Voltage", getVoltage().in(Volts));
         SmartDashboard.putNumber("Shooter/Hood/Current", getCurrent().in(Amps));
         SmartDashboard.putBoolean("Shooter/Hood/At Angle", atAngleT().getAsBoolean());
-        SmartDashboard.putNumber("Shooter/Hood/Angle Tolerance", ShooterConstants.kAngleTolerance.in(Degrees));
+        SmartDashboard.putNumber("Shooter/Hood/Angle Tolerance", degreesTolerance.get());
     }
 }
