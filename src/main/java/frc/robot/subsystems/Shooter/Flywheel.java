@@ -55,7 +55,6 @@ public class Flywheel extends SubsystemBase {
             voltageStatus,
             statorStatus
         );
-        
         log();
     }
 

@@ -5,6 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -19,7 +20,6 @@ import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
 
 public class Hood extends SubsystemBase {
-
     public TalonFX motor = new TalonFX(kHoodMotorID);
 
     private Angle targetAngle = Degrees.of(0);
@@ -34,6 +34,7 @@ public class Hood extends SubsystemBase {
     public Hood(){
         motor.getConfigurator().apply(kHoodConfig);
         SmartDashboard.putData("Shooter/Flywheel/Subsystem", this);
+        resetAngle(kHoodMinAngle);
     }
 
     @Override
@@ -44,6 +45,7 @@ public class Hood extends SubsystemBase {
             voltageStatus,
             statorStatus
         );
+        log();
     }
     
     public Angle getAngle(){
@@ -66,11 +68,16 @@ public class Hood extends SubsystemBase {
         return statorStatus.getValue();
     }
 
+    public void resetAngle(Angle angle){
+        motor.setPosition(angle);
+    }
+
     public void setVoltage(double voltage){
         motor.setVoltage(voltage);        
     }
 
     public void setAngle(Angle angle){
+        angle = Degrees.of(MathUtil.clamp(angle.in(Degrees), kHoodMinAngle.in(Degrees), kHoodMaxAngle.in(Degrees)));
         motor.setControl(mmRequest.withPosition(angle));
         targetAngle = angle;
     }

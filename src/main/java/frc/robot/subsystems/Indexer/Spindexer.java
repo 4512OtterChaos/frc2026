@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Indexer.IndexerConstants.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -51,6 +52,7 @@ public class Spindexer extends SubsystemBase {
     }
 
     public void setVoltage(double voltage){
+        voltage = MathUtil.clamp(voltage, 0, 12); //TODO: Check if necessary
         motor.setVoltage(voltage);
     }
 

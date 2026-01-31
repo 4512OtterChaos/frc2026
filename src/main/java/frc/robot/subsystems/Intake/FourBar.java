@@ -9,6 +9,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -25,28 +26,17 @@ public class FourBar extends SubsystemBase {
     private final StatusSignal<AngularVelocity> velocityStatus = motor.getVelocity();
     private final StatusSignal<Voltage> voltageStatus = motor.getMotorVoltage();
     private final StatusSignal<Current> statorStatus = motor.getStatorCurrent();
+    
+    public FourBar(){
+        motor.getConfigurator().apply(kFourBarConfig);
+        SmartDashboard.putData("Intake/Four Bar/Subsystem", this);
+        resetAngle(kFourBarMaxAngle);
+    }
 
     @Override
     public void periodic(){
         BaseStatusSignal.refreshAll(positionStatus, velocityStatus, voltageStatus, statorStatus);
         log();
-    }
-    
-    public FourBar(){
-        motor.getConfigurator().apply(kFourBarConfig);
-        SmartDashboard.putData("Intake/Four Bar/Subsystem", this);
-    }
-
-    public Command lower(){
-        return sequence(
-            setVoltageC(kFourBarVoltageOut),
-            waitUntil(atAngle(kFourBarMinAngle)),
-            setVoltageC(0)
-        );
-    }
-
-    public Trigger atAngle(Angle angle){
-        return new Trigger(()-> (getAngle().in(Degrees) - angle.in(Degrees)) <= kAngleTolernce.in(Degrees));
     }
 
     public Angle getAngle(){
@@ -65,7 +55,17 @@ public class FourBar extends SubsystemBase {
         return statorStatus.getValue();
     }
 
+    public void resetAngle(Angle angle){
+        motor.setPosition(angle);
+    }
+
     public void setVoltage(double voltage){
+        if (getAngle().in(Degrees) >= kFourBarMaxAngle.in(Degrees)){
+            voltage = MathUtil.clamp(voltage, -12, 0);
+        }
+        if (getAngle().in(Degrees) <= kFourBarMinAngle.in(Degrees)){
+            voltage = MathUtil.clamp(voltage, 0, 12);
+        }
         motor.setVoltage(voltage);
     }  
 
@@ -79,6 +79,18 @@ public class FourBar extends SubsystemBase {
 
     public Command setVoltageOutC(){
         return setVoltageC(kFourBarVoltageOut).withName("Voltage Out");
+    }
+
+    public Command lower(){
+        return sequence(
+            setVoltageC(kFourBarVoltageOut),
+            waitUntil(atAngle(kFourBarMinAngle)),
+            setVoltageC(0)
+        );
+    }
+
+    public Trigger atAngle(Angle angle){
+        return new Trigger(()-> (getAngle().in(Degrees) - angle.in(Degrees)) <= kAngleTolernce.in(Degrees));
     }
 
     public void log(){
