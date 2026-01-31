@@ -19,6 +19,8 @@ public class ClimberConstants {
     public static final Distance kMinHeight = Inches.of(23); //TODO: tune
     public static final Distance kHeightTolerance = Inches.of(0.25); //TODO: tune
 
+    public static final double kDebounceTime = 0.25;
+
     public static final int kGearRatio = 1; //TODO: tune
 
     public static final TalonFXConfiguration kConfig = new TalonFXConfiguration();
