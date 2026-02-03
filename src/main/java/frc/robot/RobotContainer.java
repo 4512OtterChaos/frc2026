@@ -90,4 +90,12 @@ public class RobotContainer {
 
     Trigger isAutonomous = new Trigger(()-> driverStation.isAutonomous())
         .onTrue(fourBar.lower()); //TODO: test if this works
+
+
+    // Simulation
+    public void simulationPeriodic() {
+        flywheel.simulationPeriodic();
+        hood.simulationPeriodic();
+    }
+
 }
