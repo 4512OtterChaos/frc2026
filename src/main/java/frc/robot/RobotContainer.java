@@ -70,6 +70,9 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         driver.back().onTrue(runOnce(()-> drivetrain.resetRotation(Rotation2d.kZero)));
 
+        driver.rightTrigger().whileTrue(hood.setAngleC(Degrees.of(20)));
+        driver.leftTrigger().whileTrue(intake.setVoltageOutC().repeatedly());
+
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 

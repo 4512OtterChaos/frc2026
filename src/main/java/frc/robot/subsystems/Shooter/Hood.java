@@ -4,12 +4,18 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.sim.ChassisReference;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,7 +39,7 @@ public class Hood extends SubsystemBase {
     
     public Hood(){
         motor.getConfigurator().apply(kHoodConfig);
-        SmartDashboard.putData("Shooter/Flywheel/Subsystem", this);
+        SmartDashboard.putData("Shooter/Hood/Subsystem", this);
         resetAngle(Degrees.of(hoodMinAngle.get()));
     }
 
@@ -45,6 +51,7 @@ public class Hood extends SubsystemBase {
             voltageStatus,
             statorStatus
         );
+        motor.setControl(mmRequest.withPosition(targetAngle));
         log();
     }
     
@@ -78,7 +85,6 @@ public class Hood extends SubsystemBase {
 
     public void setAngle(Angle angle){
         angle = Degrees.of(MathUtil.clamp(angle.in(Degrees), hoodMinAngle.get(), hoodMaxAngle.get()));
-        motor.setControl(mmRequest.withPosition(angle));
         targetAngle = angle;
     }
     
@@ -137,5 +143,48 @@ public class Hood extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/Hood/Current", getCurrent().in(Amps));
         SmartDashboard.putBoolean("Shooter/Hood/At Angle", atAngleT().getAsBoolean());
         SmartDashboard.putNumber("Shooter/Hood/Angle Tolerance", degreesTolerance.get());
+    }
+
+    // Simulation
+    SingleJointedArmSim hoodSim = new SingleJointedArmSim(
+        LinearSystemId.createSingleJointedArmSystem(
+            DCMotor.getKrakenX60(1),
+            kMomentOfInertia.in(KilogramSquareMeters),
+            kHoodGearRatio
+        ),
+        DCMotor.getKrakenX60(1),
+        kHoodGearRatio,
+        kArmLength.in(Meters),
+        kHoodMinAngle.in(Radians),
+        kHoodMaxAngle.in(Radians),
+        false,//TODO:Include gravity?
+        kHoodMinAngle.in(Radians));
+
+
+    DCMotorSim motorSim = new DCMotorSim(
+        LinearSystemId.createDCMotorSystem(
+            DCMotor.getKrakenX60(1),
+            kMomentOfInertia.in(KilogramSquareMeters),
+            kHoodGearRatio
+        ),
+        DCMotor.getKrakenX60(1)
+    );
+
+    @Override
+    public void simulationPeriodic() {
+        TalonFXSimState motorSimState = motor.getSimState();
+        motorSimState.Orientation =  ChassisReference.CounterClockwise_Positive;//TODO: Fix, idk what it means
+
+        motorSimState.setSupplyVoltage(motor.getSupplyVoltage().getValue());//TODO: Add friction? Also, idk that the voltage should be accessed like this
+        motorSim.setInputVoltage(motorSimState.getMotorVoltage());
+
+        motorSim.update(0.02);
+
+        motorSimState.setRawRotorPosition(motorSim.getAngularPositionRotations() * kHoodGearRatio);
+        motorSimState.setRotorVelocity(motorSim.getAngularVelocityRPM() / 60  * kHoodGearRatio);
+        //                                           shaft RPM --> rotations per second --> motor rotations per second
+        double voltage = motorSim.getInputVoltage();
+        hoodSim.setInput(voltage);
+		hoodSim.update(0.02);
     }
 }

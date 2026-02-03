@@ -1,4 +1,5 @@
 package frc.robot.subsystems.Intake;
+import static frc.robot.util.OCUnits.*;
 
 import static edu.wpi.first.units.Units.Degrees;
 
@@ -10,6 +11,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.robot.util.TunableNumber;
 
 public class IntakeConstants {
@@ -36,6 +38,8 @@ public class IntakeConstants {
     public static final TunableNumber intakeVoltageOut = new TunableNumber("Intake/Roller/Voltage Out", kIntakeVoltageOut);
     public static final TunableNumber fourBarVoltageIn = new TunableNumber("Intake/Four Bar/Voltage In", kFourBarVoltageIn);
     public static final TunableNumber fourBarVoltageOut = new TunableNumber("Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
+
+    public static final MomentOfInertia kMomentOfInertia = MomentOfInertia.ofRelativeUnits(10, PoundSquareInches);//TODO: tune
 
     public static final TalonFXConfiguration kIntakeConfig = new TalonFXConfiguration();
     static { 

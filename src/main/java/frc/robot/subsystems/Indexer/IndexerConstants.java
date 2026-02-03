@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Indexer;
 
+import static frc.robot.util.OCUnits.*;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -7,6 +9,8 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.robot.util.TunableNumber;
 
 
@@ -28,6 +32,8 @@ public class IndexerConstants {
 
     public static final TunableNumber feedSlowVoltage = new TunableNumber("Indexer/Feeder/Feed Slow Voltage", kFeedSlowVoltage); 
     public static final TunableNumber spindexSlowVoltage = new TunableNumber("Indexer/Spindexer/Feed Slow Voltage", kSpindexSlowVoltage); 
+
+    public static final MomentOfInertia kMomentOfInertia = MomentOfInertia.ofRelativeUnits(10, PoundSquareInches);//TODO: tune
 
     public static final TalonFXConfiguration kSpindexerConfig = new TalonFXConfiguration();
     static {

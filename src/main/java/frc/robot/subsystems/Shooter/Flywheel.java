@@ -2,6 +2,7 @@ package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
@@ -12,11 +13,18 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.sim.ChassisReference;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -134,4 +142,42 @@ public class Flywheel extends SubsystemBase {
         SmartDashboard.putBoolean("Shooter/Flywheel/Up to speed", upToSpeedT().getAsBoolean());
         SmartDashboard.putNumber("Shooter/Flywheel/Velocity Tolerance", RPMTolerance.get());
     }
+
+    // Simulation
+    FlywheelSim flywheelSim = new FlywheelSim(
+        LinearSystemId.createFlywheelSystem(
+            DCMotor.getKrakenX60(2),
+            kMomentOfInertia.in(KilogramSquareMeters),
+            kFlywheelGearRatio
+        ),
+        DCMotor.getKrakenX60(1)
+        );
+
+
+    DCMotorSim motorSim = new DCMotorSim(
+        LinearSystemId.createDCMotorSystem(
+            DCMotor.getKrakenX60(2),
+            kMomentOfInertia.in(KilogramSquareMeters),
+            kFlywheelGearRatio
+        ),
+        DCMotor.getKrakenX60(2)
+    );
+
+    @Override
+    public void simulationPeriodic() {
+        TalonFXSimState motorSimState = leftMotor.getSimState();
+        motorSimState.Orientation =  ChassisReference.Clockwise_Positive;//TODO: Fix, idk what it means
+
+        motorSimState.setSupplyVoltage(leftMotor.getSupplyVoltage().getValue());//TODO: Add friction? Also, idk that the voltage should be accessed like this
+        motorSim.setInputVoltage(motorSimState.getMotorVoltage());
+
+        motorSim.update(0.02);
+
+        motorSimState.setRawRotorPosition(motorSim.getAngularPositionRotations() * kHoodGearRatio);
+        motorSimState.setRotorVelocity(motorSim.getAngularVelocityRPM() / 60  * kHoodGearRatio);
+        //                                           shaft RPM --> rotations per second --> motor rotations per second
+        double voltage = motorSim.getInputVoltage();
+        flywheelSim.setInput(voltage);
+		flywheelSim.update(0.02);
+    }   
 }

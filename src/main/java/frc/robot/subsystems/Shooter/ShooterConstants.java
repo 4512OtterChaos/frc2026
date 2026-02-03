@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.util.OCUnits.*;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -12,6 +13,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.robot.util.TunableNumber;
 
 public final class ShooterConstants {
@@ -21,7 +24,7 @@ public final class ShooterConstants {
     public static int kRightMotorID = 43;
 
     public static double kFlywheelGearRatio = 1; // TODO: Get Later
-    public static double kHoodGearRatio = 1; // TODO: Get Later
+    public static double kHoodGearRatio = 10; // TODO: Get Later
 
     public static final AngularVelocity flywheelIdleVelocity = RPM.of(500);// TODO: Tune
 
@@ -45,6 +48,8 @@ public final class ShooterConstants {
     public static final TunableNumber RPMTolerance = new TunableNumber("Shooter/Flywheel/RPM Tolerance", kVelocityTolerance.in(RPM));
     public static final TunableNumber degreesTolerance = new TunableNumber("Shooter/Hood/Degrees Tolerance", kAngleTolerance.in(Degrees));
 
+    public static final MomentOfInertia kMomentOfInertia = PoundSquareInches.of(80);//TODO: tune
+    public static final Distance kArmLength = Inches.of(15);//TODO: tune
 
     public static final TalonFXConfiguration kFlywheelConfig = new TalonFXConfiguration();
     static {
@@ -92,12 +97,12 @@ public final class ShooterConstants {
         current.StatorCurrentLimit = 40; 
 
         Slot0Configs control = kHoodConfig.Slot0;// TODO: Tune PID
-        control.kP = 0.1; 
+        control.kP = 9; 
         control.kI = 0;
         control.kD = 0;
         
         control.kS = 0.1;
-        control.kV = 0.01;
+        control.kV = 0;
         control.kA = 0;
     }
     
