@@ -3,6 +3,8 @@ package frc.robot.subsystems.Shooter;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
@@ -12,22 +14,47 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 
 public class Shotmap {
+
+    public static Distance distanceToHub(Pose2d robotPose , Translation2d kHubPos) {
+        double meters = robotPose.getTranslation().getDistance(kHubPos);
+        return Meters.of(meters);
+    }   
+
     private static InterpolatingTreeMap<Double, State> map = 
         new InterpolatingTreeMap<Double, State>(InverseInterpolator.forDouble(), (State startValue, State endValue, double t)-> startValue.interpolate(endValue, t));
 
     static {
+        addState(Inches.of(-100),Degrees.of(5), RPM.of(2800),Seconds.of(1.5));// TODO: use real values
+        addState(Inches.of(-200),Degrees.of(10), RPM.of(3500),Seconds.of(2));// TODO: use real values
+        addState(Inches.of(-300),Degrees.of(15), RPM.of(4200),Seconds.of(2.5));// TODO: use real values
         addState(Inches.of(100),Degrees.of(5), RPM.of(2800),Seconds.of(1.5));// TODO: use real values
         addState(Inches.of(200),Degrees.of(10), RPM.of(3500),Seconds.of(2));// TODO: use real values
         addState(Inches.of(300),Degrees.of(15), RPM.of(4200),Seconds.of(2.5));// TODO: use real values
     }
 
+    private static Double minKeyMeters = null;
+    private static Double maxKeyMeters = null;
+
     private static void addState(Distance distance, Angle angle, AngularVelocity velocity, Time tof){
-        map.put(distance.in(Meters), new State(angle, velocity, tof));
+        double key = distance.in(Meters);
+        map.put(key, new State(angle, velocity, tof));
+
+        if (minKeyMeters == null || key < minKeyMeters) minKeyMeters = key;
+        if (maxKeyMeters == null || key > maxKeyMeters) maxKeyMeters = key;
     }
 
     public static State getState(Distance distance){
-        return map.get(distance.in(Meters));
+        double key = distance.in(Meters);
+
+        // Clamp into map domain so interpolation always has bounds
+        if (minKeyMeters != null && maxKeyMeters != null) {
+            key = MathUtil.clamp(key, minKeyMeters, maxKeyMeters);
+        }
+
+        return map.get(key);
     }
+
+
 
     public static Angle getAngle(Distance distance){
         return getState(distance).getAngle();
@@ -79,5 +106,4 @@ public class Shotmap {
             }
         }
     }
-
 }

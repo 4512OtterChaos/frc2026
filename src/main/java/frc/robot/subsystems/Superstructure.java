@@ -1,8 +1,12 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Indexer.Feeder;
@@ -42,20 +46,30 @@ public class Superstructure {
         ).withName("Index");
     }
 
-    public Command shootShotMapC(Distance distance){
+    public Command shootShotMapC(Supplier<Distance> distanceSup) {
+        Command liveSetpoints = run(() -> {
+            var d = distanceSup.get();         
+            var state = Shotmap.getState(d);   
+
+            hood.setAngle(state.getAngle());   
+            flywheel.setVelocity(state.getVelocity());
+
+            // Debug proof (optional but super helpful)
+            SmartDashboard.putNumber("Shot/Distance", d.in(Meters));
+            SmartDashboard.putNumber("Shot/CMD Angle", state.getAngle().in(Degrees));
+            SmartDashboard.putNumber("Shot/CMD RPM", state.getVelocity().in(RPM));
+        });
+
+        Command feed = parallel(spindexer.spindexC(), feeder.feedC());
+
         return parallel(
             drivetrain.faceHub(),
+            liveSetpoints, 
             sequence(
-                parallel(
-                    waitUntil(drivetrain.facingHubT()),
-                    flywheel.setVelocityC(Shotmap.getVelocity(distance)),
-                    hood.setAngleC(Shotmap.getAngle(distance))
-                ),
-                parallel(
-                    spindexer.spindexC(),
-                    feeder.feedC()
-                )
+                waitUntil(() -> drivetrain.facingHubT().getAsBoolean() && flywheel.upToSpeed()),
+                feed
             )
-        );
+        ).withName("ShootShotMapLive");
     }
+
 }

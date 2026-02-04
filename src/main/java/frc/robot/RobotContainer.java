@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DSControlWord;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,6 +26,8 @@ import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Flywheel;
 import frc.robot.subsystems.Shooter.Hood;
 import frc.robot.subsystems.Shooter.ShooterConstants;
+import frc.robot.subsystems.Shooter.Shotmap;
+import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
 
 public class RobotContainer {
@@ -55,7 +58,7 @@ public class RobotContainer {
         spindexer.setDefaultCommand(superstructure.passiveSpindexC());
         feeder.setDefaultCommand(feeder.passiveIndexC());
         flywheel.setDefaultCommand(flywheel.setVelocityC(ShooterConstants.flywheelIdleVelocity));
-        hood.setDefaultCommand(hood.setMinAngleC());
+        // hood.setDefaultCommand(hood.setMinAngleC());
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -70,7 +73,7 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         driver.back().onTrue(runOnce(()-> drivetrain.resetRotation(Rotation2d.kZero)));
 
-        driver.rightTrigger().whileTrue(hood.setAngleC(Degrees.of(20)));
+        driver.rightTrigger().whileTrue(superstructure.shootShotMapC(()-> Shotmap.distanceToHub(drivetrain.getState().Pose, FieldUtil.kHubTrl)));
         driver.leftTrigger().whileTrue(intake.setVoltageOutC().repeatedly());
 
         drivetrain.registerTelemetry(logger::telemeterize);
