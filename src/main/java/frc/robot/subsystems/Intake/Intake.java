@@ -17,6 +17,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -94,38 +95,27 @@ public class Intake extends SubsystemBase{
     // Simulation
     FlywheelSim intakeSim = new FlywheelSim(
         LinearSystemId.createFlywheelSystem(
-            DCMotor.getKrakenX60(2),
+            DCMotor.getKrakenX60(1),
             kMomentOfInertia.in(KilogramSquareMeters),
             kIntakeGearRatio
         ),
-        DCMotor.getKrakenX60(1)
+        DCMotor.getKrakenX60(1),
+        kIntakeGearRatio
         );
-
-
-    DCMotorSim motorSim = new DCMotorSim(
-        LinearSystemId.createDCMotorSystem(
-            DCMotor.getKrakenX60(2),
-            kMomentOfInertia.in(KilogramSquareMeters),
-            kIntakeGearRatio
-        ),
-        DCMotor.getKrakenX60(2)
-    );
 
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motorSimState = motor.getSimState();
         motorSimState.Orientation =  ChassisReference.Clockwise_Positive;//TODO: Fix, idk what it means
 
-        motorSimState.setSupplyVoltage(motor.getSupplyVoltage().getValue());//TODO: Add friction? Also, idk that the voltage should be accessed like this
-        motorSim.setInputVoltage(motorSimState.getMotorVoltage());
-
-        motorSim.update(0.02);
-
-        motorSimState.setRawRotorPosition(motorSim.getAngularPositionRotations() * kIntakeGearRatio);
-        motorSimState.setRotorVelocity(motorSim.getAngularVelocityRPM() / 60  * kIntakeGearRatio);
-        //                                           shaft RPM --> rotations per second --> motor rotations per second
-        double voltage = motorSim.getInputVoltage();
-        intakeSim.setInput(voltage);
+        double voltage = motorSimState.getMotorVoltage();
+        intakeSim.setInputVoltage(voltage);
 		intakeSim.update(0.02);
+
+        double wheelRadPerSec = intakeSim.getAngularVelocityRadPerSec();
+        double wheelRps = wheelRadPerSec / (2.0 * Math.PI);
+       
+        motorSimState.setRotorVelocity(wheelRps);
+        motorSimState.addRotorPosition(wheelRps * 0.02);
     }   
 }

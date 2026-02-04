@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -109,38 +110,27 @@ public class Spindexer extends SubsystemBase {
     // SImulation
     FlywheelSim spindexerSim = new FlywheelSim(
         LinearSystemId.createFlywheelSystem(
-            DCMotor.getKrakenX60(2),
+            DCMotor.getKrakenX60(1),
             kMomentOfInertia.in(KilogramSquareMeters),
             kSpindexerGearRatio
         ),
-        DCMotor.getKrakenX60(1)
+        DCMotor.getKrakenX60(1),
+        kSpindexerGearRatio
         );
-
-
-    DCMotorSim motorSim = new DCMotorSim(
-        LinearSystemId.createDCMotorSystem(
-            DCMotor.getKrakenX60(2),
-            kMomentOfInertia.in(KilogramSquareMeters),
-            kSpindexerGearRatio
-        ),
-        DCMotor.getKrakenX60(2)
-    );
 
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motorSimState = motor.getSimState();
         motorSimState.Orientation =  ChassisReference.Clockwise_Positive;//TODO: Fix, idk what it means
 
-        motorSimState.setSupplyVoltage(motor.getSupplyVoltage().getValue());//TODO: Add friction? Also, idk that the voltage should be accessed like this
-        motorSim.setInputVoltage(motorSimState.getMotorVoltage());
-
-        motorSim.update(0.02);
-
-        motorSimState.setRawRotorPosition(motorSim.getAngularPositionRotations() * kSpindexerGearRatio);
-        motorSimState.setRotorVelocity(motorSim.getAngularVelocityRPM() / 60  * kSpindexerGearRatio);
-        //                                           shaft RPM --> rotations per second --> motor rotations per second
-        double voltage = motorSim.getInputVoltage();
-        spindexerSim.setInput(voltage);
+        double voltage = motorSimState.getMotorVoltage();
+        spindexerSim.setInputVoltage(voltage);
 		spindexerSim.update(0.02);
+
+        double wheelRadPerSec = spindexerSim.getAngularVelocityRadPerSec();
+        double wheelRps = wheelRadPerSec / (2.0 * Math.PI);
+       
+        motorSimState.setRotorVelocity(wheelRps);
+        motorSimState.addRotorPosition(wheelRps * 0.02);
     }   
 }

@@ -146,6 +146,7 @@ public class Hood extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/Hood/Angle Tolerance", degreesTolerance.get());
     }
 
+
     // Simulation
     SingleJointedArmSim hoodSim = new SingleJointedArmSim(
             DCMotor.getKrakenX60(1),
