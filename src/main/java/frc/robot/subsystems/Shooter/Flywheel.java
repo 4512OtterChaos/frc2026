@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
@@ -134,7 +135,7 @@ public class Flywheel extends SubsystemBase {
     }
 
     public void log(){
-        SmartDashboard.putNumber("Shooter/Flywheel/Shooter Wheel Angle", getAngle().in(Degrees));
+        SmartDashboard.putNumber("Shooter/Flywheel/Shooter Wheel Angle", MathUtil.clamp(getAngle().in(Degrees), 0, 360));
         SmartDashboard.putNumber("Shooter/Flywheel/Wheel RPM", getAngularVelocity().in(RPM));
         // SmartDashboard.putNumber("Shooter/Flywheel/Wheel Radians", getAngularVelocity().in(RadiansPerSecond));
         SmartDashboard.putNumber("Shooter/Flywheel/Voltage", getVoltage().in(Volts));

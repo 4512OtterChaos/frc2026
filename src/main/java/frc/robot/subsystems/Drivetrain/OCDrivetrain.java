@@ -2,7 +2,6 @@ package frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -99,8 +98,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
         return applyRequest(() -> {
             ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate), lastTargetSpeeds, Robot.kDefaultPeriod);
             lastTargetSpeeds = targetSpeeds;
-            return face.withVelocityX(-targetSpeeds.vxMetersPerSecond)
-                        .withVelocityY(-targetSpeeds.vyMetersPerSecond)
+            return face.withVelocityX(targetSpeeds.vxMetersPerSecond)
+                        .withVelocityY(targetSpeeds.vyMetersPerSecond)
                         .withTargetDirection(getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle()); 
         });
     }

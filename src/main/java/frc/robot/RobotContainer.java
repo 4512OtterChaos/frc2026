@@ -58,8 +58,6 @@ public class RobotContainer {
         spindexer.setDefaultCommand(superstructure.passiveSpindexC());
         feeder.setDefaultCommand(feeder.passiveIndexC());
         flywheel.setDefaultCommand(flywheel.setVelocityC(ShooterConstants.flywheelIdleVelocity));
-        // hood.setDefaultCommand(hood.setMinAngleC());
-
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -73,7 +71,7 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         driver.back().onTrue(runOnce(()-> drivetrain.resetRotation(Rotation2d.kZero)));
 
-        driver.rightTrigger().whileTrue(superstructure.shootShotMapC(()-> Shotmap.distanceToHub(drivetrain.getState().Pose, FieldUtil.kHubTrl)));
+        driver.rightTrigger().whileTrue(parallel(superstructure.shootShotMapC(()-> Shotmap.distanceToHub(drivetrain.getState().Pose, FieldUtil.kHubTrl)), drivetrain.driveFacingHub(driver)));
         driver.leftTrigger().whileTrue(intake.setVoltageOutC().repeatedly());
 
         drivetrain.registerTelemetry(logger::telemeterize);

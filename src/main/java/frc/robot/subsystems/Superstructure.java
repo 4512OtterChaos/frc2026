@@ -60,16 +60,17 @@ public class Superstructure {
             SmartDashboard.putNumber("Shot/CMD RPM", state.getVelocity().in(RPM));
         });
 
-        Command feed = parallel(spindexer.spindexC(), feeder.feedC());
+        Command shoot = parallel(spindexer.spindexC(), feeder.feedC());
 
         return parallel(
-            drivetrain.faceHub(),
             liveSetpoints, 
             sequence(
                 waitUntil(() -> drivetrain.facingHubT().getAsBoolean() && flywheel.upToSpeed()),
-                feed
+                flywheel.setVelocityC(RPM.of(90))
             )
         ).withName("ShootShotMapLive");
     }
 
+
+    
 }
