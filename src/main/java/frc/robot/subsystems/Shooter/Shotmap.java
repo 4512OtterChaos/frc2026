@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.Shooter.ShooterConstants.gravity;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,6 +12,7 @@ import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.util.FieldUtil;
 
@@ -20,13 +22,10 @@ public class Shotmap {
         double meters = robotPose.getTranslation().getDistance(kHubPos);
         return Meters.of(meters);
     }   
+    
+    private static InterpolatingTreeMap<Double, State> map = 
+        new InterpolatingTreeMap<Double, State>(InverseInterpolator.forDouble(), (State startValue, State endValue, double t)-> startValue.interpolate(endValue, t));
 
-    record DistanceHeightKey(double distance, double height) {}
-
-    private static InterpolatingTreeMap<DistanceHeightKey, State> map = 
-        new InterpolatingTreeMap<DistanceHeightKey, State>(InverseInterpolator.forDouble(), (State startValue, State endValue, double t)-> startValue.interpolate(endValue, t));
-
-        
     static {
         addState(Inches.of(-100),Degrees.of(5), RPM.of(2800),Seconds.of(1.5), FieldUtil.kHubHeight);// TODO: use real values
         addState(Inches.of(-200),Degrees.of(10), RPM.of(3500),Seconds.of(2), FieldUtil.kHubHeight);// TODO: use real values
@@ -58,17 +57,18 @@ public class Shotmap {
         return map.get(key);
     }
 
-    public static Distance distanceToHub3D(Pose2d robotPose, double robotHeight, Translation2d hubPos, double hubHeight) {
-        double dx = hubPos.getX() - robotPose.getX();
-        double dy = hubPos.getY() - robotPose.getY();
-        double dz = hubHeight - robotHeight; // vertical difference
-        double meters = Math.sqrt(dx*dx + dy*dy + dz*dz);
-        return Meters.of(meters);
-    }
-
     public static Angle getAngle(Distance distance){
         return getState(distance).getAngle();
     }
+
+    // public static Angle setAngle(LinearVelocity velocity, Distance distance, Distance height) {
+    //     double value = (velocity.in(MetersPerSecond) * velocity.in(MetersPerSecond)
+    //                 + Math.sqrt(Math.pow(velocity.in(MetersPerSecond), 4) - gravity * (gravity * distance.in(Meters) * distance.in(Meters) + 2 * height.in(Meters) * velocity.in(MetersPerSecond) * velocity.in(MetersPerSecond)))
+    //                 / (gravity * distance.in(Meters))
+    //                 );
+    //         double angle = Math.atan(value);
+    //         return Degrees.of(angle);
+    // }
 
     public static AngularVelocity getVelocity(Distance distance){
         return getState(distance).getVelocity();

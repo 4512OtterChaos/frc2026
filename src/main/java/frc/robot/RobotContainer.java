@@ -58,6 +58,7 @@ public class RobotContainer {
         spindexer.setDefaultCommand(superstructure.passiveSpindexC());
         feeder.setDefaultCommand(feeder.passiveIndexC());
         flywheel.setDefaultCommand(flywheel.setVelocityC(ShooterConstants.flywheelIdleVelocity));
+        // drivetrain.setDefaultCommand(drivetrain.faceHub());
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
