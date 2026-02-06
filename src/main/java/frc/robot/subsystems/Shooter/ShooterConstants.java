@@ -26,6 +26,8 @@ public final class ShooterConstants {
     public static double kFlywheelGearRatio = 1; // TODO: Get Later
     public static double kHoodGearRatio = 10; // TODO: Get Later
 
+    public static double gravity = 9.8; //TODO: maybe tune later
+
     public static final AngularVelocity flywheelIdleVelocity = RPM.of(500);// TODO: Tune
 
     public static final TunableNumber flywheelIdleRPM = new TunableNumber("Shooter/Flywheel/Idle RPM", flywheelIdleVelocity.in(RPM));
@@ -65,7 +67,7 @@ public final class ShooterConstants {
         current.StatorCurrentLimit = 40; 
 
         Slot0Configs control = kFlywheelConfig.Slot0;// TODO: Tune PID
-        control.kP = 0.1; 
+        control.kP = 3; 
         control.kI = 0;
         control.kD = 0;
         

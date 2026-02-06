@@ -2,11 +2,14 @@ package frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
@@ -55,7 +58,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
     private final SwerveRequest.RobotCentricFacingAngle face = new SwerveRequest.RobotCentricFacingAngle()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
-            .withHeadingPID(3, 0, 0); // TODO: tune PID
+            .withHeadingPID(9, 0, 0); // TODO: tune PID
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -74,6 +77,11 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
 
     public double getTurnSpeed(){
         return turnSpeedRatio.get() * MaxAngularRate;
+    }
+
+    public Pose2d getPose() {
+        Optional<Pose2d> pose = samplePoseAt(0);
+        return pose.orElse(new Pose2d());
     }
 
     public Command drive(OCXboxController controller){
