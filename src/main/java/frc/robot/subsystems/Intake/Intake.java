@@ -11,6 +11,9 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 import static frc.robot.subsystems.Shooter.ShooterConstants.kMomentOfInertia;
 
+import java.nio.channels.ReadPendingException;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
@@ -69,7 +72,7 @@ public class Intake extends SubsystemBase{
     }
 
     public Command setVoltageC(double voltage){
-        return runOnce(()-> setVoltage(voltage)).withName("Set Voltage: " + voltage);    
+        return run(()-> setVoltage(voltage)).withName("Set Voltage: " + voltage);    
     }
 
     public Command setVoltageInC(){
@@ -85,8 +88,18 @@ public class Intake extends SubsystemBase{
         intakeVoltageOut.poll();
     }
 
+    public double wrapAngle(){
+        double angle = getAngle().in(Degrees);
+        angle %= 360;
+        if (angle <= 0) {
+            angle += 360;
+        }
+        return angle;
+    }
+
+
     public void log(){
-        SmartDashboard.putNumber("Intake/Roller/Angle Degrees", getAngle().in(Degrees));
+        SmartDashboard.putNumber("Intake/Roller/Angle Degrees", wrapAngle());
         SmartDashboard.putNumber("Intake/Roller/RPM", getVelocity().in(RPM));
         SmartDashboard.putNumber("Intake/Roller/Voltage", getVoltage().in(Volts));
         SmartDashboard.putNumber("Intake/Roller/Current", getCurrent().in(Amps));

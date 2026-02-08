@@ -5,14 +5,13 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
+import static frc.robot.subsystems.Intake.IntakeConstants.fourBarMinDegrees;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DSControlWord;
 import edu.wpi.first.wpilibj2.command.Command;
-import static edu.wpi.first.wpilibj2.command.Commands.*;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Superstructure;
@@ -73,8 +72,8 @@ public class RobotContainer {
         driver.back().onTrue(runOnce(()-> drivetrain.resetRotation(Rotation2d.kZero)));
 
         driver.rightTrigger().whileTrue(parallel(superstructure.shootShotMapC(()-> Shotmap.distanceToHub(drivetrain.getState().Pose, FieldUtil.kHubTrl)), drivetrain.driveFacingHub(driver)));
-        driver.leftTrigger().whileTrue(intake.setVoltageOutC().repeatedly());
-
+        driver.leftTrigger().whileTrue(intake.setVoltageInC()); driver.leftTrigger().whileFalse(intake.setVoltageC(0));
+        driver.b().whileTrue(fourBar.lower());
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
@@ -92,7 +91,6 @@ public class RobotContainer {
 
     Trigger isAutonomous = new Trigger(()-> driverStation.isAutonomous())
         .onTrue(fourBar.lower()); //TODO: test if this works
-
 
     // Simulation
     public void simulationPeriodic() {

@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Degrees;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -27,12 +28,13 @@ public class IntakeConstants {
 
     public static final TunableNumber fourBarMinDegrees = new TunableNumber("Intake/Four Bar/Min Degrees", kFourBarMinAngle.in(Degrees));
     public static final TunableNumber fourBarMaxDegrees = new TunableNumber("Intake/Four Bar/Max Degrees", kFourBarMaxAngle.in(Degrees));
-    public static final TunableNumber degreeTolerance = new TunableNumber("Intake/Four Bar/Degrees Tolerance", kFourBarMinAngle.in(Degrees));
+    public static final TunableNumber degreeTolerance = new TunableNumber("Intake/Four Bar/Degrees Tolerance", kAngleTolerance.in(Degrees));
 
-    public static final double kIntakeVoltageIn = 2.5; //TODO: Tune
-    public static final double kIntakeVoltageOut = -2.5; //TODO: Tune
-    public static final double kFourBarVoltageIn = 2.5; //TODO: Tune
-    public static final double kFourBarVoltageOut = -2.5; //TODO: Tune
+    public static final double kIntakeVoltageIn = 3; //TODO: Tune
+    public static final double kIntakeVoltageOut = -3; //TODO: Tune
+
+    public static final double kFourBarVoltageIn = 3; //TODO: Tune
+    public static final double kFourBarVoltageOut = -3; //TODO: Tune
 
     public static final TunableNumber intakeVoltageIn = new TunableNumber("Intake/Roller/Voltage In", kIntakeVoltageIn);
     public static final TunableNumber intakeVoltageOut = new TunableNumber("Intake/Roller/Voltage Out", kIntakeVoltageOut);
@@ -67,5 +69,16 @@ public class IntakeConstants {
         CurrentLimitsConfigs current = kFourBarConfig.CurrentLimits;
         current.StatorCurrentLimitEnable = true;
         current.StatorCurrentLimit = 40; 
+
+        Slot0Configs control = kFourBarConfig.Slot0;// TODO: Tune PID
+            control.kP = 0.1; 
+            control.kI = 0;
+            control.kD = 0;
+            
+            control.kS = 0;
+            control.kV = 0;
+            control.kA = 0;
+
+            
     }
 }

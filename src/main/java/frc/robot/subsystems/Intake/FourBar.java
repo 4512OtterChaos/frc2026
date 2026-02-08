@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
+import static frc.robot.util.OCUnits.PoundSquareInches;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -71,14 +72,14 @@ public class FourBar extends SubsystemBase {
     }
 
     public void setVoltage(double voltage){
-        if (getAngle().in(Degrees) >= fourBarMaxDegrees.get()){
+        if (getAngle().in(Degrees) >= fourBarMaxDegrees.get()) {
             voltage = MathUtil.clamp(voltage, -12, 0);
-        }
-        if (getAngle().in(Degrees) <= fourBarMinDegrees.get()){
+        } 
+        else if (getAngle().in(Degrees) <= fourBarMinDegrees.get()) {
             voltage = MathUtil.clamp(voltage, 0, 12);
         }
         motor.setVoltage(voltage);
-    }  
+    }
 
     public Command setVoltageC(double voltage){
         return runOnce(()-> setVoltage(voltage)).withName("Set Voltage: " + voltage);    
@@ -95,7 +96,7 @@ public class FourBar extends SubsystemBase {
     public Command lower(){
         return sequence(
             setVoltageC(fourBarVoltageOut.get()),
-            waitUntil(atAngle(Degrees.of(fourBarMinDegrees.get()))),
+            waitUntil(atAngle(Degrees.of(fourBarMaxDegrees.get()))),
             setVoltageC(0)
         );
     }
@@ -125,17 +126,17 @@ public class FourBar extends SubsystemBase {
         LinearSystemId.createFlywheelSystem(
             DCMotor.getKrakenX60(2),
             kMomentOfInertia.in(KilogramSquareMeters),
-            kFourBarGearRatio
+            90
         ),
         DCMotor.getKrakenX60(1)
-        );
+    );
 
 
     DCMotorSim motorSim = new DCMotorSim(
         LinearSystemId.createDCMotorSystem(
             DCMotor.getKrakenX60(2),
             kMomentOfInertia.in(KilogramSquareMeters),
-            kFourBarGearRatio
+            900
         ),
         DCMotor.getKrakenX60(2)
     );
