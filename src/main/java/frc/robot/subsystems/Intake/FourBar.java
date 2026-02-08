@@ -126,7 +126,7 @@ public class FourBar extends SubsystemBase {
         LinearSystemId.createFlywheelSystem(
             DCMotor.getKrakenX60(2),
             kMomentOfInertia.in(KilogramSquareMeters),
-            90
+            kFourBarGearRatio
         ),
         DCMotor.getKrakenX60(1)
     );
@@ -136,7 +136,7 @@ public class FourBar extends SubsystemBase {
         LinearSystemId.createDCMotorSystem(
             DCMotor.getKrakenX60(2),
             kMomentOfInertia.in(KilogramSquareMeters),
-            900
+            kFourBarGearRatio
         ),
         DCMotor.getKrakenX60(2)
     );
