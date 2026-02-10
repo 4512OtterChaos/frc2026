@@ -96,7 +96,7 @@ public class FourBar extends SubsystemBase {
     public Command lower(){
         return sequence(
             setVoltageC(fourBarVoltageOut.get()),
-            waitUntil(atAngle(Degrees.of(fourBarMaxDegrees.get()))),
+            waitUntil(atAngle(Degrees.of(fourBarMinDegrees.get()))),
             setVoltageC(0)
         );
     }

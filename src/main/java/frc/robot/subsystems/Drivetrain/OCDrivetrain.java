@@ -11,6 +11,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -99,22 +100,75 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
     }
     
     public Command faceHub(){
-        return applyRequest(() -> face.withTargetDirection(getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle())); // TODO: (maybe) switch directions €
+        return applyRequest(() -> {
+            Translation2d safeTarget = clampToHubBuffer(getState().Pose.getTranslation());
+            return face.withTargetDirection(getState().Pose.getTranslation().minus(safeTarget).getAngle());
+        }); // TODO: (maybe) switch directions 
     }
 
     public Command driveFacingHub(OCXboxController controller){
         return applyRequest(() -> {
             ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate), lastTargetSpeeds, Robot.kDefaultPeriod);
-            lastTargetSpeeds = targetSpeeds;
-            return face.withVelocityX(-targetSpeeds.vxMetersPerSecond)
+                lastTargetSpeeds = targetSpeeds;
+
+                // Cap motion so we never go inside hub
+                targetSpeeds = hubBarrier(targetSpeeds, getState().Pose);
+
+                return face.withVelocityX(-targetSpeeds.vxMetersPerSecond)
                         .withVelocityY(-targetSpeeds.vyMetersPerSecond)
-                        .withTargetDirection(getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle()); 
-        });
+                        .withTargetDirection(getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle());
+            });
     }
 
     public Trigger facingHubT() {
         return new Trigger(() -> getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle().getDegrees() == getState().Pose.getRotation().getDegrees())
                                     .debounce(0.25);// TODO: Tune
+    }
+
+    private ChassisSpeeds hubBarrier(ChassisSpeeds speeds, Pose2d pose) {
+        Translation2d robotPos = pose.getTranslation();
+        Translation2d hubPos = FieldUtil.kHubTrl;
+
+        double dx = hubPos.getX() - robotPos.getX();
+        double dy = hubPos.getY() - robotPos.getY();
+        double distance = Math.hypot(dx, dy);
+
+        if (distance < FieldUtil.kHubBarrier.in(Meters)) {
+            double angleToHub = Math.atan2(dy, dx);
+
+            double vAlong = speeds.vxMetersPerSecond * Math.cos(angleToHub) +
+                            speeds.vyMetersPerSecond * Math.sin(angleToHub);
+
+            if (vAlong > 0) {
+                double newVx = speeds.vxMetersPerSecond - vAlong * Math.cos(angleToHub);
+                double newVy = speeds.vyMetersPerSecond - vAlong * Math.sin(angleToHub);
+                return new ChassisSpeeds(newVx, newVy, speeds.omegaRadiansPerSecond);
+            }
+        }
+
+        return speeds;
+    }
+
+
+        
+    private Translation2d clampToHubBuffer(Translation2d robotPos) {
+        double hubX = FieldUtil.kHubTrl.getX();
+        double hubY = FieldUtil.kHubTrl.getY();
+        double halfWidth = FieldUtil.kHubWidth.in(Meters) / 2.0 + FieldUtil.kHubBarrier.in(Meters);
+        double halfHeight = FieldUtil.kHubWidth.in(Meters) / 2.0 + FieldUtil.kHubBarrier.in(Meters); // assuming square for simplicity
+
+        double dx = robotPos.getX() - hubX;
+        double dy = robotPos.getY() - hubY;
+
+        if (Math.abs(dx) < halfWidth) {
+            dx = Math.signum(dx) * halfWidth;
+        }
+
+        if (Math.abs(dy) < halfHeight) {
+            dy = Math.signum(dy) * halfHeight;
+        }
+
+        return new Translation2d(hubX + dx, hubY + dy);
     }
     
     public void changeTunable(){
