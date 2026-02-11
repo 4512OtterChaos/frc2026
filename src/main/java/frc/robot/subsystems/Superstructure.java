@@ -54,7 +54,6 @@ public class Superstructure {
             hood.setAngle(state.getAngle());   
             flywheel.setVelocity(state.getVelocity());
 
-            // Debug proof (optional but super helpful)
             SmartDashboard.putNumber("Shot/Distance", distance.in(Meters));
             SmartDashboard.putNumber("Shot/CMD Angle", state.getAngle().in(Degrees));
             SmartDashboard.putNumber("Shot/CMD RPM", state.getVelocity().in(RPM));

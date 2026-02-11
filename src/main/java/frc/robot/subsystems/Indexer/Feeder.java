@@ -48,6 +48,7 @@ public class Feeder extends SubsystemBase{
             voltageStatus,
             statorStatus
         );
+        changeTunable();
         log();
     }
 

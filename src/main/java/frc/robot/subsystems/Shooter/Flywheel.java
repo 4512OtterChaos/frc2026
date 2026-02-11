@@ -59,6 +59,7 @@ public class Flywheel extends SubsystemBase {
             voltageStatus,
             statorStatus
         );
+        changeTunable();
         log();
     }
 
@@ -104,7 +105,7 @@ public class Flywheel extends SubsystemBase {
     }
 
     public Trigger upToSpeedT(){
-        return new Trigger(()-> upToSpeed()).debounce(flywheelDebounceTime.get());
+        return new Trigger(()-> upToSpeed());
     }
 
 
@@ -132,8 +133,17 @@ public class Flywheel extends SubsystemBase {
         }
     }
 
+    public double wrapAngle(){
+        double angle = getAngle().in(Degrees);
+        angle %= 360;
+        if (angle <= 0) {
+            angle += 360;
+        }
+        return angle;
+    }
+
     public void log(){
-        SmartDashboard.putNumber("Shooter/Flywheel/Shooter Wheel Angle", MathUtil.clamp(getAngle().in(Degrees), 0, 360));
+        SmartDashboard.putNumber("Shooter/Flywheel/Shooter Wheel Angle", wrapAngle());
         SmartDashboard.putNumber("Shooter/Flywheel/Wheel RPM", getAngularVelocity().in(RPM));
         // SmartDashboard.putNumber("Shooter/Flywheel/Wheel Radians", getAngularVelocity().in(RadiansPerSecond));
         SmartDashboard.putNumber("Shooter/Flywheel/Voltage", getVoltage().in(Volts));

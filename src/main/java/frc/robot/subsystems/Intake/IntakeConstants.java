@@ -2,6 +2,7 @@ package frc.robot.subsystems.Intake;
 import static frc.robot.util.OCUnits.*;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -12,6 +13,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.robot.util.TunableNumber;
 
@@ -22,6 +24,8 @@ public class IntakeConstants {
     public static final double kIntakeGearRatio = 1; //TODO: Use Real
     public static final double kFourBarGearRatio = 1; //TODO: Use Real
 
+    public static final Distance kFourBarArmLength = Meters.of(976);
+
     public static final Angle kFourBarMinAngle = Degrees.of(15); //TODO: tune
     public static final Angle kFourBarMaxAngle = Degrees.of(85); //TODO: tune
     public static final Angle kAngleTolerance = Degrees.of(2); //TODO: tune
@@ -30,8 +34,8 @@ public class IntakeConstants {
     public static final TunableNumber fourBarMaxDegrees = new TunableNumber("Intake/Four Bar/Max Degrees", kFourBarMaxAngle.in(Degrees));
     public static final TunableNumber degreeTolerance = new TunableNumber("Intake/Four Bar/Degrees Tolerance", kAngleTolerance.in(Degrees));
 
-    public static final double kIntakeVoltageIn = 3; //TODO: Tune
-    public static final double kIntakeVoltageOut = -3; //TODO: Tune
+    public static final double kIntakeVoltageIn = 4; //TODO: Tune
+    public static final double kIntakeVoltageOut = -4; //TODO: Tune
 
     public static final double kFourBarVoltageIn = 3; //TODO: Tune
     public static final double kFourBarVoltageOut = -3; //TODO: Tune
@@ -55,6 +59,16 @@ public class IntakeConstants {
         CurrentLimitsConfigs current = kIntakeConfig.CurrentLimits;
         current.StatorCurrentLimitEnable = true;
         current.StatorCurrentLimit = 40; 
+
+        Slot0Configs control = kIntakeConfig.Slot0;// TODO: Tune PID
+            control.kP = 9; 
+            control.kI = 0;
+            control.kD = 0;
+            
+            control.kS = 0;
+            control.kV = 0;
+            control.kA = 0;
+
     }
 
     public static final TalonFXConfiguration kFourBarConfig = new TalonFXConfiguration();

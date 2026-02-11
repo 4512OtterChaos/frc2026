@@ -27,7 +27,7 @@ import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 public class Hood extends SubsystemBase {
     public TalonFX motor = new TalonFX(kHoodMotorID);
 
-    private Angle targetAngle = Degrees.of(0);
+    private Angle targetAngle = Degrees.of(hoodMinAngle.get());
  
     private final StatusSignal<Angle> positionStatus = motor.getPosition();
     private final StatusSignal<AngularVelocity> velocityStatus = motor.getVelocity();
@@ -51,6 +51,7 @@ public class Hood extends SubsystemBase {
             statorStatus
         );
         motor.setControl(mmRequest.withPosition(targetAngle));
+        changeTunable();
         log();
     }
     
@@ -96,7 +97,7 @@ public class Hood extends SubsystemBase {
     }
 
     public Command setAngleC(Angle angle){
-        return run(()-> setAngle(angle)).until(atAngleT()).withName("Set angle: " + angle);
+        return runOnce(()-> setAngle(angle)).until(atAngleT()).withName("Set angle: " + angle);
     }
 
     public Command setMinAngleC(){
@@ -147,15 +148,15 @@ public class Hood extends SubsystemBase {
 
     // Simulation
     SingleJointedArmSim hoodSim = new SingleJointedArmSim(
-            DCMotor.getKrakenX60(1),
-            kHoodGearRatio,
-            kMomentOfInertia.in(KilogramSquareMeters),
-            kArmLength.in(Meters),
-            kHoodMinAngle.in(Radians),
-            kHoodMaxAngle.in(Radians),
-            true,//TODO:Include gravity?
-            kHoodMinAngle.in(Radians)
-        );
+        DCMotor.getKrakenX60(1),
+        kHoodGearRatio,
+        kMomentOfInertia.in(KilogramSquareMeters),
+        kArmLength.in(Meters),
+        kHoodMinAngle.in(Radians),
+        kHoodMaxAngle.in(Radians),
+        true,//TODO:Include gravity?
+        kHoodMinAngle.in(Radians)
+    );
 
     @Override
     public void simulationPeriodic() {

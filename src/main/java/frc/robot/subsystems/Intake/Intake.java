@@ -43,6 +43,7 @@ public class Intake extends SubsystemBase{
             voltageStatus,
             statorStatus
         );
+        changeTunable();
         log();
     }
 

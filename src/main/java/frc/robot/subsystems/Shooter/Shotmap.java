@@ -2,6 +2,7 @@ package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Shooter.ShooterConstants.gravity;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kWheelRadius;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -56,6 +57,36 @@ public class Shotmap {
 
         return map.get(key);
     }
+    
+    public static State SOTFLogic(Pose2d robotPose, Translation2d hubPos, Translation2d robotFieldVelocity) {
+            // 1. Distance
+            Distance dist = distanceToHub(robotPose, hubPos);
+            State base = getState(dist);
+
+            // 2. Direction to goal
+            Translation2d toHub = hubPos.minus(robotPose.getTranslation()).div(dist.in(Meters));
+
+            // 3. Base horizontal velocity
+            double vHorizIdeal = getHorizontalVelocity(dist).in(MetersPerSecond);
+            Translation2d vTarget = toHub.times(vHorizIdeal);
+
+            // 4. Subtract robot velocity
+            Translation2d vShot = vTarget.minus(robotFieldVelocity);
+            double newHorizSpeed = vShot.getNorm();
+
+            // 5. Recompute pitch using vertical component
+            double vTotal = rpmToLinear(base.getVelocity());
+            double vVert = vTotal * Math.sin(base.getAngle().in(Radians));
+            double newPitch = Math.atan2(vVert, newHorizSpeed);
+
+            // 6. Build new state
+            return new State(
+                Radians.of(newPitch),
+                linearToRPM(Math.hypot(newHorizSpeed, vVert)),
+                base.getTof(),
+                base.getHeight()
+            );
+        }
 
     public static Angle getAngle(Distance distance){
         return getState(distance).getAngle();
@@ -69,6 +100,29 @@ public class Shotmap {
     //         double angle = Math.atan(value);
     //         return Degrees.of(angle);
     // }
+
+    public static double rpmToLinear(AngularVelocity rpm) {
+        double wheelRadius = kWheelRadius.in(Meters);
+        return rpm.in(RPM) * 2.0 * Math.PI * wheelRadius / 60.0;
+    }
+
+    public static AngularVelocity linearToRPM(double metersPerSecond) {
+        double wheelRadius = kWheelRadius.in(Meters);
+        double rpm = metersPerSecond * 60.0 / (2.0 * Math.PI * wheelRadius);
+        return RPM.of(rpm);
+    }
+
+    public static LinearVelocity getHorizontalVelocity(Distance distance) {
+        State s = getState(distance);
+        
+
+        // Convert RPM -> linear exit speed (you probably already have this somewhere)
+        double vTotal = rpmToLinear(s.getVelocity()); // m/s
+        double theta = s.getAngle().in(Radians);
+
+        double vHoriz = vTotal * Math.cos(theta);
+        return MetersPerSecond.of(vHoriz);
+    }
 
     public static AngularVelocity getVelocity(Distance distance){
         return getState(distance).getVelocity();
@@ -84,7 +138,7 @@ public class Shotmap {
         private Time tof;
         private Distance height;
 
-        State(Angle angle, AngularVelocity velocity, Time tof, Distance height){
+        public State(Angle angle, AngularVelocity velocity, Time tof, Distance height){
             this.angle = angle;
             this.velocity = velocity;
             this.tof = tof;

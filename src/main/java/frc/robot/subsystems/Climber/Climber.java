@@ -47,6 +47,7 @@ public class Climber extends SubsystemBase {
             voltageStatus,
             statorStatus
         );
+        changeTunable();
         log();
     }
     
