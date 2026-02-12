@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
@@ -44,8 +45,9 @@ public class RobotContainer {
     private final Feeder feeder = new Feeder();
     private final Flywheel flywheel = new Flywheel();
     private final Hood hood = new Hood();
+    private final Climber climber = new Climber();
 
-    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, flywheel, hood);
+    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, flywheel, hood, climber);
 
     public RobotContainer() {
         configureDefaultCommands();
@@ -74,7 +76,9 @@ public class RobotContainer {
         driver.rightTrigger().whileTrue(parallel(superstructure.shootShotMapC(()-> Shotmap.distanceToHub(drivetrain.getState().Pose, FieldUtil.kHubTrl)), drivetrain.driveFacingHub(driver)));
         driver.leftTrigger().whileTrue(intake.setVoltageInC()); driver.leftTrigger().whileFalse(intake.setVoltageC(0));
         driver.b().whileTrue(fourBar.lower());
+        driver.a().whileTrue(climber.climbC().repeatedly());
         drivetrain.registerTelemetry(logger::telemeterize);
+    
     }
 
     public Command getAutonomousCommand() {

@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Climber;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 
 import frc.robot.util.TunableNumber;
@@ -12,18 +13,19 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 
 public class ClimberConstants {
     public static final int kMotorID = 51; 
 
-    public static final Distance kMaxHeight = Inches.of(30); //TODO: tune
-    public static final Distance kMinHeight = Inches.of(23); //TODO: tune
-    public static final Distance kHeightTolerance = Inches.of(0.25); //TODO: tune
+    public static final Angle kMaxHeight = Degrees.of(30); //TODO: tune
+    public static final Angle kMinHeight = Degrees.of(23); //TODO: tune
+    public static final Angle kHeightTolerance = Degrees.of(0.25); //TODO: tune
 
-    public static final TunableNumber maxHeight = new TunableNumber("Climber/Max Height", kMaxHeight.in(Inches));
-    public static final TunableNumber minHeight = new TunableNumber("Climber/Max Height", kMinHeight.in(Inches));
-    public static final TunableNumber heightTolerance = new TunableNumber("Climber/Height Tolerance", kHeightTolerance.in(Inches));
+    public static final TunableNumber maxHeight = new TunableNumber("Climber/Max Height", kMaxHeight.in(Degrees));
+    public static final TunableNumber minHeight = new TunableNumber("Climber/Max Height", kMinHeight.in(Degrees));
+    public static final TunableNumber heightTolerance = new TunableNumber("Climber/Height Tolerance", kHeightTolerance.in(Degrees));
 
     public static final double kDebounceTime = 0.25;
 
