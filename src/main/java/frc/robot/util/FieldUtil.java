@@ -2,10 +2,7 @@ package frc.robot.util;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.ctre.phoenix6.sim.ChassisReference;
-
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Distance;
 
 public class FieldUtil {
