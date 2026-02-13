@@ -77,12 +77,12 @@ public class FourBar extends SubsystemBase {
     }
 
     public void setVoltage(double voltage){
-        if (getAngle().in(Degrees) >= fourBarMaxDegrees.get()) {
-            voltage = MathUtil.clamp(voltage, -12, 0);
-        } 
-        else if (getAngle().in(Degrees) <= fourBarMinDegrees.get()) {
-            voltage = MathUtil.clamp(voltage, 0, 12);
-        }
+        // if (getAngle().in(Degrees) >= fourBarMaxDegrees.get()) {
+        //     voltage = MathUtil.clamp(voltage, -12, 0);
+        // } 
+        // else if (getAngle().in(Degrees) <= fourBarMinDegrees.get()) {
+        //     voltage = MathUtil.clamp(voltage, 0, 12);
+        // }
         motor.setVoltage(voltage);
     }
 
@@ -101,7 +101,7 @@ public class FourBar extends SubsystemBase {
     public Command lower(){
         return sequence(
             setVoltageC(-3),
-            waitUntil(atAngle(Degrees.of(fourBarMaxDegrees.get()))),
+            waitUntil(atAngle(Degrees.of(fourBarMinDegrees.get()))),
             setVoltageC(0)
         );
     }
@@ -128,16 +128,15 @@ public class FourBar extends SubsystemBase {
     
     // Simulation
     SingleJointedArmSim fourBarSim = new SingleJointedArmSim(
-        LinearSystemId.createSingleJointedArmSystem(
         DCMotor.getKrakenX60(1),
         kFourBarGearRatio,
         kMomentOfInertia.in(KilogramSquareMeters),
         kFourBarArmLength.in(Meters),
-        fourBarMinDegrees,
-        fourBarMaxDegrees,
+        fourBarMinDegrees.get(),
+        fourBarMaxDegrees.get(),
         true,//TODO:Include gravity?
-        fourBarMinDegrees)
-    );
+        fourBarMinDegrees.get()
+        );
 
 
     DCMotorSim motorSim = new DCMotorSim(
