@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Indexer.Feeder;
 import frc.robot.subsystems.Indexer.IndexerConstants;
@@ -27,8 +28,9 @@ public class Superstructure {
     private Feeder feeder;
     private Flywheel flywheel;
     private Hood hood;
+    private Climber climber; 
 
-    public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Flywheel flywheel, Hood hood){
+    public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Flywheel flywheel, Hood hood, Climber climber){
         this.drivetrain = drivetrain;
         this.intake = intake;
         this.fourBar = fourBar;
@@ -36,6 +38,7 @@ public class Superstructure {
         this.feeder = feeder;
         this.flywheel = flywheel;
         this.hood = hood;
+        this.climber = climber;
     }
 
     public Command passiveSpindexC(){
