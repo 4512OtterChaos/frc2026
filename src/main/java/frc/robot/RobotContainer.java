@@ -74,7 +74,10 @@ public class RobotContainer {
         driver.back().onTrue(runOnce(()-> drivetrain.resetRotation(Rotation2d.kZero)));
 
         driver.rightTrigger().whileTrue(parallel(superstructure.shootShotMapC(()-> Shotmap.distanceToHub(drivetrain.getState().Pose, FieldUtil.kHubTrl)), drivetrain.driveFacingHub(driver)));
+        driver.rightTrigger().whileFalse(run(()-> hood.setAngle(Degrees.of(0))));
+
         driver.leftTrigger().whileTrue(intake.setVoltageInC()); driver.leftTrigger().whileFalse(intake.setVoltageC(0));
+        
         driver.b().whileTrue(fourBar.lower());
         driver.a().whileTrue(climber.climbC().repeatedly());
         drivetrain.registerTelemetry(logger::telemeterize);
