@@ -59,27 +59,21 @@ public class Shotmap {
     }
     
     public static State SOTFLogic(Pose2d robotPose, Translation2d hubPos, Translation2d robotFieldVelocity) {
-            // 1. Distance
             Distance dist = distanceToHub(robotPose, hubPos);
             State base = getState(dist);
 
-            // 2. Direction to goal
             Translation2d toHub = hubPos.minus(robotPose.getTranslation()).div(dist.in(Meters));
 
-            // 3. Base horizontal velocity
             double vHorizIdeal = getHorizontalVelocity(dist).in(MetersPerSecond);
             Translation2d vTarget = toHub.times(vHorizIdeal);
 
-            // 4. Subtract robot velocity
             Translation2d vShot = vTarget.minus(robotFieldVelocity);
             double newHorizSpeed = vShot.getNorm();
 
-            // 5. Recompute pitch using vertical component
             double vTotal = rpmToLinear(base.getVelocity());
             double vVert = vTotal * Math.sin(base.getAngle().in(Radians));
             double newPitch = Math.atan2(vVert, newHorizSpeed);
 
-            // 6. Build new state
             return new State(
                 Radians.of(newPitch),
                 linearToRPM(Math.hypot(newHorizSpeed, vVert)),
@@ -116,8 +110,7 @@ public class Shotmap {
         State s = getState(distance);
         
 
-        // Convert RPM -> linear exit speed (you probably already have this somewhere)
-        double vTotal = rpmToLinear(s.getVelocity()); // m/s
+        double vTotal = rpmToLinear(s.getVelocity());
         double theta = s.getAngle().in(Radians);
 
         double vHoriz = vTotal * Math.cos(theta);
