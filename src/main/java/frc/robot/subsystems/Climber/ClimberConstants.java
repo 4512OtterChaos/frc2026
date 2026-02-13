@@ -19,12 +19,12 @@ import edu.wpi.first.units.measure.Distance;
 public class ClimberConstants {
     public static final int kMotorID = 51; 
 
-    public static final Angle kMaxHeight = Degrees.of(30); //TODO: tune
-    public static final Angle kMinHeight = Degrees.of(23); //TODO: tune
-    public static final Angle kHeightTolerance = Degrees.of(0.25); //TODO: tune
+    public static final Angle kMaxHeightRot = Degrees.of(3000); //TODO: tune
+    public static final Angle kMinHeightRot = Degrees.of(2300); //TODO: tune
+    public static final Angle kHeightTolerance = Degrees.of(100); //TODO: tune
 
-    public static final TunableNumber maxHeight = new TunableNumber("Climber/Max Height", kMaxHeight.in(Degrees));
-    public static final TunableNumber minHeight = new TunableNumber("Climber/Max Height", kMinHeight.in(Degrees));
+    public static final TunableNumber maxHeight = new TunableNumber("Climber/Max Height", kMaxHeightRot.in(Degrees));
+    public static final TunableNumber minHeight = new TunableNumber("Climber/Max Height", kMinHeightRot.in(Degrees));
     public static final TunableNumber heightTolerance = new TunableNumber("Climber/Height Tolerance", kHeightTolerance.in(Degrees));
 
     public static final double kDebounceTime = 0.25;
