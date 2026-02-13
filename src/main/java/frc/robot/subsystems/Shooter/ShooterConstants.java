@@ -24,7 +24,7 @@ public final class ShooterConstants {
     public static int kRightMotorID = 43;
 
     public static double kFlywheelGearRatio = 1; // TODO: Get Later
-    public static double kHoodGearRatio = 10; // TODO: Get Later
+    public static double kHoodGearRatio = (60/18) * (32/20) * (24/20) * (208/18); // TODO: Get Later
 
     public static Distance kWheelRadius = Inches.of(2);
 
@@ -101,7 +101,7 @@ public final class ShooterConstants {
         current.StatorCurrentLimit = 40; 
 
         Slot0Configs control = kHoodConfig.Slot0;// TODO: Tune PID
-        control.kP = 9; 
+        control.kP = 5; 
         control.kI = 0;
         control.kD = 0;
         
