@@ -70,16 +70,14 @@ public class RobotContainer {
 
     private void configureBindings() {
 
-        // Reset the field-centric heading on left bumper press.
         driver.back().onTrue(runOnce(()-> drivetrain.resetRotation(Rotation2d.kZero)));
-
         driver.rightTrigger().whileTrue(parallel(superstructure.shootShotMapC(()-> Shotmap.distanceToHub(drivetrain.getState().Pose, FieldUtil.kHubTrl)), drivetrain.driveFacingHub(driver)));
         driver.rightTrigger().whileFalse(run(()-> hood.setAngle(Degrees.of(0))));
-
         driver.leftTrigger().whileTrue(intake.setVoltageInC()); driver.leftTrigger().whileFalse(intake.setVoltageC(0));
-        
-        driver.b().whileTrue(fourBar.lower());
-        driver.a().whileTrue(climber.climbC().repeatedly());
+        driver.b().onTrue(fourBar.lower());
+        driver.povUp().whileTrue(climber.setMaxHeightC());
+        driver.povDown().whileTrue(climber.setMinHeightC());
+
         drivetrain.registerTelemetry(logger::telemeterize);
     
     }
