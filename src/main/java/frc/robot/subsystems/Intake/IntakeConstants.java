@@ -1,7 +1,8 @@
 package frc.robot.subsystems.Intake;
 import static frc.robot.util.OCUnits.*;
-
+import static edu.wpi.first.units.Units.Centimeter;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Meters;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -24,7 +25,7 @@ public class IntakeConstants {
     public static final double kIntakeGearRatio = 1; //TODO: Use Real
     public static final double kFourBarGearRatio = 1; //TODO: Use Real
 
-    public static final Distance kFourBarArmLength = Meters.of(976);
+    public static final Distance kFourBarArmLength = Feet.of(2);
 
     public static final Angle kFourBarMinAngle = Degrees.of(15); //TODO: tune
     public static final Angle kFourBarMaxAngle = Degrees.of(85); //TODO: tune
@@ -37,8 +38,8 @@ public class IntakeConstants {
     public static final double kIntakeVoltageIn = 4; //TODO: Tune
     public static final double kIntakeVoltageOut = -4; //TODO: Tune
 
-    public static final double kFourBarVoltageIn = 3; //TODO: Tune
-    public static final double kFourBarVoltageOut = -3; //TODO: Tune
+    public static final double kFourBarVoltageIn = 2; //TODO: Tune
+    public static final double kFourBarVoltageOut = -2; //TODO: Tune
 
     public static final TunableNumber intakeVoltageIn = new TunableNumber("Intake/Roller/Voltage In", kIntakeVoltageIn);
     public static final TunableNumber intakeVoltageOut = new TunableNumber("Intake/Roller/Voltage Out", kIntakeVoltageOut);
