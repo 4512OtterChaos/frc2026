@@ -24,13 +24,13 @@ public final class ShooterConstants {
     public static int kRightMotorID = 43;
 
     public static double kFlywheelGearRatio = 1; // TODO: Get Later
-    public static double kHoodGearRatio = (60/18) * (32/20) * (24/20) * (208/18); // TODO: Get Later
+    public static double kHoodGearRatio = (60/18) * (32/20) * (24/20) * (208/18); // TODO: Confirm
 
     public static Distance kWheelRadius = Inches.of(2);
 
-    public static double gravity = 9.8; //TODO: maybe tune later
+    public static double gravity = 9.8;
 
-    public static final AngularVelocity flywheelIdleVelocity = RPM.of(500);// TODO: Tune
+    public static final AngularVelocity flywheelIdleVelocity = RPM.of(500); // TODO: Tune
 
     public static final TunableNumber flywheelIdleRPM = new TunableNumber("Shooter/Flywheel/Idle RPM", flywheelIdleVelocity.in(RPM));
 
@@ -47,7 +47,7 @@ public final class ShooterConstants {
     public static final TunableNumber hoodDebounceTime = new TunableNumber("Shooter/Hood/Debounce Time", kHoodDebounceTime);
 
     public static final AngularVelocity kVelocityTolerance = RPM.of(200); // TODO: tune tolerance
-    public static final Angle kAngleTolerance = Degrees.of(1.5); // TODO: tune tolerance
+    public static final Angle kAngleTolerance = Degrees.of(0.5); // TODO: tune tolerance
 
     public static final TunableNumber RPMTolerance = new TunableNumber("Shooter/Flywheel/RPM Tolerance", kVelocityTolerance.in(RPM));
     public static final TunableNumber degreesTolerance = new TunableNumber("Shooter/Hood/Degrees Tolerance", kAngleTolerance.in(Degrees));
@@ -101,7 +101,7 @@ public final class ShooterConstants {
         current.StatorCurrentLimit = 40; 
 
         Slot0Configs control = kHoodConfig.Slot0;// TODO: Tune PID
-        control.kP = 5; 
+        control.kP = 100; //TODO: please tune with REAL motors
         control.kI = 0;
         control.kD = 0;
         
