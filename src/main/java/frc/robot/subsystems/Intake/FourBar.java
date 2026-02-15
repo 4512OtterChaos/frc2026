@@ -77,12 +77,12 @@ public class FourBar extends SubsystemBase {
     }
 
     public void setVoltage(double voltage){
-        // if (getAngle().in(Degrees) >= fourBarMaxDegrees.get()) {
-        //     voltage = MathUtil.clamp(voltage, -12, 0);
-        // } 
-        // else if (getAngle().in(Degrees) <= fourBarMinDegrees.get()) {
-        //     voltage = MathUtil.clamp(voltage, 0, 12);
-        // }
+        if (getAngle().in(Radians) >= fourBarMaxDegrees.get()) {
+            voltage = MathUtil.clamp(voltage, -12, 0);
+        } 
+        else if (getAngle().in(Radians) <= fourBarMinDegrees.get()) {
+            voltage = MathUtil.clamp(voltage, 0, 12);
+        }
         motor.setVoltage(voltage);
     }
 
@@ -100,14 +100,18 @@ public class FourBar extends SubsystemBase {
 
     public Command lower(){
         return sequence(
-            setVoltageC(-3),
-            waitUntil(atAngle(Degrees.of(fourBarMinDegrees.get()))),
+            setVoltageC(kFourBarVoltageOut),
+            waitUntil(atAngleT(Degrees.of(15))),
             setVoltageC(0)
         );
     }
 
-    public Trigger atAngle(Angle angle){
-        return new Trigger(()-> (getAngle().in(Degrees) - angle.in(Degrees)) <= degreeTolerance.get());
+    public boolean atAngle(Angle angle) {
+        return Math.abs(getAngle().in(Degrees)) - angle.in(Degrees) <= degreeTolerance.get();
+    }
+
+    public Trigger atAngleT(Angle angle){
+        return new Trigger(()-> atAngle(angle));
     }
 
     public void changeTunable(){
@@ -166,3 +170,4 @@ public class FourBar extends SubsystemBase {
 		fourBarSim.update(0.02);
     }   
 }
+
