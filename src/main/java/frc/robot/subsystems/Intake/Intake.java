@@ -9,19 +9,13 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kMomentOfInertia;
 
-import java.nio.channels.ReadPendingException;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -100,7 +94,8 @@ public class Intake extends SubsystemBase{
 
 
     public void log(){
-        SmartDashboard.putNumber("Intake/Roller/Angle Degrees", wrapAngle());
+        SmartDashboard.putNumber("Intake/Roller/Angle Degrees", getAngle().in(Degrees));
+        SmartDashboard.putNumber("Intake/Roller/Wrapped Angle Degrees", wrapAngle());
         SmartDashboard.putNumber("Intake/Roller/RPM", getVelocity().in(RPM));
         SmartDashboard.putNumber("Intake/Roller/Voltage", getVoltage().in(Volts));
         SmartDashboard.putNumber("Intake/Roller/Current", getCurrent().in(Amps));
@@ -110,7 +105,7 @@ public class Intake extends SubsystemBase{
     FlywheelSim intakeSim = new FlywheelSim(
         LinearSystemId.createFlywheelSystem(
             DCMotor.getKrakenX60(1),
-            kMomentOfInertia.in(KilogramSquareMeters),
+            kIntakeMomentOfInertia.in(KilogramSquareMeters),
             kIntakeGearRatio
         ),
         DCMotor.getKrakenX60(1),

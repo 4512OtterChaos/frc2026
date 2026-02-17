@@ -1,9 +1,7 @@
 package frc.robot.subsystems.Intake;
 import static frc.robot.util.OCUnits.*;
-import static edu.wpi.first.units.Units.Centimeter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.Meters;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -46,7 +44,8 @@ public class IntakeConstants {
     public static final TunableNumber fourBarVoltageIn = new TunableNumber("Intake/Four Bar/Voltage In", kFourBarVoltageIn);
     public static final TunableNumber fourBarVoltageOut = new TunableNumber("Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
 
-    public static final MomentOfInertia kMomentOfInertia = MomentOfInertia.ofRelativeUnits(10, PoundSquareInches);//TODO: tune
+    public static final MomentOfInertia kFourBarMomentOfInertia = PoundSquareInches.of(10);//TODO: tune
+    public static final MomentOfInertia kIntakeMomentOfInertia = PoundSquareInches.of(10);//TODO: tune
 
     public static final TalonFXConfiguration kIntakeConfig = new TalonFXConfiguration();
     static { 

@@ -1,7 +1,6 @@
 package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.Shooter.ShooterConstants.gravity;
 import static frc.robot.subsystems.Shooter.ShooterConstants.kWheelRadius;
 
 import edu.wpi.first.math.MathUtil;

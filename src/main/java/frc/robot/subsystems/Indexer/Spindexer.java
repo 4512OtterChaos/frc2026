@@ -16,13 +16,10 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.Shooter.Flywheel;
 
 public class Spindexer extends SubsystemBase {
     private TalonFX motor = new TalonFX(kSpindexerID);
@@ -108,11 +105,11 @@ public class Spindexer extends SubsystemBase {
         SmartDashboard.putNumber("Indexer/Spindexer/Current", getCurrent().in(Amps));
     }
 
-    // SImulation
+    // Simulation
     FlywheelSim spindexerSim = new FlywheelSim(
         LinearSystemId.createFlywheelSystem(
             DCMotor.getKrakenX60(1),
-            kMomentOfInertia.in(KilogramSquareMeters),
+            kSpindexerMomentOfInertia.in(KilogramSquareMeters),
             kSpindexerGearRatio
         ),
         DCMotor.getKrakenX60(1),

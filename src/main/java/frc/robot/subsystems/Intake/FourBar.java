@@ -4,9 +4,6 @@ import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodMaxAngle;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodMinAngle;
-import static frc.robot.util.OCUnits.PoundSquareInches;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -15,7 +12,6 @@ import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
@@ -23,7 +19,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -77,10 +72,10 @@ public class FourBar extends SubsystemBase {
     }
 
     public void setVoltage(double voltage){
-        if (getAngle().in(Radians) >= fourBarMaxDegrees.get()) {
+        if (getAngle().in(Degrees) >= fourBarMaxDegrees.get()) {
             voltage = MathUtil.clamp(voltage, -12, 0);
         } 
-        else if (getAngle().in(Radians) <= fourBarMinDegrees.get()) {
+        else if (getAngle().in(Degree) <= fourBarMinDegrees.get()) {
             voltage = MathUtil.clamp(voltage, 0, 12);
         }
         motor.setVoltage(voltage);
@@ -101,7 +96,7 @@ public class FourBar extends SubsystemBase {
     public Command lower(){
         return sequence(
             setVoltageC(kFourBarVoltageOut),
-            waitUntil(atAngleT(Degrees.of(15))),
+            waitUntil(atAngleT(Degrees.of(fourBarMinDegrees.get()))),
             setVoltageC(0)
         );
     }
@@ -134,7 +129,7 @@ public class FourBar extends SubsystemBase {
     SingleJointedArmSim fourBarSim = new SingleJointedArmSim(
         DCMotor.getKrakenX60(1),
         kFourBarGearRatio,
-        kMomentOfInertia.in(KilogramSquareMeters),
+        kFourBarMomentOfInertia.in(KilogramSquareMeters),
         kFourBarArmLength.in(Meters),
         fourBarMinDegrees.get(),
         fourBarMaxDegrees.get(),
@@ -146,7 +141,7 @@ public class FourBar extends SubsystemBase {
     DCMotorSim motorSim = new DCMotorSim(
         LinearSystemId.createDCMotorSystem(
             DCMotor.getKrakenX60(2),
-            kMomentOfInertia.in(KilogramSquareMeters),
+            kFourBarMomentOfInertia.in(KilogramSquareMeters),
             kFourBarGearRatio
         ),
         DCMotor.getKrakenX60(2)

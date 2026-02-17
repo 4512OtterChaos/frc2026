@@ -6,14 +6,12 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
-import static frc.robot.subsystems.Intake.IntakeConstants.fourBarMinDegrees;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DSControlWord;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
@@ -59,6 +57,9 @@ public class RobotContainer {
         spindexer.setDefaultCommand(superstructure.passiveSpindexC());
         feeder.setDefaultCommand(feeder.passiveIndexC());
         flywheel.setDefaultCommand(flywheel.setVelocityC(ShooterConstants.flywheelIdleVelocity));
+        intake.setDefaultCommand(intake.setVoltageC(0));
+        hood.setDefaultCommand(hood.setAngleC(Degrees.of(0)));
+        //TODO: Hood default command?
         // drivetrain.setDefaultCommand(drivetrain.faceHub());
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -72,8 +73,7 @@ public class RobotContainer {
 
         driver.back().onTrue(runOnce(()-> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.rightTrigger().whileTrue(parallel(superstructure.shootShotMapC(()-> Shotmap.distanceToHub(drivetrain.getState().Pose, FieldUtil.kHubTrl)), drivetrain.driveFacingHub(driver)));
-        driver.rightTrigger().whileFalse(run(()-> hood.setAngle(Degrees.of(0))));
-        driver.leftTrigger().whileTrue(intake.setVoltageInC()); driver.leftTrigger().whileFalse(intake.setVoltageC(0));
+        driver.leftTrigger().whileTrue(intake.setVoltageInC());
         driver.b().onTrue(fourBar.lower());
         driver.povUp().whileTrue(climber.setMaxHeightC());
         driver.povDown().whileTrue(climber.setMinHeightC());
@@ -94,13 +94,9 @@ public class RobotContainer {
         );
     }
 
-    Trigger isAutonomous = new Trigger(()-> driverStation.isAutonomous())
-        .onTrue(fourBar.lower()); //TODO: test if this works
-
     // Simulation
     public void simulationPeriodic() {
-        flywheel.simulationPeriodic();
-        hood.simulationPeriodic();
+
     }
 
 }

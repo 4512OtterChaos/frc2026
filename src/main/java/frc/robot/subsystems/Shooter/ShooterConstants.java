@@ -5,6 +5,7 @@ import static frc.robot.util.OCUnits.*;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -28,8 +29,6 @@ public final class ShooterConstants {
 
     public static Distance kWheelRadius = Inches.of(2);
 
-    public static double gravity = 9.8;
-
     public static final AngularVelocity flywheelIdleVelocity = RPM.of(500); // TODO: Tune
 
     public static final TunableNumber flywheelIdleRPM = new TunableNumber("Shooter/Flywheel/Idle RPM", flywheelIdleVelocity.in(RPM));
@@ -52,13 +51,13 @@ public final class ShooterConstants {
     public static final TunableNumber RPMTolerance = new TunableNumber("Shooter/Flywheel/RPM Tolerance", kVelocityTolerance.in(RPM));
     public static final TunableNumber degreesTolerance = new TunableNumber("Shooter/Hood/Degrees Tolerance", kAngleTolerance.in(Degrees));
 
-    public static final MomentOfInertia kMomentOfInertia = PoundSquareInches.of(80);//TODO: tune
-    public static final Distance kArmLength = Inches.of(15);//TODO: tune
+    public static final MomentOfInertia kMomentOfInertia = PoundSquareInches.of(10);//TODO: tune
+    public static final Distance kArmLength = Inches.of(5);//TODO: tune
 
     public static final TalonFXConfiguration kFlywheelConfig = new TalonFXConfiguration();
     static {
         FeedbackConfigs feedback = kFlywheelConfig.Feedback;
-        feedback.SensorToMechanismRatio = kFlywheelGearRatio;
+        feedback.SensorToMechanismRatio = 1;
         
         MotorOutputConfigs output = kFlywheelConfig.MotorOutput;
         output.NeutralMode = NeutralModeValue.Coast;
@@ -72,7 +71,7 @@ public final class ShooterConstants {
         control.kP = 3; 
         control.kI = 0;
         control.kD = 0;
-        
+
         control.kS = 0.1;
         control.kV = 0.01;
         control.kA = 0;
@@ -101,13 +100,18 @@ public final class ShooterConstants {
         current.StatorCurrentLimit = 40; 
 
         Slot0Configs control = kHoodConfig.Slot0;// TODO: Tune PID
-        control.kP = 100; //TODO: please tune with REAL motors
+        control.kP = 1000; //TODO: please tune with REAL motors
         control.kI = 0;
         control.kD = 0;
         
+        control.kG = 0.1;
         control.kS = 0.1;
-        control.kV = 0;
+        control.kV = 0.2;
         control.kA = 0;
+
+        MotionMagicConfigs mm = kHoodConfig.MotionMagic;
+        mm.MotionMagicCruiseVelocity = Rotations.of(300).in(Rotations); // inches per second
+        mm.MotionMagicAcceleration = Rotations.of(500).in(Rotations);
     }
     
     public static final TunableNumber hoodkP = new TunableNumber("Shooter/Hood/PID/P", kHoodConfig.Slot0.kP);

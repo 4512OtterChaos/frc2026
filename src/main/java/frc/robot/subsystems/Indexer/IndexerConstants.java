@@ -18,8 +18,8 @@ public class IndexerConstants {
     public static final int kSpindexerID = 31;
     public static final int kFeederID = 32;
 
-    public static final int kSpindexerGearRatio = 1;// TODO: Tune
-    public static final int kFeederGearRatio = 1;// TODO: Tune
+    public static final int kSpindexerGearRatio = 3;
+    public static final int kFeederGearRatio = 32/12;
 
     public static final double kSpindexerVoltage = 4;// TODO: Tune
     public static final double kFeederVoltage = 4;// TODO: Tune
@@ -33,7 +33,9 @@ public class IndexerConstants {
     public static final TunableNumber feedSlowVoltage = new TunableNumber("Indexer/Feeder/Feed Slow Voltage", kFeedSlowVoltage); 
     public static final TunableNumber spindexSlowVoltage = new TunableNumber("Indexer/Spindexer/Feed Slow Voltage", kSpindexSlowVoltage); 
 
-    public static final MomentOfInertia kMomentOfInertia = MomentOfInertia.ofRelativeUnits(10, PoundSquareInches);//TODO: tune
+    public static final MomentOfInertia kSpindexerMomentOfInertia = PoundSquareInches.of(4.9077);
+    public static final MomentOfInertia kFeederMomentOfInertia = PoundSquareInches.of(0.654939);
+    
 
     public static final TalonFXConfiguration kSpindexerConfig = new TalonFXConfiguration();
     static {

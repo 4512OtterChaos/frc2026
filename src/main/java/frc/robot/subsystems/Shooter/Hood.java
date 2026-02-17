@@ -3,8 +3,6 @@ package frc.robot.subsystems.Shooter;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -19,14 +17,12 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
-import java.util.function.DoubleSupplier;
 
 
 public class Hood extends SubsystemBase {
@@ -39,7 +35,7 @@ public class Hood extends SubsystemBase {
     private final StatusSignal<Voltage> voltageStatus = motor.getMotorVoltage();
     private final StatusSignal<Current> statorStatus = motor.getStatorCurrent();
 
-    private final PositionVoltage mmRequest = new PositionVoltage(0);
+    private final MotionMagicVoltage mmRequest = new MotionMagicVoltage(0).withEnableFOC(false);
 
     public Hood(){
         motor.getConfigurator().apply(kHoodConfig);
@@ -160,10 +156,10 @@ public class Hood extends SubsystemBase {
         kHoodGearRatio,
         kMomentOfInertia.in(KilogramSquareMeters),
         kArmLength.in(Meters),
-        kHoodMinAngle.in(Degrees),
-        kHoodMaxAngle.in(Degrees),
+        kHoodMinAngle.in(Radians),
+        kHoodMaxAngle.in(Radians),
         true,//TODO:Include gravity?
-        kHoodMinAngle.in(Degrees)
+        kHoodMinAngle.in(Radians)
     );
 
     @Override

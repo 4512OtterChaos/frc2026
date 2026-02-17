@@ -50,23 +50,27 @@ public class Superstructure {
     }
 
     public Command shootShotMapC(Supplier<Distance> distanceSup) {
-        Command liveSetpoints = run(() -> {
-            var distance = distanceSup.get();         
-            var state = Shotmap.getState(distance);   
+        Command liveSetpoints = run(
+            () -> {
+                var distance = distanceSup.get();         
+                var state = Shotmap.getState(distance);   
 
-            hood.setAngle(state.getAngle());   
-            flywheel.setVelocity(state.getVelocity());
+                hood.setAngle(state.getAngle());   
+                flywheel.setVelocity(state.getVelocity());
 
-            SmartDashboard.putNumber("Shot/Distance", distance.in(Meters));
-            SmartDashboard.putNumber("Shot/CMD Angle", state.getAngle().in(Degrees));
-            SmartDashboard.putNumber("Shot/CMD RPM", state.getVelocity().in(RPM));
-        });
+                SmartDashboard.putNumber("Shot/Distance", distance.in(Meters));
+                SmartDashboard.putNumber("Shot/CMD Angle", state.getAngle().in(Degrees));
+                SmartDashboard.putNumber("Shot/CMD RPM", state.getVelocity().in(RPM));
+            }, 
+            hood, flywheel
+        );
 
         return parallel(
             liveSetpoints, 
             sequence(
                 waitUntil(() -> drivetrain.facingHubT().getAsBoolean() && flywheel.upToSpeed()),
-                flywheel.setVelocityC(RPM.of(90))
+                feeder.feedC(),
+                spindexer.spindexC()
             )
         ).withName("ShootShotMapLive");
     }

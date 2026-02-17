@@ -15,8 +15,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -126,11 +124,11 @@ public class Feeder extends SubsystemBase{
         SmartDashboard.putNumber("Indexer/Feeder/Current", getCurrent().in(Amps));
     }
     
-    // SImulation
+    // Simulation
     FlywheelSim feederSim = new FlywheelSim(
         LinearSystemId.createFlywheelSystem(
             DCMotor.getKrakenX60(2),
-            kMomentOfInertia.in(KilogramSquareMeters),
+            kFeederMomentOfInertia.in(KilogramSquareMeters),
             kFeederGearRatio
         ),
         DCMotor.getKrakenX60(2),

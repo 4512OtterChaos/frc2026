@@ -2,36 +2,26 @@
 
     import com.ctre.phoenix6.BaseStatusSignal;
     import com.ctre.phoenix6.StatusSignal;
-    import com.ctre.phoenix6.controls.MotionMagicVoltage;
     import com.ctre.phoenix6.controls.PositionVoltage;
     import com.ctre.phoenix6.hardware.TalonFX;
     import com.ctre.phoenix6.sim.ChassisReference;
-    import com.ctre.phoenix6.sim.TalonFXSimState;
 
     import edu.wpi.first.math.MathUtil;
     import edu.wpi.first.math.system.plant.DCMotor;
     import edu.wpi.first.math.system.plant.LinearSystemId;
-    import edu.wpi.first.units.AngleUnit;
     import edu.wpi.first.units.measure.Angle;
     import edu.wpi.first.units.measure.AngularVelocity;
     import edu.wpi.first.units.measure.Current;
-    import edu.wpi.first.units.measure.Distance;
-    import edu.wpi.first.units.measure.LinearVelocity;
     import edu.wpi.first.units.measure.Voltage;
     import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+    import edu.wpi.first.wpilibj.simulation.ElevatorSim;
     import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
     import edu.wpi.first.wpilibj2.command.Command;
     import edu.wpi.first.wpilibj2.command.SubsystemBase;
     import edu.wpi.first.wpilibj2.command.button.Trigger;
-    import frc.robot.util.OCXboxController;
 
     import static edu.wpi.first.units.Units.*;
-    import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-    import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
     import static frc.robot.subsystems.Climber.ClimberConstants.*;
-import static frc.robot.util.OCUnits.PoundSquareInches;
 
         
     public class Climber extends SubsystemBase {
@@ -164,7 +154,7 @@ import static frc.robot.util.OCUnits.PoundSquareInches;
             LinearSystemId.createElevatorSystem(
                 DCMotor.getKrakenX60(2),
                 climberWeight,
-                wheelRad,
+                wheelRad, //TODO: replace
                 kGearRatio
             ),
             DCMotor.getKrakenX60(1),
@@ -176,20 +166,15 @@ import static frc.robot.util.OCUnits.PoundSquareInches;
 
         @Override
         public void simulationPeriodic() {
-            var leftSim = motor.getSimState();
-            leftSim.Orientation = ChassisReference.CounterClockwise_Positive;
-            leftSim.setSupplyVoltage(RobotController.getBatteryVoltage());
-            var rightSim = motor.getSimState();
-            rightSim.Orientation = ChassisReference.Clockwise_Positive;
-            rightSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+            var motorSim = motor.getSimState();
+            motorSim.Orientation = ChassisReference.CounterClockwise_Positive;
+            motorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-            climberSim.setInput(leftSim.getMotorVoltage());
+            climberSim.setInput(motorSim.getMotorVoltage());
             climberSim.update(0.02);
 
-            leftSim.setRawRotorPosition(carriageDistToMotorAngle(Meters.of(climberSim.getPositionMeters())));
-            leftSim.setRotorVelocity(carriageDistToMotorAngle(Meters.of(climberSim.getVelocityMetersPerSecond())).per(Second));
-            rightSim.setRawRotorPosition(carriageDistToMotorAngle(Meters.of(climberSim.getPositionMeters())));
-            rightSim.setRotorVelocity(carriageDistToMotorAngle(Meters.of(climberSim.getVelocityMetersPerSecond())).per(Second));
+            motorSim.setRawRotorPosition(carriageDistToMotorAngle(Meters.of(climberSim.getPositionMeters())));
+            motorSim.setRotorVelocity(carriageDistToMotorAngle(Meters.of(climberSim.getVelocityMetersPerSecond())).per(Second));
         }   
     }
     /*

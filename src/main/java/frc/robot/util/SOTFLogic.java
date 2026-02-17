@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 
 import frc.robot.subsystems.Shooter.Shotmap;
-import frc.robot.subsystems.Shooter.Shotmap.State;
 
 public final class SOTFLogic {
 

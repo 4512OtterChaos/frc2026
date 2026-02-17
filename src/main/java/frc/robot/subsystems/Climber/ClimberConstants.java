@@ -1,6 +1,5 @@
 package frc.robot.subsystems.Climber;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
@@ -28,7 +27,7 @@ public class ClimberConstants {
     public static final Distance kHeightTolerance = Meters.of(0.2); //TODO: tune
 
     //CLIMBER sim
-    public static final double climberWeight = 20; //TODO: find weight
+    public static final double climberWeight = 6; //TODO: find weight
     public static final double wheelRad = 5;
     public static final Distance kSprocketPD = Inches.of(1.76); //TODO: find out what a spricket is
 
