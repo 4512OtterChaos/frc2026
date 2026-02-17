@@ -155,7 +155,7 @@ public class Hood extends SubsystemBase {
         DCMotor.getKrakenX60(1),
         kHoodGearRatio,
         kMomentOfInertia.in(KilogramSquareMeters),
-        kArmLength.in(Meters),
+        kHoodLength.in(Meters),
         kHoodMinAngle.in(Radians),
         kHoodMaxAngle.in(Radians),
         true,//TODO:Include gravity?

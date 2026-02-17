@@ -22,14 +22,14 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 public class ClimberConstants {
     public static final int kMotorID = 51; 
 
-    public static final Distance kMaxHeightRot = Meters.of(2); //TODO: tune
+    public static final Distance kMaxHeightRot = Meters.of(5); //TODO: tune
     public static final Distance kMinHeightRot = Meters.of(2); //TODO: tune
     public static final Distance kHeightTolerance = Meters.of(0.2); //TODO: tune
 
     //CLIMBER sim
     public static final double climberWeight = 6; //TODO: find weight
     public static final double wheelRad = 5;
-    public static final Distance kSprocketPD = Inches.of(1.76); //TODO: find out what a spricket is
+    public static final Distance kSprocketPD = Inches.of(1.76); //TODO: Find the factual value
 
 
     public static final MomentOfInertia kMomentOfInertia = PoundSquareInches.of(80);//TODO: tune

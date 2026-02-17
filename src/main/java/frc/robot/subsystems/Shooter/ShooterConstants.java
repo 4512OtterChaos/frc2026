@@ -24,8 +24,8 @@ public final class ShooterConstants {
     public static int kLeftMotorID = 42;
     public static int kRightMotorID = 43;
 
-    public static double kFlywheelGearRatio = 1; // TODO: Get Later
-    public static double kHoodGearRatio = (60/18) * (32/20) * (24/20) * (208/18); // TODO: Confirm
+    public static double kFlywheelGearRatio = 22/20;
+    public static double kHoodGearRatio = (60/18) * (32/20) * (24/20) * (208/18);
 
     public static Distance kWheelRadius = Inches.of(2);
 
@@ -34,7 +34,7 @@ public final class ShooterConstants {
     public static final TunableNumber flywheelIdleRPM = new TunableNumber("Shooter/Flywheel/Idle RPM", flywheelIdleVelocity.in(RPM));
 
     public static final Angle kHoodMinAngle = Degrees.of(0);
-    public static final Angle kHoodMaxAngle = Degrees.of(30);// TODO: Tune
+    public static final Angle kHoodMaxAngle = Degrees.of(27.5);
 
     public static final TunableNumber hoodMinAngle = new TunableNumber("Shooter/Hood/Min Angle", kHoodMinAngle.in(Degrees)); 
     public static final TunableNumber hoodMaxAngle = new TunableNumber("Shooter/Hood/Max Angle", kHoodMaxAngle.in(Degrees));
@@ -51,8 +51,8 @@ public final class ShooterConstants {
     public static final TunableNumber RPMTolerance = new TunableNumber("Shooter/Flywheel/RPM Tolerance", kVelocityTolerance.in(RPM));
     public static final TunableNumber degreesTolerance = new TunableNumber("Shooter/Hood/Degrees Tolerance", kAngleTolerance.in(Degrees));
 
-    public static final MomentOfInertia kMomentOfInertia = PoundSquareInches.of(10);//TODO: tune
-    public static final Distance kArmLength = Inches.of(5);//TODO: tune
+    public static final MomentOfInertia kMomentOfInertia = PoundSquareInches.of(168.737616);
+    public static final Distance kHoodLength = Inches.of(8.187500);
 
     public static final TalonFXConfiguration kFlywheelConfig = new TalonFXConfiguration();
     static {
@@ -110,7 +110,7 @@ public final class ShooterConstants {
         control.kA = 0;
 
         MotionMagicConfigs mm = kHoodConfig.MotionMagic;
-        mm.MotionMagicCruiseVelocity = Rotations.of(300).in(Rotations); // inches per second
+        mm.MotionMagicCruiseVelocity = Rotations.of(300).in(Rotations); // inches per second TODO: Tunable nums
         mm.MotionMagicAcceleration = Rotations.of(500).in(Rotations);
     }
     

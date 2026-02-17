@@ -2,9 +2,11 @@ package frc.robot.subsystems.Intake;
 import static frc.robot.util.OCUnits.*;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -20,13 +22,13 @@ public class IntakeConstants {
     public static final int kIntakeMotorID = 21;
     public static final int kFourBarMotorID = 22;
 
-    public static final double kIntakeGearRatio = 1; //TODO: Use Real
-    public static final double kFourBarGearRatio = 1; //TODO: Use Real
+    public static final double kIntakeGearRatio = 2; 
+    public static final double kFourBarGearRatio = (38/8) * (38/20) * (26/12); 
 
     public static final Distance kFourBarArmLength = Feet.of(2);
 
-    public static final Angle kFourBarMinAngle = Degrees.of(15); //TODO: tune
-    public static final Angle kFourBarMaxAngle = Degrees.of(85); //TODO: tune
+    public static final Angle kFourBarMinAngle = Degrees.of(16.5); 
+    public static final Angle kFourBarMaxAngle = Degrees.of(100.5); 
     public static final Angle kAngleTolerance = Degrees.of(2); //TODO: tune
 
     public static final TunableNumber fourBarMinDegrees = new TunableNumber("Intake/Four Bar/Min Degrees", kFourBarMinAngle.in(Degrees));
@@ -86,12 +88,16 @@ public class IntakeConstants {
 
         Slot0Configs control = kFourBarConfig.Slot0;// TODO: Tune PID
             control.kP = 0.1; 
-            control.kI = 0;
+            control.kI = 0.1;
             control.kD = 0;
             
             control.kS = 0;
             control.kV = 0;
             control.kA = 0;
+
+        MotionMagicConfigs mm = kFourBarConfig.MotionMagic;
+        mm.MotionMagicCruiseVelocity = Rotations.of(300).in(Rotations); // inches per second
+        mm.MotionMagicAcceleration = Rotations.of(500).in(Rotations);
 
             
     }

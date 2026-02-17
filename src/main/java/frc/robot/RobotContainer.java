@@ -59,7 +59,6 @@ public class RobotContainer {
         flywheel.setDefaultCommand(flywheel.setVelocityC(ShooterConstants.flywheelIdleVelocity));
         intake.setDefaultCommand(intake.setVoltageC(0));
         hood.setDefaultCommand(hood.setAngleC(Degrees.of(0)));
-        //TODO: Hood default command?
         // drivetrain.setDefaultCommand(drivetrain.faceHub());
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
