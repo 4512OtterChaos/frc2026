@@ -1,7 +1,6 @@
 package frc.robot.subsystems.Climber;
 
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.util.OCUnits.PoundSquareInches;
 
@@ -9,6 +8,7 @@ import frc.robot.util.TunableNumber;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -22,27 +22,30 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 public class ClimberConstants {
     public static final int kMotorID = 51; 
 
-    public static final Distance kMaxHeightRot = Meters.of(5); //TODO: tune
-    public static final Distance kMinHeightRot = Meters.of(2); //TODO: tune
-    public static final Distance kHeightTolerance = Meters.of(0.2); //TODO: tune
+    public static final Angle kMaxAngle = Rotations.of(5); //TODO: tune
+    public static final Angle kMinAngle = Rotations.of(0); //TODO: tune
+    public static final Angle kAngleTolerance = Rotations.of(0.2); //TODO: tune
 
-    //CLIMBER sim
-    public static final double climberWeight = 6; //TODO: find weight
-    public static final double wheelRad = 5;
-    public static final Distance kSprocketPD = Inches.of(1.76); //TODO: Find the factual value
-
+    public static final TunableNumber maxAngleRot = new TunableNumber("Climber/Max Angle (Rot)", kMaxAngle.in(Rotations));
+    public static final TunableNumber minAngleRot = new TunableNumber("Climber/Min Angle (Rot)", kMinAngle.in(Rotations));
+    public static final TunableNumber angleToleranceRot = new TunableNumber("Climber/Angle Tolerance (Rot)", kAngleTolerance.in(Rotations));
 
     public static final MomentOfInertia kMomentOfInertia = PoundSquareInches.of(80);//TODO: tune
 
-    public static final TunableNumber maxHeight = new TunableNumber("Climber/Max Height", kMaxHeightRot.in(Meters));
-    public static final TunableNumber minHeight = new TunableNumber("Climber/Max Height", kMinHeightRot.in(Meters));
-    public static final TunableNumber heightTolerance = new TunableNumber("Climber/Height Tolerance", kHeightTolerance.in(Meters));
+    public static final Distance kMinHeight = Inches.of(22); //TODO: tune
+    public static final Distance kMaxHeight = Inches.of(30); //TODO: tune
+
+    public static final TunableNumber maxHeightInches = new TunableNumber("Climber/Max Height (Inches)", kMaxHeight.in(Inches));
+    public static final TunableNumber minHeightInches = new TunableNumber("Climber/Min Height (Inches)", kMinHeight.in(Inches));
 
     public static final double kDebounceTime = 0.25;
 
     public static final TunableNumber debounceTime = new TunableNumber("Climber/Debounce Time", kDebounceTime);
 
-    public static final double kGearRatio = 1; //TODO: tune
+    public static final double kGearRatio = 27;
+    //CLIMBER sim
+    public static final double climberWeight = 1; //TODO: find weight
+    public static final Distance shaftRad = Inches.of((maxHeightInches.get() - minHeightInches.get()) / maxAngleRot.get() / 2 * Math.PI);
 
     public static final TalonFXConfiguration kConfig = new TalonFXConfiguration();
     static {
@@ -65,10 +68,10 @@ public class ClimberConstants {
         control.kS = 0.1;
         control.kV = 0.01;
         control.kA = 0;
-    }
 
-    public static Angle carriageDistToMotorAngle(Distance dist) {
-        return Rotations.of(dist.in(Meters) / 2.0 / (kSprocketPD.in(Meters) * Math.PI) * kGearRatio);
+        MotionMagicConfigs mm = kConfig.MotionMagic;
+        mm.MotionMagicCruiseVelocity = Rotations.of(3).in(Rotations); // inches per second
+        mm.MotionMagicAcceleration = Rotations.of(5).in(Rotations);
     }
 
     public static final TunableNumber kP = new TunableNumber("Climber/PID/P", kConfig.Slot0.kP);
@@ -79,5 +82,11 @@ public class ClimberConstants {
     public static final TunableNumber kV = new TunableNumber("Climber/Feed Forward/V", kConfig.Slot0.kV);
     public static final TunableNumber kA = new TunableNumber("Climber/Feed Forward/A", kConfig.Slot0.kA);
 
+    public static Angle heightToAngle(Distance height){
+        return Rotations.of(height.in(Inches) * maxAngleRot.get() / (maxHeightInches.get() - minHeightInches.get()));
+    }
 
+    public static Distance angleToHeight(Angle angle){
+        return Inches.of(angle.in(Rotations) * (maxHeightInches.get() - minHeightInches.get()) / maxAngleRot.get());
+    }
 }

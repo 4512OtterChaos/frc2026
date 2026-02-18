@@ -2,7 +2,7 @@
 
     import com.ctre.phoenix6.BaseStatusSignal;
     import com.ctre.phoenix6.StatusSignal;
-    import com.ctre.phoenix6.controls.PositionVoltage;
+    import com.ctre.phoenix6.controls.MotionMagicVoltage;
     import com.ctre.phoenix6.hardware.TalonFX;
     import com.ctre.phoenix6.sim.ChassisReference;
 
@@ -27,14 +27,14 @@
     public class Climber extends SubsystemBase {
         public TalonFX motor = new TalonFX(kMotorID);
 
-        public Angle targetHeight = Degrees.of(0);
+        public Angle targetAngle = Degrees.of(0);
 
         private final StatusSignal<Angle> positionStatus = motor.getPosition();
         private final StatusSignal<AngularVelocity> velocityStatus = motor.getVelocity();
         private final StatusSignal<Voltage> voltageStatus = motor.getMotorVoltage();
         private final StatusSignal<Current> statorStatus = motor.getStatorCurrent();
 
-        private final PositionVoltage voltageRequest = new PositionVoltage(0);
+        private final MotionMagicVoltage mmRequest = new MotionMagicVoltage(0).withEnableFOC(false);
 
 
         public Climber(){
@@ -52,8 +52,8 @@
                 statorStatus
             );
             changeTunable();
+            motor.setControl(mmRequest.withPosition(targetAngle));
             log();
-            motor.setControl(voltageRequest.withPosition(targetHeight));
         }
         
         public Angle getHeight(){
@@ -61,7 +61,7 @@
         }
         
         public Angle getTargetRotations() {
-            return targetHeight;
+            return targetAngle;
         }
 
         public AngularVelocity getVelocity(){
@@ -84,13 +84,13 @@
             motor.setVoltage(voltage);        
         }
         
-        public void setHeight(Angle degrees){
-            degrees = Degrees.of(MathUtil.clamp(degrees.in(Degrees), minHeight.get(), maxHeight.get())); //TODO: fix climber safety before testing
-            targetHeight = degrees;
+        public void setHeight(Angle angle){
+            angle = Rotations.of(MathUtil.clamp(angle.in(Rotations), minAngleRot.get(), maxAngleRot.get())); //TODO: fix climber safety before testing
+            targetAngle = angle;
         }
 
         public boolean atTargetHeight(){
-            return targetHeight.in(Degrees) - getHeight().in(Degrees) <= heightTolerance.get();
+            return targetAngle.in(Degrees) - getHeight().in(Degrees) <= angleToleranceRot.get();
         }
 
         public Command setVoltageC(double voltage){
@@ -102,11 +102,11 @@
         }
 
         public Command setMinHeightC(){
-            return setHeightC(Degrees.of(minHeight.get()));
+            return setHeightC(Rotations.of(minAngleRot.get()));
         }
 
         public Command setMaxHeightC(){
-            return setHeightC(Degrees.of(maxHeight.get()));
+            return setHeightC(Rotations.of(maxAngleRot.get()));
         }
 
         public Trigger atTargetHeightT(){
@@ -114,9 +114,9 @@
         }
 
         public void changeTunable(){
-            maxHeight.poll();
-            minHeight.poll();
-            heightTolerance.poll();
+            maxAngleRot.poll();
+            minAngleRot.poll();
+            angleToleranceRot.poll();
             debounceTime.poll();
             kP.poll();
             kI.poll();
@@ -140,13 +140,13 @@
 
 
         public void log(){  
-            SmartDashboard.putNumber("Climber/Current Height", getHeight().in(Degrees));
-            SmartDashboard.putNumber("Climber/Target Height", getTargetRotations().in(Degrees));
+            SmartDashboard.putNumber("Climber/Height", getHeight().in(Rotations));
+            SmartDashboard.putNumber("Climber/Target Height", getTargetRotations().in(Rotations));
             SmartDashboard.putNumber("Climber/RPS", getVelocity().in(RotationsPerSecond));
             SmartDashboard.putNumber("Climber/Voltage", getVoltage().in(Volts));
             SmartDashboard.putNumber("Climber/Current", getCurrent().in(Amps));
             SmartDashboard.putBoolean("Climber/At Height", atTargetHeightT().getAsBoolean());
-            SmartDashboard.putNumber("Climber/Height Tolerance", heightTolerance.get());
+            SmartDashboard.putNumber("Climber/Height Tolerance", angleToleranceRot.get());
         }
 
         // Simulation
@@ -154,14 +154,14 @@
             LinearSystemId.createElevatorSystem(
                 DCMotor.getKrakenX60(2),
                 climberWeight,
-                wheelRad, //TODO: replace
+                shaftRad.in(Meters), //TODO: replace
                 kGearRatio
             ),
             DCMotor.getKrakenX60(1),
-            minHeight.get(),
-            maxHeight.get(),
+            angleToHeight(Rotations.of(minAngleRot.get())).in(Meters),
+            angleToHeight(Rotations.of(maxAngleRot.get())).in(Meters),
             true,
-            minHeight.get()
+            angleToHeight(Rotations.of(minAngleRot.get())).in(Meters)
         );
 
         @Override
@@ -173,8 +173,8 @@
             climberSim.setInput(motorSim.getMotorVoltage());
             climberSim.update(0.02);
 
-            motorSim.setRawRotorPosition(carriageDistToMotorAngle(Meters.of(climberSim.getPositionMeters())));
-            motorSim.setRotorVelocity(carriageDistToMotorAngle(Meters.of(climberSim.getVelocityMetersPerSecond())).per(Second));
+            motorSim.setRawRotorPosition(heightToAngle(Meters.of(climberSim.getPositionMeters())));
+            motorSim.setRotorVelocity(heightToAngle(Meters.of(climberSim.getVelocityMetersPerSecond())).per(Second));
         }   
     }
     /*
