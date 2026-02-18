@@ -9,7 +9,6 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DSControlWord;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.Superstructure;
@@ -30,8 +29,6 @@ import frc.robot.util.OCXboxController;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    
-    private final DSControlWord driverStation = new DSControlWord(); 
 
     private final OCXboxController driver = new OCXboxController(0);
 
@@ -73,7 +70,8 @@ public class RobotContainer {
         driver.back().onTrue(runOnce(()-> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.rightTrigger().whileTrue(parallel(superstructure.shootShotMapC(()-> Shotmap.distanceToHub(drivetrain.getState().Pose, FieldUtil.kHubTrl)), drivetrain.driveFacingHub(driver)));
         driver.leftTrigger().whileTrue(intake.setVoltageInC());
-        driver.b().onTrue(fourBar.lower());
+        driver.a().whileTrue(fourBar.setMinAngleC());
+        driver.y().whileTrue(fourBar.setMaxAngleC());
         driver.povUp().whileTrue(climber.setMaxHeightC());
         driver.povDown().whileTrue(climber.setMinHeightC());
 

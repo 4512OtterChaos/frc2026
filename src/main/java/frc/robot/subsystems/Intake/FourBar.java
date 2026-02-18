@@ -1,12 +1,11 @@
 package frc.robot.subsystems.Intake;
 
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -32,6 +31,9 @@ public class FourBar extends SubsystemBase {
     private final StatusSignal<AngularVelocity> velocityStatus = motor.getVelocity();
     private final StatusSignal<Voltage> voltageStatus = motor.getMotorVoltage();
     private final StatusSignal<Current> statorStatus = motor.getStatorCurrent();
+
+    private Angle targetAngle = Degrees.of(fourBarMaxDegrees.get());
+    private MotionMagicVoltage mmRequest = new MotionMagicVoltage(0);
     
     public FourBar(){
         motor.getConfigurator().apply(kFourBarConfig);
@@ -47,8 +49,13 @@ public class FourBar extends SubsystemBase {
             voltageStatus,
             statorStatus
         );
+        motor.setControl(mmRequest.withPosition(targetAngle));
         changeTunable();
         log();
+
+        if (getAngle().isNear(Degrees.of(targetAngle.in(Degrees)), Degrees.of(4.5))) { //TODO: find a better way to do this
+            setVoltage(0);
+        }
     }
 
     public Angle getAngle(){
@@ -93,16 +100,20 @@ public class FourBar extends SubsystemBase {
         return setVoltageC(fourBarVoltageOut.get()).withName("Voltage Out");
     }
 
-    public Command lower(){
-        return sequence(
-            setVoltageC(kFourBarVoltageOut),
-            waitUntil(atAngleT(Degrees.of(fourBarMinDegrees.get()))),
-            setVoltageC(0)
-        );
+    public Command setMinAngleC(){
+        return runOnce(()-> setAngle(Degrees.of(fourBarMinDegrees.get())));
+    }
+
+    public Command setMaxAngleC(){
+        return runOnce(()-> setAngle(Degrees.of(fourBarMaxDegrees.get())));
+    }
+
+    public void setAngle(Angle angle){
+        targetAngle = Degrees.of(MathUtil.clamp(angle.in(Degrees), fourBarMinDegrees.get(), fourBarMaxDegrees.get()));
     }
 
     public boolean atAngle(Angle angle) {
-        return Math.abs(getAngle().in(Degrees)) - angle.in(Degrees) <= degreeTolerance.get();
+        return getAngle().isNear(angle, Degrees.of(degreeTolerance.get()));
     }
 
     public Trigger atAngleT(Angle angle){
@@ -119,6 +130,7 @@ public class FourBar extends SubsystemBase {
 
     public void log(){
         SmartDashboard.putNumber("Intake/Four Bar/Angle Degrees", getAngle().in(Degrees));
+        SmartDashboard.putNumber("Intake/Four Bar/Target Angle Degrees", targetAngle.in(Degrees));
         SmartDashboard.putNumber("Intake/Four Bar/RPM", getVelocity().in(RPM));
         SmartDashboard.putNumber("Intake/Four Bar/Voltage", getVoltage().in(Volts));
         SmartDashboard.putNumber("Intake/Four Bar/Current", getCurrent().in(Amps));
@@ -133,7 +145,7 @@ public class FourBar extends SubsystemBase {
         kFourBarArmLength.in(Meters),
         fourBarMinDegrees.get(),
         fourBarMaxDegrees.get(),
-        true,//TODO:Include gravity?
+        true,
         fourBarMinDegrees.get()
         );
 
@@ -150,7 +162,7 @@ public class FourBar extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motorSimState = motor.getSimState();
-        motorSimState.Orientation =  ChassisReference.Clockwise_Positive;//TODO: Fix, idk what it means
+        motorSimState.Orientation =  ChassisReference.Clockwise_Positive;
 
         motorSimState.setSupplyVoltage(motor.getSupplyVoltage().getValue());//TODO: Add friction? Also, idk that the voltage should be accessed like this
         motorSim.setInputVoltage(motorSimState.getMotorVoltage());
@@ -159,7 +171,6 @@ public class FourBar extends SubsystemBase {
 
         motorSimState.setRawRotorPosition(motorSim.getAngularPositionRotations() * kFourBarGearRatio);
         motorSimState.setRotorVelocity(motorSim.getAngularVelocityRPM() / 60  * kFourBarGearRatio);
-        //                                           shaft RPM --> rotations per second --> motor rotations per second
         double voltage = motorSim.getInputVoltage();
         fourBarSim.setInput(voltage);
 		fourBarSim.update(0.02);
