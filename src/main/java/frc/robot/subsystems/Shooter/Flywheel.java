@@ -23,6 +23,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -59,6 +60,7 @@ public class Flywheel extends SubsystemBase {
             statorStatus
         );
         changeTunable();
+        leftMotor.setControl(velocityrequest.withVelocity(targetVelocity));
         log();
     }
 
@@ -87,7 +89,6 @@ public class Flywheel extends SubsystemBase {
     }
 
     public void setVelocity(AngularVelocity velocity){
-        leftMotor.setControl(velocityrequest.withVelocity(velocity));
         targetVelocity = velocity;
     }
 
@@ -157,31 +158,37 @@ public class Flywheel extends SubsystemBase {
     FlywheelSim flywheelSim = new FlywheelSim(
         LinearSystemId.createFlywheelSystem(
             DCMotor.getKrakenX60(2),
-            kMomentOfInertia.in(KilogramSquareMeters),
+            kFlywheelMomentOfInertia.in(KilogramSquareMeters),
             kFlywheelGearRatio
         ),
         DCMotor.getKrakenX60(2),
         kFlywheelGearRatio
-        );
+    );
+
+    DCMotorSim motorSim = new DCMotorSim(
+        LinearSystemId.createDCMotorSystem(
+            DCMotor.getKrakenX60(2),
+            kFlywheelMomentOfInertia.in(KilogramSquareMeters),
+            kFlywheelGearRatio
+        ),
+        DCMotor.getKrakenX60(2)
+    );
 
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motorSimState = leftMotor.getSimState();
         motorSimState.Orientation =  ChassisReference.Clockwise_Positive;//TODO: Fix, idk what it means
 
-        double voltage = motorSimState.getMotorVoltage();
-        flywheelSim.setInputVoltage(voltage);
+        motorSimState.setSupplyVoltage(leftMotor.getSupplyVoltage().getValue());//TODO: Add friction? Also, idk that the voltage should be accessed like this
+        motorSim.setInputVoltage(motorSimState.getMotorVoltage());
+
+        motorSim.update(0.02);
+
+        motorSimState.setRawRotorPosition(motorSim.getAngularPositionRotations() * kFlywheelGearRatio);
+        motorSimState.setRotorVelocity(motorSim.getAngularVelocityRPM() / 60  * kFlywheelGearRatio);
+        //                                           shaft RPM --> rotations per second --> motor rotations per second
+        double voltage = motorSim.getInputVoltage();
+        flywheelSim.setInput(voltage);
 		flywheelSim.update(0.02);
-
-        double wheelRadPerSec = flywheelSim.getAngularVelocityRadPerSec();
-        double wheelRps = wheelRadPerSec / (2.0 * Math.PI);
-       
-        motorSimState.setRotorVelocity(wheelRps);
-        motorSimState.addRotorPosition(wheelRps * 0.02);
-
-        // Simulating follower
-        rightMotor.getSimState().setSupplyVoltage(RobotController.getBatteryVoltage());
-        rightMotor.getSimState().setRotorVelocity(wheelRps);
-        rightMotor.getSimState().addRotorPosition(wheelRps * 0.02);
     }   
 }

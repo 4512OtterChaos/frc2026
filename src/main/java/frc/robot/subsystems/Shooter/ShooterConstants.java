@@ -27,8 +27,6 @@ public final class ShooterConstants {
     public static double kFlywheelGearRatio = 22/20;
     public static double kHoodGearRatio = (60/18) * (32/20) * (24/20) * (208/18);
 
-    public static Distance kWheelRadius = Inches.of(2);
-
     public static final AngularVelocity flywheelIdleVelocity = RPM.of(500); // TODO: Tune
 
     public static final TunableNumber flywheelIdleRPM = new TunableNumber("Shooter/Flywheel/Idle RPM", flywheelIdleVelocity.in(RPM));
@@ -51,13 +49,17 @@ public final class ShooterConstants {
     public static final TunableNumber RPMTolerance = new TunableNumber("Shooter/Flywheel/RPM Tolerance", kVelocityTolerance.in(RPM));
     public static final TunableNumber degreesTolerance = new TunableNumber("Shooter/Hood/Degrees Tolerance", kAngleTolerance.in(Degrees));
 
-    public static final MomentOfInertia kMomentOfInertia = PoundSquareInches.of(168.737616);
+    public static final MomentOfInertia kHoodMomentOfInertia = PoundSquareInches.of(168.737616);
+    public static final MomentOfInertia kFlywheelMomentOfInertia = PoundSquareInches.of(8); //TODO: Get Real
+
+    public static final Distance kWheelRadius = Inches.of(2); // TODO: tune
+    public static final Distance kHoodPivotHeight = Inches.of(12); // TODO: tune
     public static final Distance kHoodLength = Inches.of(8.187500);
 
     public static final TalonFXConfiguration kFlywheelConfig = new TalonFXConfiguration();
     static {
         FeedbackConfigs feedback = kFlywheelConfig.Feedback;
-        feedback.SensorToMechanismRatio = 1;
+        feedback.SensorToMechanismRatio = kFlywheelGearRatio;
         
         MotorOutputConfigs output = kFlywheelConfig.MotorOutput;
         output.NeutralMode = NeutralModeValue.Coast;
@@ -68,11 +70,11 @@ public final class ShooterConstants {
         current.StatorCurrentLimit = 40; 
 
         Slot0Configs control = kFlywheelConfig.Slot0;// TODO: Tune PID
-        control.kP = 3; 
+        control.kP = 0; 
         control.kI = 0;
         control.kD = 0;
 
-        control.kS = 0.1;
+        control.kS = 0;
         control.kV = 0.01;
         control.kA = 0;
     }
@@ -100,26 +102,30 @@ public final class ShooterConstants {
         current.StatorCurrentLimit = 40; 
 
         Slot0Configs control = kHoodConfig.Slot0;// TODO: Tune PID
-        control.kP = 1000; //TODO: please tune with REAL motors
+        control.kP = 2; //TODO: please tune with REAL motors
         control.kI = 0;
         control.kD = 0;
         
-        control.kG = 0.1;
-        control.kS = 0.1;
-        control.kV = 0.2;
+        control.kG = 0.01;
+        control.kS = 0.2;
+        control.kV = 0.1;
         control.kA = 0;
 
         MotionMagicConfigs mm = kHoodConfig.MotionMagic;
-        mm.MotionMagicCruiseVelocity = Rotations.of(300).in(Rotations); // inches per second TODO: Tunable nums
-        mm.MotionMagicAcceleration = Rotations.of(500).in(Rotations);
+        mm.MotionMagicCruiseVelocity = Rotations.of(3).in(Rotations); // inches per second TODO: Tunable nums
+        mm.MotionMagicAcceleration = Rotations.of(5).in(Rotations);
     }
     
     public static final TunableNumber hoodkP = new TunableNumber("Shooter/Hood/PID/P", kHoodConfig.Slot0.kP);
     public static final TunableNumber hoodkI = new TunableNumber("Shooter/Hood/PID/I", kHoodConfig.Slot0.kI);
     public static final TunableNumber hoodkD = new TunableNumber("Shooter/Hood/PID/D", kHoodConfig.Slot0.kD);
 
+    public static final TunableNumber hoodkG = new TunableNumber("Shooter/Hood/Feed Forward/G", kHoodConfig.Slot0.kG);
     public static final TunableNumber hoodkS = new TunableNumber("Shooter/Hood/Feed Forward/S", kHoodConfig.Slot0.kS);
     public static final TunableNumber hoodkV = new TunableNumber("Shooter/Hood/Feed Forward/V", kHoodConfig.Slot0.kV);
     public static final TunableNumber hoodkA = new TunableNumber("Shooter/Hood/Feed Forward/A", kHoodConfig.Slot0.kA);
+
+    public static final TunableNumber hoodCruiseVelocity = new TunableNumber("Shooter/Hood/MotionMagic/Cruise Velocity", kHoodConfig.MotionMagic.MotionMagicCruiseVelocity);
+    public static final TunableNumber hoodAcceleration = new TunableNumber("Shooter/Hood/MotionMagic/Acceleration", kHoodConfig.MotionMagic.MotionMagicAcceleration);
 
 }

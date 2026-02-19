@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.SuperstructureViz;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
@@ -43,6 +44,7 @@ public class RobotContainer {
     private final Climber climber = new Climber();
 
     private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, flywheel, hood, climber);
+    private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, fourBar, spindexer, feeder, flywheel, hood, climber);
 
     public RobotContainer() {
         configureDefaultCommands();
@@ -93,7 +95,7 @@ public class RobotContainer {
 
     // Simulation
     public void simulationPeriodic() {
-
+        // superstructureViz.periodic();
     }
 
 }
