@@ -53,7 +53,7 @@ public class FourBar extends SubsystemBase {
         changeTunable();
         log();
 
-        if (getAngle().isNear(Degrees.of(targetAngle.in(Degrees)), Degrees.of(4.5))) { //TODO: find a better way to do this
+        if (getAngle().isNear(Degrees.of(targetAngle.in(Degrees)), Degrees.of(0.2))) { //TODO: find a better way to do this
             setVoltage(0);
         }
     }

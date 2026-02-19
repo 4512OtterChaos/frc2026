@@ -52,8 +52,8 @@ public final class ShooterConstants {
     public static final MomentOfInertia kHoodMomentOfInertia = PoundSquareInches.of(168.737616);
     public static final MomentOfInertia kFlywheelMomentOfInertia = PoundSquareInches.of(8); //TODO: Get Real
 
-    public static final Distance kWheelRadius = Inches.of(2); // TODO: tune
-    public static final Distance kHoodPivotHeight = Inches.of(12); // TODO: tune
+    public static final Distance kWheelRadius = Inches.of(4);
+    public static final Distance kHoodPivotHeight = Inches.of(18.096682);
     public static final Distance kHoodLength = Inches.of(8.187500);
 
     public static final TalonFXConfiguration kFlywheelConfig = new TalonFXConfiguration();

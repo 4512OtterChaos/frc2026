@@ -49,7 +49,7 @@ public class SuperstructureViz extends SubsystemBase{
         this.climber = climber;
     }
 
-    Mechanism2d hoodMech = new Mechanism2d(.4, .4, new Color8Bit(0, 100, 150));
+    Mechanism2d hoodMech = new Mechanism2d(.4, .6, new Color8Bit(0, 100, 150));
     MechanismRoot2d hoodMechRoot = hoodMech.getRoot("Hood", 0.3, 0.05);
 
     private final MechanismLigament2d mechBase = hoodMechRoot.append(
@@ -61,33 +61,12 @@ public class SuperstructureViz extends SubsystemBase{
             new MechanismLigament2d("setpointBase", ShooterConstants.kHoodPivotHeight.in(Meters), 90, kSetpointWidth, kSetpointBaseColor));
     private final MechanismLigament2d setpointHood = setpointBase.append(
             new MechanismLigament2d("setpointHood", ShooterConstants.kHoodLength.in(Meters), kDefaultHoodDeg, kSetpointWidth, kSetpointBaseColor));
-    
 
 
-    // Mechanism2d shooterMech = new Mechanism2d(.5, .5, new Color8Bit(0, 100, 150));
-    // MechanismRoot2d shooterMechRoot = shooterMech.getRoot("ShooterArm", 0.25, 0.05);
+    Mechanism2d fourBarMech = new Mechanism2d(.8, .6, new Color8Bit(0, 100, 150));
+    MechanismRoot2d fourBMechRoot = fourBarMech.getRoot("Four Bar", 0.7, 0.05);
 
-    // private final MechanismLigament2d mechBaseLeft = shooterMechRoot.append(
-    //         new MechanismLigament2d("ArmBaseLeft", ShooterArmConstants.kBaseLength.in(Meters)/2, 180, kMechWidth, kMechBaseColor));
-    // private final MechanismLigament2d mechArmLeft = mechBaseLeft.append(
-    //         new MechanismLigament2d("ArmLeft", ShooterArmConstants.kPivotToWheels.in(Meters), -kDefaultArmDeg, kMechWidth, kMechBaseColor));
-    // private final MechanismLigament2d mechBaseRight = shooterMechRoot.append(
-    //         new MechanismLigament2d("BaseRight", ShooterArmConstants.kBaseLength.in(Meters)/2, 0, kMechWidth, kMechBaseColor));
-    // private final MechanismLigament2d mechArmRight = mechBaseRight.append(
-    //         new MechanismLigament2d("ArmRight", ShooterArmConstants.kPivotToWheels.in(Meters), kDefaultArmDeg, kMechWidth, kMechBaseColor));
-    
-    // private final MechanismLigament2d setpointBaseLeft = shooterMechRoot.append(
-    //         new MechanismLigament2d("setpointArmBaseLeft", ShooterArmConstants.kBaseLength.in(Meters)/2, 180, kSetpointWidth, kSetpointBaseColor));
-    // private final MechanismLigament2d setpointArmLeft = setpointBaseLeft.append(
-    //         new MechanismLigament2d("setpointArmLeft", ShooterArmConstants.kPivotToWheels.in(Meters), -kDefaultArmDeg, kSetpointWidth,
-    //                 kSetpointBaseColor));
-    // private final MechanismLigament2d setpointBaseRight = shooterMechRoot.append(
-    //         new MechanismLigament2d("setpointArmBaseRight", ShooterArmConstants.kBaseLength.in(Meters)/2, 0, kSetpointWidth, kSetpointBaseColor));
-    // private final MechanismLigament2d setpointArmRight = setpointBaseRight.append(
-    //         new MechanismLigament2d("setpointArmRight", ShooterArmConstants.kPivotToWheels.in(Meters), kDefaultArmDeg, kSetpointWidth,
-    //                 kSetpointBaseColor));
-    
-
+    private final MechanismLigament2d 
     
     @Override
     public void simulationPeriodic() {
