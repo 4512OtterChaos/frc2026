@@ -90,6 +90,19 @@ public class SuperstructureViz extends SubsystemBase{
     private final MechanismLigament2d fourBarMech2Setpoint = fourBarMech2SetpointBase.append(
             new MechanismLigament2d("FourBar 2 Setpoint", IntakeConstants.kFourBar2Length.in(Meters), kDefaultHoodDeg, kSetpointWidth, kSetpointBaseColor));
 
+    Mechanism2d climberMechWindow = new Mechanism2d(.5, .6, kWindowColor);
+    MechanismRoot2d climberMechRoot = climberMechWindow.getRoot("Climber", 0.25, .1);
+
+    private MechanismLigament2d climberMechBase = climberMechRoot.append(
+            new MechanismLigament2d("Climber Base", 0.2, 90, kMechWidth+3, kMechBaseColor));
+    private MechanismLigament2d climberMech = climberMechBase.append(
+            new MechanismLigament2d("Climber", 0.0, 0, kMechWidth, kMechBaseColor));
+    
+    private final MechanismLigament2d climberSetpointBase = climberMechRoot.append(
+            new MechanismLigament2d("Climber SetpointBase", 0.2, 90, kSetpointWidth+3, kSetpointBaseColor));
+    private final MechanismLigament2d climberSetpoint = climberSetpointBase.append(
+            new MechanismLigament2d("Climber Setpoint", 0, 0, kSetpointWidth, kSetpointBaseColor));
+
     
     @Override
     public void simulationPeriodic() {
@@ -102,6 +115,8 @@ public class SuperstructureViz extends SubsystemBase{
         fourBarMech2.setAngle(kDefaultFourBar2Deg - fourBar.getAngle().in(Degrees));
         fourBarMech2Setpoint.setAngle(kDefaultFourBar2Deg - fourBar.getTargetAngle().in(Degrees));
 
+        climberMech.setLength(climber.getHeightDistance().in(Meters));
+        climberSetpoint.setLength(climber.getTargetHeight().in(Meters));
 
 
 

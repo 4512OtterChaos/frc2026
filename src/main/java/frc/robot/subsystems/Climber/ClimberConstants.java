@@ -61,12 +61,12 @@ public class ClimberConstants {
         current.StatorCurrentLimit = 40; 
 
         Slot0Configs control = kConfig.Slot0;// TODO: Tune PID
-        control.kP = 0.1; 
+        control.kP = 3; 
         control.kI = 0;
         control.kD = 0;
         
-        control.kS = 0.1;
-        control.kV = 0.01;
+        control.kS = 0;
+        control.kV = 0;
         control.kA = 0;
 
         MotionMagicConfigs mm = kConfig.MotionMagic;
