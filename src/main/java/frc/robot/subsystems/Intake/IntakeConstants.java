@@ -2,6 +2,7 @@ package frc.robot.subsystems.Intake;
 import static frc.robot.util.OCUnits.*;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -48,6 +49,12 @@ public class IntakeConstants {
 
     public static final MomentOfInertia kFourBarMomentOfInertia = PoundSquareInches.of(10);//TODO: tune
     public static final MomentOfInertia kIntakeMomentOfInertia = PoundSquareInches.of(10);//TODO: tune
+
+    public static final Distance kFourBar1PivotHeight = Inches.of(7.250000);
+    public static final Distance kFourBar1Length = Inches.of(10.248965);
+
+    public static final Distance kFourBar2PivotHeight = Inches.of(6.750000);
+    public static final Distance kFourBar2Length = Inches.of(11.617010);
 
     public static final TalonFXConfiguration kIntakeConfig = new TalonFXConfiguration();
     static { 

@@ -62,6 +62,10 @@ public class FourBar extends SubsystemBase {
         return positionStatus.getValue();
     }
 
+    public Angle getTargetAngle() {
+        return targetAngle;
+    }
+
     public AngularVelocity getVelocity(){
         return velocityStatus.getValue();
     }
@@ -147,7 +151,7 @@ public class FourBar extends SubsystemBase {
         fourBarMaxDegrees.get(),
         true,
         fourBarMinDegrees.get()
-        );
+    );
 
 
     DCMotorSim motorSim = new DCMotorSim(
@@ -174,6 +178,6 @@ public class FourBar extends SubsystemBase {
         double voltage = motorSim.getInputVoltage();
         fourBarSim.setInput(voltage);
 		fourBarSim.update(0.02);
-    }   
+    }
 }
 
