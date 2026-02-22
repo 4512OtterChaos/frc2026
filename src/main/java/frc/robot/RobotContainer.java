@@ -7,8 +7,10 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.Superstructure;
@@ -25,6 +27,7 @@ import frc.robot.subsystems.Shooter.Flywheel;
 import frc.robot.subsystems.Shooter.Hood;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.Shotmap;
+import frc.robot.subsystems.Vision.Vision;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
 
@@ -42,6 +45,8 @@ public class RobotContainer {
     private final Flywheel flywheel = new Flywheel();
     private final Hood hood = new Hood();
     private final Climber climber = new Climber();
+
+    private final Vision vision = new Vision();
 
     private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, flywheel, hood, climber);
     private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, fourBar, spindexer, feeder, flywheel, hood, climber);
@@ -70,7 +75,7 @@ public class RobotContainer {
     private void configureBindings() {
 
         driver.back().onTrue(runOnce(()-> drivetrain.resetRotation(Rotation2d.kZero)));
-        driver.rightTrigger().whileTrue(parallel(superstructure.shootShotMapC(()-> Shotmap.distanceToHub(drivetrain.getState().Pose, FieldUtil.kHubTrl)), drivetrain.driveFacingHub(driver)));
+        driver.rightTrigger().whileTrue(parallel(superstructure.shootShotMapC(()-> Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate(), FieldUtil.kHubTrl)), drivetrain.driveFacingHub(driver)));
         driver.leftTrigger().whileTrue(intake.setVoltageInC());
         driver.a().whileTrue(fourBar.setMinAngleC());
         driver.y().whileTrue(fourBar.setMaxAngleC());
@@ -93,9 +98,21 @@ public class RobotContainer {
         );
     }
 
-    // Simulation
+    public void periodic() {
+        vision.periodic();
+        
+        double phoenixTimeOffset = Timer.getFPGATimestamp() - Utils.getCurrentTimeSeconds();
+        var swerveState = drivetrain.getState();
+        vision.update(
+            drivetrain.visionEstimator,
+            swerveState.Pose.getRotation(),
+            RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
+            swerveState.Timestamp + phoenixTimeOffset
+        );
+    }
+
     public void simulationPeriodic() {
-        // superstructureViz.periodic();
+        vision.simulationPeriodic(drivetrain.getState().Pose);
     }
 
 }

@@ -15,11 +15,11 @@ public class VisionConstants {
     public static final String kCameraNameFacingLeft = "OV9281"; // TODO: change name to actual
     public static final String kCameraNameFacingRight = "OV9281_2nd"; // TODO: change name to actual
     // Cam mounting pose
-    public static final Transform3d kRobotToCamFacingLeft = new Transform3d(
+    public static final Transform3d kRobotToCamFacingLeft = new Transform3d( //TODO: update
         new Translation3d(Units.inchesToMeters(4.5), Units.inchesToMeters(8.5), Units.inchesToMeters(11.75)), // 9 holes between gusset to mount Z
         new Rotation3d(0, 0, Math.toRadians(-5))
     );
-    public static final Transform3d kRobotToCamFacingRight = new Transform3d(
+    public static final Transform3d kRobotToCamFacingRight = new Transform3d( //TODO: update
         new Translation3d(Units.inchesToMeters(5.25), Units.inchesToMeters(10.5), Units.inchesToMeters(11.75)),
         new Rotation3d(0, 0, Math.toRadians(-40))
     );
@@ -27,13 +27,13 @@ public class VisionConstants {
     // The layout of the AprilTags on the field
     public static final AprilTagFieldLayout kTagLayout;
     static {
-        var originalLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+        var originalLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
         List<AprilTag> tags = new ArrayList<>(originalLayout.getTags());
-        tags.removeIf(tag -> tag.ID <= 5 || (tag.ID >= 12 && tag.ID <= 16));
+        // tags.removeIf(tag -> tag.ID <= 5 || (tag.ID >= 12 && tag.ID <= 16)); //TODO: Is something like this necessary
         kTagLayout = new AprilTagFieldLayout(tags, originalLayout.getFieldLength(), originalLayout.getFieldWidth());
-        for (var tag : kTagLayout.getTags()) {
-            System.err.println("tag id "+tag.ID);
-        }
+        // for (var tag : kTagLayout.getTags()) {
+        //     System.err.println("tag id "+tag.ID);
+        // }
     }
     
     // The standard deviations of our vision estimated poses, which affect correction rate

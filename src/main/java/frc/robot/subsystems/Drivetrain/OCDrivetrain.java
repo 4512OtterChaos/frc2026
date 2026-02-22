@@ -2,14 +2,27 @@ package frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Optional;
+
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
@@ -60,6 +73,16 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     public ChassisSpeeds lastTargetSpeeds = new ChassisSpeeds();
+
+    public final SwerveDrivePoseEstimator visionEstimator = new SwerveDrivePoseEstimator(
+        getKinematics(),
+        getState().Pose.getRotation(),
+        getState().ModulePositions,
+        getState().Pose
+    );
+
+    private final StructPublisher<Pose2d> estimatedPosePub = NetworkTableInstance.getDefault().getStructTopic("Swerve/Estimated Pose", Pose2d.struct).publish();
+
     
     public OCDrivetrain(
         SwerveDrivetrainConstants drivetrainConstants,
@@ -80,8 +103,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
         return applyRequest(() -> {
             ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate), lastTargetSpeeds, Robot.kDefaultPeriod);
             lastTargetSpeeds = targetSpeeds;
-            return drive.withVelocityX(-targetSpeeds.vxMetersPerSecond)
-                        .withVelocityY(-targetSpeeds.vyMetersPerSecond)
+            return drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
+                        .withVelocityY(targetSpeeds.vyMetersPerSecond)
                         .withRotationalRate(targetSpeeds.omegaRadiansPerSecond);
         });
     }
@@ -99,8 +122,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
             ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate), lastTargetSpeeds, Robot.kDefaultPeriod);
                 lastTargetSpeeds = targetSpeeds;
 
-                return face.withVelocityX(-targetSpeeds.vxMetersPerSecond)
-                        .withVelocityY(-targetSpeeds.vyMetersPerSecond)
+                return face.withVelocityX(targetSpeeds.vxMetersPerSecond)
+                        .withVelocityY(targetSpeeds.vyMetersPerSecond)
                         .withTargetDirection(getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle());
             });
     }
@@ -129,5 +152,90 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
             kStandardLimiter.angularAcceleration = RadiansPerSecondPerSecond.of(angularAccel.get());
             kStandardLimiter.angularDeceleration = RadiansPerSecondPerSecond.of(angularDecel.get());
         }
+    }
+
+    @Override
+    public void periodic() {
+        // super.periodic();
+
+        changeTunable();
+        
+        double phoenixTimeOffset = Timer.getFPGATimestamp() - Utils.getCurrentTimeSeconds();
+        var state = getState();
+        visionEstimator.updateWithTime(state.Timestamp + phoenixTimeOffset, state.RawHeading, state.ModulePositions);
+        estimatedPosePub.set(visionEstimator.getEstimatedPosition());
+    }
+
+    public Pose2d getGlobalPoseEstimate() {
+        return visionEstimator.getEstimatedPosition();
+    }
+
+    public Optional<Pose2d> sampleGlobalPoseEstimateAt(double timestampSeconds) {
+        return visionEstimator.sampleAt(timestampSeconds);
+    }
+
+    public void disturbSimPose() {
+        var disturbance =
+                    new Transform2d(new Translation2d(1.0, 1.0), new Rotation2d(0.17 * 2 * Math.PI));
+        super.resetPose(getState().Pose.plus(disturbance));
+    }
+
+    public void disturbGlobalPoseEstimate() {
+        var disturbance =
+                    new Transform2d(new Translation2d(Math.random(), Math.random()), Rotation2d.kZero);
+        visionEstimator.resetPose(getGlobalPoseEstimate().plus(disturbance));
+    }
+
+    @Override
+    public void resetPose(Pose2d pose) {
+        super.resetPose(pose);
+        visionEstimator.resetPose(pose);
+        // visionEstimator.resetTranslation(pose.getTranslation());
+    }
+
+    @Override
+    public void resetTranslation(Translation2d translation) {
+        super.resetTranslation(translation);
+        visionEstimator.resetTranslation(translation);
+    }
+
+    @Override
+    public void resetRotation(Rotation2d rotation) {
+        super.resetRotation(rotation);
+        visionEstimator.resetRotation(rotation);
+    }
+
+    /**
+     * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
+     * while still accounting for measurement noise.
+     *
+     * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
+     * @param timestampSeconds The timestamp of the vision measurement in seconds.
+     */
+    @Override
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+        visionEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
+    }
+
+    /**
+     * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
+     * while still accounting for measurement noise.
+     * <p>
+     * Note that the vision measurement standard deviations passed into this method
+     * will continue to apply to future measurements until a subsequent call to
+     * {@link #setVisionMeasurementStdDevs(Matrix)} or this method.
+     *
+     * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
+     * @param timestampSeconds The timestamp of the vision measurement in seconds.
+     * @param visionMeasurementStdDevs Standard deviations of the vision pose measurement
+     *     in the form [x, y, theta]ᵀ, with units in meters and radians.
+     */
+    @Override
+    public void addVisionMeasurement(
+        Pose2d visionRobotPoseMeters,
+        double timestampSeconds,
+        Matrix<N3, N1> visionMeasurementStdDevs
+    ) {
+        visionEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     }
 }
