@@ -1,0 +1,35 @@
+{
+ "name":"NewPath",
+ "version":3,
+ "snapshot":{
+  "waypoints":[],
+  "constraints":[],
+  "targetDt":0.05
+ },
+ "params":{
+  "waypoints":[
+    {"x":{"exp":"3.557309865951538 m", "val":3.557309865951538}, "y":{"exp":"4.505291938781738 m", "val":4.505291938781738}, "heading":{"exp":"180 deg", "val":3.141592653589793}, "intervals":1515, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"2.3119394779205322 m", "val":2.311939477920532}, "y":{"exp":"5.246725082397461 m", "val":5.246725082397461}, "heading":{"exp":"-0.7853977376765858 rad", "val":-0.7853977376765858}, "intervals":1428, "split":false, "fixTranslation":false, "fixHeading":false, "overrideIntervals":false},
+    {"x":{"exp":"1 m", "val":1.0}, "y":{"exp":"5.212704658508301 m", "val":5.212704658508301}, "heading":{"exp":"90 deg", "val":1.5707963267948966}, "intervals":708, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"1.0666277408599854 m", "val":1.0666277408599854}, "y":{"exp":"4.5347676277160645 m", "val":4.5347676277160645}, "heading":{"exp":"90 deg", "val":1.5707963267948966}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+  "constraints":[
+    {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
+    {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
+    {"from":"first", "to":"last", "data":{"type":"KeepInRectangle", "props":{"x":{"exp":"0 m", "val":0.0}, "y":{"exp":"0 m", "val":0.0}, "w":{"exp":"16.541 m", "val":16.541}, "h":{"exp":"8.0692 m", "val":8.0692}}}, "enabled":false}],
+  "targetDt":{
+   "exp":"0.05 s",
+   "val":0.05
+  }
+ },
+ "trajectory":{
+  "config":null,
+  "sampleType":null,
+  "waypoints":[],
+  "samples":[],
+  "splits":[]
+ },
+ "events":[
+   {"name":"Marker", "from":{"target":1, "targetTimestamp":null, "offset":{"exp":"4 s", "val":4.0}}, "event":{"type":"sequential", "data":{"commands":[
+       {"type":"named", "data":{"name":"Shoot"}}]}}},
+   {"name":"Marker", "from":{"target":3, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"Climb"}}}]
+}
