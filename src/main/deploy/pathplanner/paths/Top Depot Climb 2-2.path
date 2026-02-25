@@ -3,32 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6024111111111115,
-        "y": 6.091077777777778
+        "x": 1.595,
+        "y": 5.878209586869304
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0502293125759725,
-        "y": 5.993713228439907
-      },
-      "isLocked": true,
-      "linkedName": "Top Starting Point"
-    },
-    {
-      "anchor": {
-        "x": 2.0433000000000003,
-        "y": 5.516155555555556
-      },
-      "prevControl": {
-        "x": 2.4339260534307448,
-        "y": 5.6955380493993815
-      },
-      "nextControl": {
-        "x": 1.7900475539524674,
-        "y": 5.399857487505392
+        "x": 1.8445627223819498,
+        "y": 5.863429614023934
       },
       "isLocked": false,
-      "linkedName": "Top Shoot Climb Midpoint"
+      "linkedName": "Top Depot Climb Midpoint"
     },
     {
       "anchor": {
@@ -37,11 +21,11 @@
       },
       "prevControl": {
         "x": 1.063,
-        "y": 5.076
+        "y": 5.526
       },
       "nextControl": {
         "x": 1.063,
-        "y": 4.573685592714785
+        "y": 4.415021571829878
       },
       "isLocked": true,
       "linkedName": "Top Climb Offset"
@@ -53,7 +37,7 @@
       },
       "prevControl": {
         "x": 1.063,
-        "y": 4.829685055899689
+        "y": 4.92344010870639
       },
       "nextControl": null,
       "isLocked": true,
@@ -62,20 +46,20 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 2.0,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 2.0035971223021583,
-      "maxWaypointRelativePos": 3.0,
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 0.0,
       "constraints": {
-        "maxVelocity": 1.0,
+        "maxVelocity": 1.5,
         "maxAcceleration": 3.0,
-        "maxAngularVelocity": 0.1,
-        "maxAngularAcceleration": 0.1,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }
@@ -84,19 +68,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Shoot",
-      "waypointRelativePos": 1.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Shoot"
-        }
-      }
-    },
-    {
       "name": "Climber Up",
-      "waypointRelativePos": 1.1,
+      "waypointRelativePos": 0.10000000000000009,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -107,7 +80,7 @@
     },
     {
       "name": "Climber Down",
-      "waypointRelativePos": 3.0,
+      "waypointRelativePos": 2.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -130,10 +103,10 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Top Shoot Climb",
+  "folder": "Top Depot Climb",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 140.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
