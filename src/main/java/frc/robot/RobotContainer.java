@@ -116,3 +116,8 @@ public class RobotContainer {
     }
 
 }
+/* TODO:
+ * Shoot command intake agitation
+ * Four Bar torque control
+ * Shooter torque control
+ */

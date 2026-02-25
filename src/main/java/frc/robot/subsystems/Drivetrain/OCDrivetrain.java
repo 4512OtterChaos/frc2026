@@ -82,13 +82,24 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
     );
 
     private final StructPublisher<Pose2d> estimatedPosePub = NetworkTableInstance.getDefault().getStructTopic("Swerve/Estimated Pose", Pose2d.struct).publish();
-
     
     public OCDrivetrain(
         SwerveDrivetrainConstants drivetrainConstants,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, modules);
+    }
+
+    @Override
+    public void periodic() {
+        // super.periodic();
+
+        changeTunable();
+        
+        double phoenixTimeOffset = Timer.getFPGATimestamp() - Utils.getCurrentTimeSeconds();
+        var state = getState();
+        visionEstimator.updateWithTime(state.Timestamp + phoenixTimeOffset, state.RawHeading, state.ModulePositions);
+        estimatedPosePub.set(visionEstimator.getEstimatedPosition());
     }
 
     public double getDriveSpeed(){
@@ -99,9 +110,27 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
         return turnSpeedRatio.get() * MaxAngularRate;
     }
 
+    public Pose2d getGlobalPoseEstimate() {
+        return visionEstimator.getEstimatedPosition();
+    }
+
+    public Optional<Pose2d> sampleGlobalPoseEstimateAt(double timestampSeconds) {
+        return visionEstimator.sampleAt(timestampSeconds);
+    }
+
     public Command drive(OCXboxController controller){
         return applyRequest(() -> {
             ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate), lastTargetSpeeds, Robot.kDefaultPeriod);
+            lastTargetSpeeds = targetSpeeds;
+            return drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
+                        .withVelocityY(targetSpeeds.vyMetersPerSecond)
+                        .withRotationalRate(targetSpeeds.omegaRadiansPerSecond);
+        });
+    }
+
+    public Command drive(ChassisSpeeds chassisSpeeds){
+        return applyRequest(() -> {
+            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(chassisSpeeds, lastTargetSpeeds, Robot.kDefaultPeriod);
             lastTargetSpeeds = targetSpeeds;
             return drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
                         .withVelocityY(targetSpeeds.vyMetersPerSecond)
@@ -131,47 +160,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
     public Trigger facingHubT() {
         return new Trigger(() -> getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle().getDegrees() == getState().Pose.getRotation().getDegrees())
                                     .debounce(0.25);// TODO: Tune
-    }
-
-    public void changeTunable(){
-        driveSpeedRatio.poll();
-        turnSpeedRatio.poll();
-        linearAccel.poll();
-        linearDecel.poll();
-        angularAccel.poll();
-        angularDecel.poll();
-        
-        int hash = hashCode();
-        
-        //Standard limiter
-        if (driveSpeedRatio.hasChanged(hash) || turnSpeedRatio.hasChanged(hash) || linearAccel.hasChanged(hash) || linearDecel.hasChanged(hash) || angularAccel.hasChanged(hash) || angularDecel.hasChanged(hash)) {
-            kStandardLimiter.linearTopSpeed = MetersPerSecond.of(getDriveSpeed());
-            kStandardLimiter.angularTopSpeed = RadiansPerSecond.of(getTurnSpeed());
-            kStandardLimiter.linearAcceleration = MetersPerSecondPerSecond.of(linearAccel.get());
-            kStandardLimiter.linearDeceleration = MetersPerSecondPerSecond.of(linearDecel.get());
-            kStandardLimiter.angularAcceleration = RadiansPerSecondPerSecond.of(angularAccel.get());
-            kStandardLimiter.angularDeceleration = RadiansPerSecondPerSecond.of(angularDecel.get());
-        }
-    }
-
-    @Override
-    public void periodic() {
-        // super.periodic();
-
-        changeTunable();
-        
-        double phoenixTimeOffset = Timer.getFPGATimestamp() - Utils.getCurrentTimeSeconds();
-        var state = getState();
-        visionEstimator.updateWithTime(state.Timestamp + phoenixTimeOffset, state.RawHeading, state.ModulePositions);
-        estimatedPosePub.set(visionEstimator.getEstimatedPosition());
-    }
-
-    public Pose2d getGlobalPoseEstimate() {
-        return visionEstimator.getEstimatedPosition();
-    }
-
-    public Optional<Pose2d> sampleGlobalPoseEstimateAt(double timestampSeconds) {
-        return visionEstimator.sampleAt(timestampSeconds);
     }
 
     public void disturbSimPose() {
@@ -237,5 +225,26 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
         Matrix<N3, N1> visionMeasurementStdDevs
     ) {
         visionEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    }
+
+    public void changeTunable(){
+        driveSpeedRatio.poll();
+        turnSpeedRatio.poll();
+        linearAccel.poll();
+        linearDecel.poll();
+        angularAccel.poll();
+        angularDecel.poll();
+        
+        int hash = hashCode();
+        
+        //Standard limiter
+        if (driveSpeedRatio.hasChanged(hash) || turnSpeedRatio.hasChanged(hash) || linearAccel.hasChanged(hash) || linearDecel.hasChanged(hash) || angularAccel.hasChanged(hash) || angularDecel.hasChanged(hash)) {
+            kStandardLimiter.linearTopSpeed = MetersPerSecond.of(getDriveSpeed());
+            kStandardLimiter.angularTopSpeed = RadiansPerSecond.of(getTurnSpeed());
+            kStandardLimiter.linearAcceleration = MetersPerSecondPerSecond.of(linearAccel.get());
+            kStandardLimiter.linearDeceleration = MetersPerSecondPerSecond.of(linearDecel.get());
+            kStandardLimiter.angularAcceleration = RadiansPerSecondPerSecond.of(angularAccel.get());
+            kStandardLimiter.angularDeceleration = RadiansPerSecondPerSecond.of(angularDecel.get());
+        }
     }
 }
