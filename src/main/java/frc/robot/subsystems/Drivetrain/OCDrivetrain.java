@@ -1,27 +1,37 @@
 package frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.util.RobotConstants.kPigeonID;
+import static frc.robot.subsystems.Drivetrain.TunerConstants.*;
 
 import java.util.Optional;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -31,6 +41,8 @@ import frc.robot.util.OCXboxController;
 import frc.robot.util.TunableNumber;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain{
+
+    private final TalonFX driveMotor;
     private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // desired top speed
     private static double MaxAngularRate = RotationsPerSecond.of(2).in(RadiansPerSecond); // max angular velocity
 
@@ -60,6 +72,13 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
         RadiansPerSecondPerSecond.of(angularAccel.get()),
         RadiansPerSecondPerSecond.of(angularAccel.get())
     );
+
+    // private final SwerveModule[] swerveMods = {
+    //     new SwerveModule(SwerveConstants.Module.FL),
+    //     new SwerveModule(SwerveConstants.Module.FR),
+    //     new SwerveModule(SwerveConstants.Module.BL),
+    //     new SwerveModule(SwerveConstants.Module.BR)
+    // };
     
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -82,6 +101,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
     );
 
     private final StructPublisher<Pose2d> estimatedPosePub = NetworkTableInstance.getDefault().getStructTopic("Swerve/Estimated Pose", Pose2d.struct).publish();
+
+    private final Pigeon2 gyro = new Pigeon2(kPigeonID);
     
     public OCDrivetrain(
         SwerveDrivetrainConstants drivetrainConstants,
@@ -203,6 +224,87 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
     @Override
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
         visionEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
+    }
+
+    public void resetOdometry(Pose2d pose){
+        visionEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
+    }
+
+    public SwerveModulePosition getPosition() {
+        return new SwerveModulePosition(
+            Utils.positionToMeters(driveMotor.getSelectedSensorPosition(), kDriveGearRatio, kWheelCircumference),
+            getAbsoluteHeading()
+        );
+    }
+
+    public SwerveModulePosition[] getModulePositions() {
+    return new SwerveModulePosition[] {
+        new SwerveModulePosition(
+            FrontLeft.getPosition(),     // meters
+            Rotation2d.fromRadians(FrontLeft.getPosition())
+        ),
+
+        new SwerveModulePosition(
+            FrontRight.getPosition(),
+            Rotation2d.fromRadians(FrontRight.getPosition())
+        ),
+
+        new SwerveModulePosition(
+            BackLeft.getPosition(),
+            Rotation2d.fromRadians(BackLeft.getPosition())
+        ),
+
+        new SwerveModulePosition(
+            BackLeft.,
+            Rotation2d.fromRadians(BackRight.getPosition())
+        )
+    };
+}
+
+    private Command resetInitialOdomC() {
+        return runOnce(()->{
+            Rotation2d initialRot = new Rotation2d();
+            if(driveMirror()){
+                initialRot = new Rotation2d(Math.PI);
+            }
+            resetOdometry(
+                new Pose2d(
+                    getState().Pose.getTranslation(),
+                    initialRot
+                )
+            );
+        });
+    }
+
+    // public SwerveModuleState[] getModuleStates(){
+    //     return new SwerveModuleState[]{
+    //         swerveMods[0].getAbsoluteState(),
+    //         swerveMods[1].getAbsoluteState(),
+    //         swerveMods[2].getAbsoluteState(),
+    //         swerveMods[3].getAbsoluteState()
+    //     };
+    // }
+    // public SwerveModulePosition[] getModulePositions(){
+    //     return new SwerveModulePosition[]{
+    //         swerveMods[0].getPosition(),
+    //         swerveMods[1].getPosition(),
+    //         swerveMods[2].getPosition(),
+    //         swerveMods[3].getPosition()
+    //     };
+    // }
+
+    public Rotation2d getGyroYaw(){
+        return gyro.getRotation2d();
+    }
+    public Rotation2d getGyroPitch(){
+        return Rotation2d.fromDegrees(gyro.getRoll().getValueAsDouble());
+    }
+    public Rotation2d getGyroRoll(){
+        return Rotation2d.fromDegrees(gyro.getPitch().getValueAsDouble());
+    }
+
+    public boolean driveMirror(){
+        return DriverStation.getAlliance().orElse(Alliance.Blue)==Alliance.Red;
     }
 
     /**
