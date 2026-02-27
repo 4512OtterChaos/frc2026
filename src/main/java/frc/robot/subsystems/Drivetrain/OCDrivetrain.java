@@ -42,7 +42,6 @@ import frc.robot.util.TunableNumber;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain{
 
-    private final TalonFX driveMotor;
     private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // desired top speed
     private static double MaxAngularRate = RotationsPerSecond.of(2).in(RadiansPerSecond); // max angular velocity
 
@@ -227,41 +226,41 @@ public class OCDrivetrain extends CommandSwerveDrivetrain{
     }
 
     public void resetOdometry(Pose2d pose){
-        visionEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
+        visionEstimator.resetPosition(getGyroYaw(), getState().ModulePositions, pose);
     }
 
-    public SwerveModulePosition getPosition() {
-        return new SwerveModulePosition(
-            Utils.positionToMeters(driveMotor.getSelectedSensorPosition(), kDriveGearRatio, kWheelCircumference),
-            getAbsoluteHeading()
-        );
-    }
+//     public SwerveModulePosition getPosition() {
+//         return new SwerveModulePosition(
+//             Utils.positionToMeters(driveMotor.position(), kDriveGearRatio, kWheelCircumference),
+//             getAbsoluteHeading()
+//         );
+//     }
+    
+//     public SwerveModulePosition[] getModulePositions() {
+//     return new SwerveModulePosition[] {
+//         new SwerveModulePosition(
+//             FrontLeft.getPosition(),     // meters
+//             Rotation2d.fromRadians(FrontLeft.getPosition())
+//         ),
 
-    public SwerveModulePosition[] getModulePositions() {
-    return new SwerveModulePosition[] {
-        new SwerveModulePosition(
-            FrontLeft.getPosition(),     // meters
-            Rotation2d.fromRadians(FrontLeft.getPosition())
-        ),
+//         new SwerveModulePosition(
+//             FrontRight.getPosition(),
+//             Rotation2d.fromRadians(FrontRight.getPosition())
+//         ),
 
-        new SwerveModulePosition(
-            FrontRight.getPosition(),
-            Rotation2d.fromRadians(FrontRight.getPosition())
-        ),
+//         new SwerveModulePosition(
+//             BackLeft.getPosition(),
+//             Rotation2d.fromRadians(BackLeft.getPosition())
+//         ),
 
-        new SwerveModulePosition(
-            BackLeft.getPosition(),
-            Rotation2d.fromRadians(BackLeft.getPosition())
-        ),
+//         new SwerveModulePosition(
+//             BackLeft.getPosition,
+//             Rotation2d.fromRadians(BackRight.getPosition())
+//         )
+//     };
+// }
 
-        new SwerveModulePosition(
-            BackLeft.,
-            Rotation2d.fromRadians(BackRight.getPosition())
-        )
-    };
-}
-
-    private Command resetInitialOdomC() {
+    public Command resetInitialOdomC() {
         return runOnce(()->{
             Rotation2d initialRot = new Rotation2d();
             if(driveMirror()){

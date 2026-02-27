@@ -18,7 +18,7 @@ import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Flywheel;
 import frc.robot.subsystems.Shooter.Hood;
 import frc.robot.subsystems.Shooter.Shotmap;
-
+import frc.robot.util.FieldUtil;
 
 public class Superstructure {
     private OCDrivetrain drivetrain;
@@ -28,9 +28,10 @@ public class Superstructure {
     private Feeder feeder;
     private Flywheel flywheel;
     private Hood hood;
-    private Climber climber; 
+    private Climber climber;
 
-    public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Flywheel flywheel, Hood hood, Climber climber){
+    public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder,
+            Flywheel flywheel, Hood hood, Climber climber) {
         this.drivetrain = drivetrain;
         this.intake = intake;
         this.fourBar = fourBar;
@@ -41,40 +42,32 @@ public class Superstructure {
         this.climber = climber;
     }
 
-    public Command passiveSpindexC(){
+    public Command passiveSpindexC() {
         return either(
-            spindexer.setVoltageC(IndexerConstants.spindexSlowVoltage.get()),
-            spindexer.setVoltageC(0),
-            feeder.topSensorT().negate()
-        ).withName("Index");
+                spindexer.setVoltageC(IndexerConstants.spindexSlowVoltage.get()),
+                spindexer.setVoltageC(0),
+                feeder.topSensorT().negate()).withName("Index");
     }
 
     public Command shootShotMapC(Supplier<Distance> distanceSup) {
-        Command liveSetpoints = run(
-            () -> {
-                var distance = distanceSup.get();         
-                var state = Shotmap.getState(distance);   
+        return run(
+                () -> {
+                    var distance = distanceSup.get();
+                    var state = Shotmap.getState(distance);
 
-                hood.setAngle(state.getAngle());   
-                flywheel.setVelocity(state.getVelocity());
+                    hood.setAngle(state.getAngle());
+                    flywheel.setVelocity(state.getVelocity());
 
-                SmartDashboard.putNumber("Shot/Distance", distance.in(Meters));
-                SmartDashboard.putNumber("Shot/CMD Angle", state.getAngle().in(Degrees));
-                SmartDashboard.putNumber("Shot/CMD RPM", state.getVelocity().in(RPM));
-            }, 
-            hood, flywheel
-        );
-
-        return parallel(
-            liveSetpoints, 
-            sequence(
-                waitUntil(() -> drivetrain.facingHubT().getAsBoolean() && flywheel.upToSpeed()),
-                feeder.feedC(),
-                spindexer.spindexC()
-            )
-        ).withName("ShootShotMapLive");
+                    SmartDashboard.putNumber("Shot/Distance", distance.in(Meters));
+                    SmartDashboard.putNumber("Shot/Angle", state.getAngle().in(Degrees));
+                    SmartDashboard.putNumber("Shot/RPM", state.getVelocity().in(RPM));
+                },
+                hood, flywheel);
     }
 
-
-    
+    public Command shootShotMapC() {
+        Supplier<Distance> distanceSup = () -> Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate(),
+                FieldUtil.kHubTrl);
+        return shootShotMapC(distanceSup);
+    }
 }

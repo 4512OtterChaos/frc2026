@@ -9,10 +9,15 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.Auto.AutoOptions;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SuperstructureViz;
 import frc.robot.subsystems.Climber.Climber;
@@ -48,9 +53,12 @@ public class RobotContainer {
 
     private final Vision vision = new Vision();
 
+    private final PathPlannerAuto auto = new PathPlannerAuto(getAutonomousCommand());
+
     private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, flywheel, hood, climber);
     private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, fourBar, spindexer, feeder, flywheel, hood, climber);
 
+    private final AutoOptions autos = new AutoOptions(drivetrain, intake, hood, flywheel, spindexer, fourBar, climber, feeder, superstructure);
     public RobotContainer() {
         configureDefaultCommands();
         configureBindings();
@@ -81,9 +89,14 @@ public class RobotContainer {
         driver.y().whileTrue(fourBar.setMaxAngleC());
         driver.povUp().whileTrue(climber.setMaxHeightC());
         driver.povDown().whileTrue(climber.setMinHeightC());
-
         drivetrain.registerTelemetry(logger::telemeterize);
-    
+    }
+
+    private void autoBinds() {
+        new EventTrigger("Clumber Up").whileTrue(auto);
+        new EventTrigger("Climber Down").whileTrue(auto);
+        new EventTrigger("Shoot").whileTrue(superstructure.shootShotMapC());
+        new EventTrigger("Intake").whileTrue(auto);
     }
 
     public Command getAutonomousCommand() {
@@ -94,7 +107,9 @@ public class RobotContainer {
             // facing away from our alliance station wall (0 deg).
             drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
             // Finally idle for the rest of auton
-            drivetrain.applyRequest(() -> idle)
+            drivetrain.applyRequest(() -> idle),
+
+            run(()-> CommandScheduler.getInstance().schedule(autos.getAuto()))
         );
     }
 
@@ -113,6 +128,15 @@ public class RobotContainer {
 
     public void simulationPeriodic() {
         vision.simulationPeriodic(drivetrain.getState().Pose);
+    }
+
+    public void autonomousInit() {
+        CommandScheduler.getInstance().schedule(autos.getAuto());
+        autos.log();
+    }
+
+    public void robotInit() {
+        autonomousInit();
     }
 
 }
