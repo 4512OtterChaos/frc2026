@@ -1,12 +1,18 @@
 package frc.robot.Auto;
 
+import static edu.wpi.first.wpilibj2.command.Commands.none;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static frc.robot.util.RobotConstants.*;
+
+import java.security.PrivateKey;
+import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.RobotConfig;
 
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoRoutine;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -42,11 +48,11 @@ public class AutoOptions {
     private OCXboxController driver;
     private Superstructure superstructure;
 
-    
     private boolean autosSetup = false;
     RobotConfig robotConfig = new RobotConfig(kRobotWeight, kMOI, kModuleConfig, FL, FR, BL, BR);
 
-    public AutoOptions(OCDrivetrain drivetrain, Intake intake, Hood hood, Flywheel flywheel, Spindexer spindexer, FourBar fourBar, Climber climber, Feeder feeder, Superstructure superstructure) {
+    public AutoOptions(OCDrivetrain drivetrain, Intake intake, Hood hood, Flywheel flywheel, Spindexer spindexer,
+            FourBar fourBar, Climber climber, Feeder feeder, Superstructure superstructure) {
         this.drivetrain = drivetrain;
         this.intake = intake;
         this.hood = hood;
@@ -57,77 +63,77 @@ public class AutoOptions {
         this.climber = climber;
         this.superstructure = superstructure;
 
-        SmartDashboard.putData(autoOptions);
-
         AutoBuilder.configure(
-            ()-> drivetrain.getGlobalPoseEstimate(), 
-            (pose)-> drivetrain.resetPose(pose), 
-            ()-> drivetrain.getState().Speeds, 
-            (chassisSpeeds)-> drivetrain.drive(chassisSpeeds), 
-            AutoConstants.kPathConfig, 
-            robotConfig,
-            ()-> drivetrain.driveMirror(),
-            drivetrain, intake, hood, flywheel, spindexer, fourBar, feeder, climber
-        );
+                () -> drivetrain.getGlobalPoseEstimate(),
+                (pose) -> drivetrain.resetPose(pose),
+                () -> drivetrain.getState().Speeds,
+                (chassisSpeeds) -> drivetrain.drive(chassisSpeeds),
+                AutoConstants.kPathConfig,
+                robotConfig,
+                () -> drivetrain.driveMirror(),
+                drivetrain, intake, hood, flywheel, spindexer, fourBar, feeder, climber);
 
         addAutoMethods();
-    }   
-
-    public Command shootC() {
-        return Commands.parallel(superstructure.shootShotMapC(()-> Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate(), FieldUtil.kHubTrl)), drivetrain.driveFacingHub(driver));
     }
 
-    private void addAutoMethods(){
+    public Command shootC() {
+        return Commands.parallel(
+                superstructure.shootShotMapC(
+                        () -> Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate(), FieldUtil.kHubTrl)),
+                drivetrain.driveFacingHub(driver));
+    }
+
+    private void addAutoMethods() {
         NamedCommands.registerCommand("Intake", intake.setVoltageInC());
         NamedCommands.registerCommand("Shoot", shootC());
     }
 
     public void periodic() {
-        if (!autosSetup && !DriverStation.getAlliance().isEmpty()){
-            autoOptions.setDefaultOption("none", resetInitialOdomC());
+        if (!autosSetup && !DriverStation.getAlliance().isEmpty()) {
+            autoOptions.setDefaultOption("none", drivetrain.resetInitialOdomC());
             addTopShootClimbOption();
             addBottomShootClimbOption();
-            addTopDepoClimbOption();
+            addTopDepotClimbOption();
+            log();
             autosSetup = true;
         }
     }
 
-    public void addTopShootClimbOption(){
-        autoOptions.addOption("Shoot",
-            AutoBuilder.buildAuto("Shoot")
-        );
-        autoOptions.addOption("ClimberUp",
-            AutoBuilder.buildAuto("ClimberUp")
-        );
-        autoOptions.addOption("ClimberDown",
-            AutoBuilder.buildAuto("ClimberDown")
-        );
+    public void addTopShootClimbOption() {
+        autoOptions.addOption("1 - Shoot",
+                AutoBuilder.buildAuto("Shoot"));
+        autoOptions.addOption("1 - ClimberUp",
+                AutoBuilder.buildAuto("ClimberUp"));
+        autoOptions.addOption("1 - ClimberDown",
+                AutoBuilder.buildAuto("ClimberDown"));
+        // autoChooser.addCmd("Shoot or Top Depot Climb??????", null)
     }
-    
-    public void addBottomShootClimbOption(){
-        autoOptions.addOption("ClimberUp",
-            AutoBuilder.buildAuto("ClimberUp")
-        );
-        autoOptions.addOption("ClimberDown",
-            AutoBuilder.buildAuto("ClimberDown")
-        );
-        autoOptions.addOption("Shoot",
-            AutoBuilder.buildAuto("Shoot")
-        );
+
+    public void addBottomShootClimbOption() {
+        autoOptions.addOption("2 - ClimberUp",
+                AutoBuilder.buildAuto("ClimberUp"));
+        autoOptions.addOption("2 - ClimberDown",
+                AutoBuilder.buildAuto("ClimberDown"));
+        autoOptions.addOption("2 - Shoot",
+                AutoBuilder.buildAuto("Shoot"));
     }
-    
-    public void addTopDepotClimbOption(){
-        autoOptions.addOption("Intake",
-            AutoBuilder.buildAuto("Intake")
-        );
-        autoOptions.addOption("Shoot",
-            AutoBuilder.buildAuto("Shoot")
-        );
-        autoOptions.addOption("ClimberUp",
-            AutoBuilder.buildAuto("ClimberUp")
-        );
-        autoOptions.addOption("ClimberDown",
-            AutoBuilder.buildAuto("ClimberDown")
-        );
+
+    public void addTopDepotClimbOption() {
+        autoOptions.addOption("3 - Intake",
+                AutoBuilder.buildAuto("Intake"));
+        autoOptions.addOption("3 - Shoot",
+                AutoBuilder.buildAuto("Shoot"));
+        autoOptions.addOption("3 - ClimberUp",
+                AutoBuilder.buildAuto("ClimberUp"));
+        autoOptions.addOption("3 - ClimberDown",
+                AutoBuilder.buildAuto("ClimberDown"));
+    }
+
+    public Command getAuto() {
+        return Optional.ofNullable(autoOptions.getSelected()).orElse(none());
+    }
+
+    public void log() {
+        SmartDashboard.putData("Auto Chooser", autoOptions);
     }
 }

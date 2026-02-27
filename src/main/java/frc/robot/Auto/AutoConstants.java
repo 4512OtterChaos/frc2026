@@ -32,15 +32,16 @@ public class AutoConstants {
 
     // constraints for the theta controller on velocity (omega) and acceleration (alpha)
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
-        Units.rotationsToRadians(1.5),
-        Units.rotationsToRadians(3)
+        Units.rotationsToRadians(1.5), //   TODO: Tune
+        Units.rotationsToRadians(3) // TODO: Tune
     );
+
     public static final double kThetaPositionTolerance = Units.degreesToRadians(3.5);
     public static final double kThetaVelocityTolerance = Units.degreesToRadians(10);
 
     // The max speed used here is for ensuring rotating while translating doesnt command more speed than is possible
     public static final PPHolonomicDriveController kPathConfig = new PPHolonomicDriveController( //TODO: tune later >:(
-        new PIDConstants(4, 0, 0),
+        new PIDConstants(7, 0, 0),
         new PIDConstants(9, 0, 0)
     );
 
