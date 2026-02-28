@@ -19,8 +19,8 @@ public class Robot extends TimedRobot {
 
     /* log and replay timestamp and joystick data */
     private final HootAutoReplay timeAndJoystickReplay = new HootAutoReplay()
-        .withTimestampReplay()
-        .withJoystickReplay();
+            .withTimestampReplay()
+            .withJoystickReplay();
 
     public Robot() {
         robotContainer = new RobotContainer();
@@ -31,38 +31,41 @@ public class Robot extends TimedRobot {
         robotContainer.periodic();
 
         timeAndJoystickReplay.update();
-        CommandScheduler.getInstance().run(); 
+        CommandScheduler.getInstance().run();
     }
 
     @Override
     public void robotInit() {
-        robotContainer.robotInit();
+
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+    }
 
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+    }
 
     @Override
-    public void disabledExit() {}
+    public void disabledExit() {
+    }
 
     @Override
     public void autonomousInit() {
         autonomousCommand = robotContainer.getAutonomousCommand();
-        robotContainer.autonomousInit();
-
         if (autonomousCommand != null) {
             CommandScheduler.getInstance().schedule(autonomousCommand);
         }
     }
 
     @Override
-    public void autonomousPeriodic() {}
+    public void autonomousPeriodic() {
+    }
 
     @Override
-    public void autonomousExit() {}
+    public void autonomousExit() {
+    }
 
     @Override
     public void teleopInit() {
@@ -72,10 +75,12 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+    }
 
     @Override
-    public void teleopExit() {}
+    public void teleopExit() {
+    }
 
     @Override
     public void testInit() {
@@ -83,10 +88,12 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+    }
 
     @Override
-    public void testExit() {}
+    public void testExit() {
+    }
 
     @Override
     public void simulationPeriodic() {

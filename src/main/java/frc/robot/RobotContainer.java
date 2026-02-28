@@ -4,15 +4,28 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj2.command.Commands.*;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.run;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.events.EventTrigger;
 
+import choreo.auto.AutoChooser;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -37,7 +50,8 @@ import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
 
 public class RobotContainer {
-    private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
+                                                                                        // speed
 
     private final OCXboxController driver = new OCXboxController(0);
 
@@ -53,18 +67,24 @@ public class RobotContainer {
 
     private final Vision vision = new Vision();
 
-    private final PathPlannerAuto auto = new PathPlannerAuto(getAutonomousCommand());
+    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder,
+            flywheel, hood, climber);
+    private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, fourBar, spindexer,
+            feeder, flywheel, hood, climber);
 
-    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, flywheel, hood, climber);
-    private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, fourBar, spindexer, feeder, flywheel, hood, climber);
+    // private final PathPlannerAuto pathPlannerAuto = new PathPlannerAuto("Top
+    // Depot Climb");
+    private final AutoOptions autoOptions = new AutoOptions(drivetrain, intake, hood, flywheel, spindexer, fourBar,
+            climber, feeder, superstructure);
+    private final AutoChooser autoChooser = new AutoChooser();
 
-    private final AutoOptions autos = new AutoOptions(drivetrain, intake, hood, flywheel, spindexer, fourBar, climber, feeder, superstructure);
     public RobotContainer() {
+        setupPathPlanner();
         configureDefaultCommands();
         configureBindings();
     }
 
-    public void configureDefaultCommands(){
+    public void configureDefaultCommands() {
         drivetrain.setDefaultCommand(drivetrain.drive(driver));
         spindexer.setDefaultCommand(superstructure.passiveSpindexC());
         feeder.setDefaultCommand(feeder.passiveIndexC());
@@ -76,54 +96,62 @@ public class RobotContainer {
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
-            drivetrain.applyRequest(() -> idle).ignoringDisable(true)
-        );
+                drivetrain.applyRequest(() -> idle).ignoringDisable(true));
     }
 
     private void configureBindings() {
 
-        driver.back().onTrue(runOnce(()-> drivetrain.resetRotation(Rotation2d.kZero)));
-        driver.rightTrigger().whileTrue(parallel(superstructure.shootShotMapC(()-> Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate(), FieldUtil.kHubTrl)), drivetrain.driveFacingHub(driver)));
+        driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
+        driver.rightTrigger()
+                .whileTrue(parallel(
+                        superstructure.shootShotMapC(
+                                () -> Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate(), FieldUtil.kHubTrl)),
+                        drivetrain.driveFacingHub(driver)));
         driver.leftTrigger().whileTrue(intake.setVoltageInC());
         driver.a().whileTrue(fourBar.setMinAngleC());
         driver.y().whileTrue(fourBar.setMaxAngleC());
         driver.povUp().whileTrue(climber.setMaxHeightC());
         driver.povDown().whileTrue(climber.setMinHeightC());
+
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        autoBindings();
     }
 
-    private void autoBinds() {
-        new EventTrigger("Clumber Up").whileTrue(auto);
-        new EventTrigger("Climber Down").whileTrue(auto);
+    private void autoBindings() {
+        new EventTrigger("Clumber Up").whileTrue(climber.setMaxHeightC());
+        new EventTrigger("Climber Down").whileTrue(climber.setMinHeightC());
         new EventTrigger("Shoot").whileTrue(superstructure.shootShotMapC());
-        new EventTrigger("Intake").whileTrue(auto);
+        new EventTrigger("Intake").whileTrue(intake.setVoltageInC());
+
+        autoChooser.addCmd(null, null);
     }
 
     public Command getAutonomousCommand() {
         // Simple drive forward auton
         final var idle = new SwerveRequest.Idle();
         return sequence(
-            // Reset our field centric heading to match the robot
-            // facing away from our alliance station wall (0 deg).
-            drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-            // Finally idle for the rest of auton
-            drivetrain.applyRequest(() -> idle),
+                // Reset our field centric heading to match the robot
+                // facing away from our alliance station wall (0 deg).
+                drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
+                // Finally idle for the rest of auton
+                // drivetrain.applyRequest(() -> idle),
 
-            run(()-> CommandScheduler.getInstance().schedule(autos.getAuto()))
-        );
+                run(() -> CommandScheduler.getInstance().schedule(autoOptions.getAuto())),
+
+                drivetrain.getAutonomousCommand("Top Depot Climb"));
     }
 
     public void periodic() {
         vision.periodic();
-        
+
         double phoenixTimeOffset = Timer.getFPGATimestamp() - Utils.getCurrentTimeSeconds();
         var swerveState = drivetrain.getState();
         vision.update(
-            drivetrain.visionEstimator,
-            swerveState.Pose.getRotation(),
-            RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
-            swerveState.Timestamp + phoenixTimeOffset
-        );
+                drivetrain.visionEstimator,
+                swerveState.Pose.getRotation(),
+                RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
+                swerveState.Timestamp + phoenixTimeOffset);
     }
 
     public void simulationPeriodic() {
@@ -131,17 +159,52 @@ public class RobotContainer {
     }
 
     public void autonomousInit() {
-        CommandScheduler.getInstance().schedule(autos.getAuto());
-        autos.log();
+        CommandScheduler.getInstance().schedule(autoOptions.getAuto());
+        autoOptions.log();
     }
 
-    public void robotInit() {
+    public void AutonomousInit() {
         autonomousInit();
     }
 
+    public void setupPathPlanner() {
+        try {
+            RobotConfig config = RobotConfig.fromGUISettings();
+
+            AutoBuilder.configure(
+                    () -> drivetrain.getGlobalPoseEstimate(),
+                    drivetrain::resetOdometry,
+                    () -> drivetrain.getKinematics().toChassisSpeeds(drivetrain.getState().ModuleStates),
+                    (speeds) -> {
+                        drivetrain.setControl(drivetrain.getDriveRequest()
+                                .withVelocityX(speeds.vxMetersPerSecond)
+                                .withVelocityY(speeds.vyMetersPerSecond)
+                                .withRotationalRate(speeds.omegaRadiansPerSecond));
+                    },
+
+                    new PPHolonomicDriveController(
+                            new PIDConstants(5.0, 0.0, 0.0), // Translation
+                            new PIDConstants(5.0, 0.0, 0.0) // Rotation
+                    ),
+                    config,
+
+                    () -> DriverStation.getAlliance()
+                            .map(a -> a == DriverStation.Alliance.Red)
+                            .orElse(false),
+
+                    drivetrain);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        PathfindingCommand.warmupCommand().schedule();
+    }
 }
-/* TODO:
+/*
+ * TODO:
  * Shoot command intake agitation
  * Four Bar torque control
  * Shooter torque control
+ * Fix Autonomous Routine to not crash
  */
