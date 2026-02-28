@@ -15,6 +15,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -125,29 +127,22 @@ public class Feeder extends SubsystemBase{
     }
     
     // Simulation
-    FlywheelSim feederSim = new FlywheelSim(
-        LinearSystemId.createFlywheelSystem(
-            DCMotor.getKrakenX60(2),
-            kFeederMomentOfInertia.in(KilogramSquareMeters),
-            kFeederGearRatio
-        ),
-        DCMotor.getKrakenX60(2),
-        kFeederGearRatio
-        );
+    DCMotorSim model = new DCMotorSim(
+        LinearSystemId.createDCMotorSystem(1.0 / kFeederMotor.withReduction(kFeederGearRatio).KvRadPerSecPerVolt, 0.001),
+        kFeederMotor
+    );
 
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motorSimState = motor.getSimState();
         motorSimState.Orientation =  ChassisReference.Clockwise_Positive;//TODO: Fix, idk what it means
+        motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-        double voltage = motorSimState.getMotorVoltage();
-        feederSim.setInputVoltage(voltage);
-		feederSim.update(0.02);
-
-        double wheelRadPerSec = feederSim.getAngularVelocityRadPerSec();
-        double wheelRps = wheelRadPerSec / (2.0 * Math.PI);
+        model.setInputVoltage(motorSimState.getMotorVoltage());
+		model.update(0.02);
        
-        motorSimState.setRotorVelocity(wheelRps);
-        motorSimState.addRotorPosition(wheelRps * 0.02);
+        motorSimState.setRawRotorPosition(model.getAngularPosition().times(kFeederGearRatio));
+        motorSimState.setRotorVelocity(model.getAngularVelocity().times(kFeederGearRatio));
+        motorSimState.setRotorAcceleration(model.getAngularAcceleration().times(kFeederGearRatio));
     }   
 }

@@ -14,6 +14,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -166,7 +167,7 @@ public class Hood extends SubsystemBase {
 
 
     // Simulation
-    SingleJointedArmSim hoodSim = new SingleJointedArmSim(
+    SingleJointedArmSim model = new SingleJointedArmSim(
         LinearSystemId.createSingleJointedArmSystem(
             DCMotor.getKrakenX60(1),
             kHoodMomentOfInertia.in(KilogramSquareMeters),
@@ -177,34 +178,21 @@ public class Hood extends SubsystemBase {
         kHoodLength.in(Meters),
         kHoodMinAngle.in(Radians),
         kHoodMaxAngle.in(Radians),
-        true,//TODO:Include gravity?
+        true,
         kHoodMinAngle.in(Radians)
-    );
-
-    DCMotorSim motorSim = new DCMotorSim(
-        LinearSystemId.createDCMotorSystem(
-            DCMotor.getKrakenX60(1),
-            kHoodMomentOfInertia.in(KilogramSquareMeters),
-            kHoodGearRatio
-        ),
-        DCMotor.getKrakenX60(1)
     );
 
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motorSimState = motor.getSimState();
-        motorSimState.Orientation =  ChassisReference.Clockwise_Positive;//TODO: Fix, idk what it means
+        motorSimState.Orientation =  ChassisReference.CounterClockwise_Positive;//TODO: Fix, idk what it means
+        motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-        motorSimState.setSupplyVoltage(motor.getSupplyVoltage().getValue());//TODO: Add friction? Also, idk that the voltage should be accessed like this
-        motorSim.setInputVoltage(motorSimState.getMotorVoltage());
-
-        motorSim.update(0.02);
-
-        motorSimState.setRawRotorPosition(motorSim.getAngularPositionRotations() * kHoodGearRatio);
-        motorSimState.setRotorVelocity(motorSim.getAngularVelocityRPM() / 60  * kHoodGearRatio);
         //                                           shaft RPM --> rotations per second --> motor rotations per second
-        double voltage = motorSim.getInputVoltage();
-        hoodSim.setInput(voltage);
-		hoodSim.update(0.02);
+        model.setInput(motorSimState.getMotorVoltage());
+		model.update(0.02);
+
+        motorSimState.setRawRotorPosition(Radians.of(model.getAngleRads()).times(kHoodGearRatio));
+        motorSimState.setRotorVelocity(RadiansPerSecond.of(model.getVelocityRadPerSec()).times(kHoodGearRatio));
     }
 }

@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.robot.util.TunableNumber;
 
@@ -18,8 +19,10 @@ public class IndexerConstants {
     public static final int kSpindexerID = 31;
     public static final int kFeederID = 32;
 
-    public static final int kSpindexerGearRatio = 3;
-    public static final int kFeederGearRatio = 32/12;
+    public static DCMotor kFeederMotor = DCMotor.getKrakenX60(1);
+
+    public static final double kSpindexerGearRatio = 3.0;
+    public static final double kFeederGearRatio = 32.0 / 12.0;
 
     public static final double kSpindexerVoltage = 4;// TODO: Tune
     public static final double kFeederVoltage = 4;// TODO: Tune

@@ -12,10 +12,13 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.util.TunableNumber;
 
 public final class ShooterConstants {
@@ -24,15 +27,17 @@ public final class ShooterConstants {
     public static int kLeftMotorID = 42;
     public static int kRightMotorID = 43;
 
-    public static double kFlywheelGearRatio = 22/20;
-    public static double kHoodGearRatio = (60/18) * (32/20) * (24/20) * (208/18);
+    public static DCMotor kFlywheelMotor = DCMotor.getKrakenX60(2);
+
+    public static double kFlywheelGearRatio = 20.0 / 22.0;
+    public static double kHoodGearRatio = (60.0 / 18.0) * (32.0 / 20.0) * (24.0 / 20.0) * (208.0 / 18.0);
 
     public static final AngularVelocity flywheelIdleVelocity = RPM.of(500); // TODO: Tune
 
     public static final TunableNumber flywheelIdleRPM = new TunableNumber("Shooter/Flywheel/Idle RPM", flywheelIdleVelocity.in(RPM));
 
     public static final Angle kHoodMinAngle = Degrees.of(0);
-    public static final Angle kHoodMaxAngle = Degrees.of(27.5);
+    public static final Angle kHoodMaxAngle = Degrees.of(25);
 
     public static final TunableNumber hoodMinAngle = new TunableNumber("Shooter/Hood/Min Angle", kHoodMinAngle.in(Degrees)); 
     public static final TunableNumber hoodMaxAngle = new TunableNumber("Shooter/Hood/Max Angle", kHoodMaxAngle.in(Degrees));
@@ -52,7 +57,7 @@ public final class ShooterConstants {
     public static final MomentOfInertia kHoodMomentOfInertia = PoundSquareInches.of(168.737616);
     public static final MomentOfInertia kFlywheelMomentOfInertia = PoundSquareInches.of(8); //TODO: Get Real
 
-    public static final Distance kWheelRadius = Inches.of(4);
+    public static final Distance kWheelRadius = Inches.of(1.5);
     public static final Distance kHoodPivotHeight = Inches.of(18.096682);
     public static final Distance kHoodLength = Inches.of(8.187500);
 
@@ -67,7 +72,7 @@ public final class ShooterConstants {
 
         CurrentLimitsConfigs current = kFlywheelConfig.CurrentLimits;
         current.StatorCurrentLimitEnable = true;
-        current.StatorCurrentLimit = 40; 
+        current.StatorCurrentLimit = 60; 
 
         Slot0Configs control = kFlywheelConfig.Slot0;// TODO: Tune PID
         control.kP = 0; 
@@ -75,7 +80,7 @@ public final class ShooterConstants {
         control.kD = 0;
 
         control.kS = 0;
-        control.kV = 0.01;
+        control.kV = 0.1;
         control.kA = 0;
     }
 
@@ -87,6 +92,7 @@ public final class ShooterConstants {
     public static final TunableNumber flywheelkV = new TunableNumber("Shooter/Flywheel/Feed Forward/V", kFlywheelConfig.Slot0.kV);
     public static final TunableNumber flywheelkA = new TunableNumber("Shooter/Flywheel/Feed Forward/A", kFlywheelConfig.Slot0.kA);
 
+    
     
     public static final TalonFXConfiguration kHoodConfig = new TalonFXConfiguration();
     static {

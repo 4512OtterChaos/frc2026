@@ -11,6 +11,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.ChassisReference;
@@ -22,6 +23,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -40,7 +42,7 @@ public class Flywheel extends SubsystemBase {
     private final StatusSignal<Voltage> voltageStatus = leftMotor.getMotorVoltage();
     private final StatusSignal<Current> statorStatus = leftMotor.getStatorCurrent();
 
-    private final VelocityDutyCycle velocityrequest = new VelocityDutyCycle(0);
+    private final VelocityVoltage velocityrequest = new VelocityVoltage(0);
     
 
     public Flywheel() {
@@ -154,40 +156,23 @@ public class Flywheel extends SubsystemBase {
     }
 
     // Simulation
-    FlywheelSim flywheelSim = new FlywheelSim(
-        LinearSystemId.createFlywheelSystem(
-            DCMotor.getKrakenX60(2),
-            kFlywheelMomentOfInertia.in(KilogramSquareMeters),
-            kFlywheelGearRatio
-        ),
-        DCMotor.getKrakenX60(2),
-        kFlywheelGearRatio
-    );
-
-    DCMotorSim motorSim = new DCMotorSim(
-        LinearSystemId.createDCMotorSystem(
-            DCMotor.getKrakenX60(2),
-            kFlywheelMomentOfInertia.in(KilogramSquareMeters),
-            kFlywheelGearRatio
-        ),
-        DCMotor.getKrakenX60(2)
+    DCMotorSim model = new DCMotorSim(
+        LinearSystemId.createDCMotorSystem(1.0 / kFlywheelMotor.withReduction(kFlywheelGearRatio).KvRadPerSecPerVolt, 0.002),
+        kFlywheelMotor
     );
 
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motorSimState = leftMotor.getSimState();
         motorSimState.Orientation =  ChassisReference.Clockwise_Positive;//TODO: Fix, idk what it means
+        motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-        motorSimState.setSupplyVoltage(leftMotor.getSupplyVoltage().getValue());//TODO: Add friction? Also, idk that the voltage should be accessed like this
-        motorSim.setInputVoltage(motorSimState.getMotorVoltage());
-
-        motorSim.update(0.02);
-
-        motorSimState.setRawRotorPosition(motorSim.getAngularPositionRotations() * kFlywheelGearRatio);
-        motorSimState.setRotorVelocity(motorSim.getAngularVelocityRPM() / 60  * kFlywheelGearRatio);
         //                                           shaft RPM --> rotations per second --> motor rotations per second
-        double voltage = motorSim.getInputVoltage();
-        flywheelSim.setInput(voltage);
-		flywheelSim.update(0.02);
+        model.setInput(motorSimState.getMotorVoltage());
+		model.update(0.02);
+
+        motorSimState.setRawRotorPosition(model.getAngularPosition().times(kFlywheelGearRatio));
+        motorSimState.setRotorVelocity(model.getAngularVelocity().times(kFlywheelGearRatio));
+        motorSimState.setRotorAcceleration(model.getAngularAcceleration().times(kFlywheelGearRatio));
     }   
 }
