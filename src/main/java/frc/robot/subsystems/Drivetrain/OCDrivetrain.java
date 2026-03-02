@@ -1,44 +1,46 @@
 package frc.robot.subsystems.Drivetrain;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.util.RobotConstants.kPigeonID;
-import static frc.robot.subsystems.Drivetrain.TunerConstants.*;
-
 import java.util.Optional;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
-import com.ctre.phoenix6.swerve.SwerveModule;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
+import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
+import static frc.robot.util.RobotConstants.kPigeonID;
 import frc.robot.util.TunableNumber;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain {
@@ -65,6 +67,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
             kAngularAccel);
     public static final TunableNumber angularDecel = new TunableNumber("Drivetrain/Angular Deceleration",
             kAngularDecel);
+
+    private final Shotmap shotmap = new Shotmap();
 
     public final SwerveDriveLimiter kStandardLimiter = new SwerveDriveLimiter(
             MetersPerSecond.of(getDriveSpeed()),
@@ -113,14 +117,14 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     @Override
     public void periodic() {
-        // super.periodic();
-
         changeTunable();
 
         double phoenixTimeOffset = Timer.getFPGATimestamp() - Utils.getCurrentTimeSeconds();
         var state = getState();
         visionEstimator.updateWithTime(state.Timestamp + phoenixTimeOffset, state.RawHeading, state.ModulePositions);
         estimatedPosePub.set(visionEstimator.getEstimatedPosition());
+        log();
+
     }
 
     public double getDriveSpeed() {
@@ -165,23 +169,13 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         return applyRequest(() -> face.withTargetDirection(Rotation2d.fromDegrees(angle.in(Degrees))));
     }
 
-    public Command faceHub() {
-        return applyRequest(
-                () -> face.withTargetDirection(getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle())); // TODO:
-                                                                                                                       // (maybe)
-                                                                                                                       // switch
-                                                                                                                       // directions
-    }
-
     public Command driveFacingHub(OCXboxController controller) {
         return applyRequest(() -> {
-            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate),
-                    lastTargetSpeeds, Robot.kDefaultPeriod);
+            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate), lastTargetSpeeds, Robot.kDefaultPeriod);
             lastTargetSpeeds = targetSpeeds;
-
             return face.withVelocityX(targetSpeeds.vxMetersPerSecond)
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle());
+                    .withTargetDirection(shotmap.newTargetAngle(getGlobalPoseEstimate(), targetSpeeds).plus(Rotation2d.k180deg));
         });
     }
 
@@ -370,6 +364,18 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
             kStandardLimiter.linearDeceleration = MetersPerSecondPerSecond.of(linearDecel.get());
             kStandardLimiter.angularAcceleration = RadiansPerSecondPerSecond.of(angularAccel.get());
             kStandardLimiter.angularDeceleration = RadiansPerSecondPerSecond.of(angularDecel.get());
+        }
+    }
+
+    private void log() {
+        var state = getState();
+        if (state != null && state.Pose != null) {
+            Rotation2d targetAngle = shotmap.newTargetAngle(getGlobalPoseEstimate(), lastTargetSpeeds);
+            Rotation2d rawAngle = FieldUtil.kHubTrl.minus(getGlobalPoseEstimate().getTranslation()).getAngle();
+
+            SmartDashboard.putNumber("Shooter/DriveFacingHub/TargetAngleDeg", targetAngle.plus(Rotation2d.k180deg).getDegrees());
+            SmartDashboard.putNumber("Shooter/DriveFacingHub/RotationDeg", getGlobalPoseEstimate().getRotation().getDegrees());
+            SmartDashboard.putNumber("Shooter/DriveFacingHub/RawAngleDeg", rawAngle.plus(Rotation2d.k180deg).getDegrees());
         }
     }
 }

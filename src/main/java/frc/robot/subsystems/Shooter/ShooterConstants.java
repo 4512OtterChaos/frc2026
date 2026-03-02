@@ -1,8 +1,5 @@
 package frc.robot.subsystems.Shooter;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.util.OCUnits.*;
-
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -13,12 +10,15 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import static frc.robot.util.OCUnits.PoundSquareInches;
 import frc.robot.util.TunableNumber;
 
 public final class ShooterConstants {
@@ -51,8 +51,12 @@ public final class ShooterConstants {
     public static final AngularVelocity kVelocityTolerance = RPM.of(200); // TODO: tune tolerance
     public static final Angle kAngleTolerance = Degrees.of(0.5); // TODO: tune tolerance
 
+    public static final double kTargetMultiplier = 1.0; //TODO: tune for sotf if it works
+    public static final TunableNumber targetMultiplier = new TunableNumber("Shooter/DriveFacingHub/Target Tuning", kTargetMultiplier);
+
     public static final TunableNumber RPMTolerance = new TunableNumber("Shooter/Flywheel/RPM Tolerance", kVelocityTolerance.in(RPM));
     public static final TunableNumber degreesTolerance = new TunableNumber("Shooter/Hood/Degrees Tolerance", kAngleTolerance.in(Degrees));
+    
 
     public static final MomentOfInertia kHoodMomentOfInertia = PoundSquareInches.of(168.737616);
     public static final MomentOfInertia kFlywheelMomentOfInertia = PoundSquareInches.of(8); //TODO: Get Real

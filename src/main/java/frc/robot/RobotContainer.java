@@ -4,18 +4,9 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.run;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -23,16 +14,20 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.events.EventTrigger;
 
 import choreo.auto.AutoChooser;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.run;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Auto.AutoOptions;
-import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.SuperstructureViz;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
@@ -45,6 +40,8 @@ import frc.robot.subsystems.Shooter.Flywheel;
 import frc.robot.subsystems.Shooter.Hood;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.Shotmap;
+import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.SuperstructureViz;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
@@ -64,7 +61,7 @@ public class RobotContainer {
     private final Flywheel flywheel = new Flywheel();
     private final Hood hood = new Hood();
     private final Climber climber = new Climber();
-
+    private final Shotmap shotmap = new Shotmap();
     private final Vision vision = new Vision();
 
     private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder,
@@ -143,19 +140,26 @@ public class RobotContainer {
     }
 
     public void periodic() {
+        shotmap.periodic();
         vision.periodic();
 
         double phoenixTimeOffset = Timer.getFPGATimestamp() - Utils.getCurrentTimeSeconds();
         var swerveState = drivetrain.getState();
-        // vision.update(
-        //         drivetrain.visionEstimator,
-        //         swerveState.Pose.getRotation(),
-        //         RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
-        //         swerveState.Timestamp + phoenixTimeOffset);
+        vision.update(
+                drivetrain.visionEstimator,
+                swerveState.Pose.getRotation(),
+                RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
+                swerveState.Timestamp + phoenixTimeOffset);
     }
 
     public void simulationPeriodic() {
         vision.simulationPeriodic(drivetrain.getState().Pose);
+
+        vision.update(
+                drivetrain.visionEstimator,
+                drivetrain.getState().Pose.getRotation(),
+                RadiansPerSecond.of(drivetrain.getState().Speeds.omegaRadiansPerSecond),
+                drivetrain.getState().Timestamp + Timer.getFPGATimestamp() - Utils.getCurrentTimeSeconds());
     }
 
     public void autonomousInit() {
@@ -198,7 +202,7 @@ public class RobotContainer {
             e.printStackTrace();
         }
 
-        PathfindingCommand.warmupCommand().schedule();
+        CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
     }
 }
 /*

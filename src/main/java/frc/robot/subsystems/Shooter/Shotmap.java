@@ -1,119 +1,51 @@
 package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kWheelRadius;
+import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.util.FieldUtil;
 
 public class Shotmap {
+    private static InterpolatingTreeMap<Double, State> map = 
+        new InterpolatingTreeMap<Double, State>(InverseInterpolator.forDouble(), (State startValue, State endValue, double t)-> startValue.interpolate(endValue, t));
+
+    static {
+        addState(Inches.of(100),Degrees.of(5), RPM.of(2800),Seconds.of(1.5));// TODO: use real values
+        addState(Inches.of(200),Degrees.of(10), RPM.of(3500),Seconds.of(2));// TODO: use real values
+        addState(Inches.of(300),Degrees.of(15), RPM.of(4200),Seconds.of(2.5));// TODO: use real values
+    }
+
+    public void periodic() {
+        // changeTunable();
+    }
+
+    private static void addState(Distance distance, Angle angle, AngularVelocity velocity, Time tof){
+        map.put(distance.in(Meters), new State(angle, velocity, tof));
+    }
+
+    public static State getState(Distance distance){
+        return map.get(distance.in(Meters));
+    }
 
     public static Distance distanceToHub(Pose2d robotPose , Translation2d kHubPos) {
         double meters = robotPose.getTranslation().getDistance(kHubPos);
         return Meters.of(meters);
     }   
-    
-    private static InterpolatingTreeMap<Double, State> map = 
-        new InterpolatingTreeMap<Double, State>(InverseInterpolator.forDouble(), (State startValue, State endValue, double t)-> startValue.interpolate(endValue, t));
-
-    static {
-        addState(Inches.of(-100),Degrees.of(5), RPM.of(2800),Seconds.of(1.5), FieldUtil.kHubHeight);// TODO: use real values
-        addState(Inches.of(-200),Degrees.of(10), RPM.of(3500),Seconds.of(2), FieldUtil.kHubHeight);// TODO: use real values
-        addState(Inches.of(-300),Degrees.of(15), RPM.of(4200),Seconds.of(2.5), FieldUtil.kHubHeight);// TODO: use real values
-        addState(Inches.of(100),Degrees.of(5), RPM.of(2800),Seconds.of(1.5), FieldUtil.kHubHeight);// TODO: use real values
-        addState(Inches.of(200),Degrees.of(10), RPM.of(3500),Seconds.of(2), FieldUtil.kHubHeight);// TODO: use real values
-        addState(Inches.of(300),Degrees.of(15), RPM.of(4200),Seconds.of(2.5), FieldUtil.kHubHeight);// TODO: use real values
-    }
-
-    private static Double minKeyMeters = null;
-    private static Double maxKeyMeters = null;
-
-    private static void addState(Distance distance, Angle angle, AngularVelocity velocity, Time tof, Distance height){
-        double key = distance.in(Meters);
-        map.put(key, new State(angle, velocity, tof, height));
-
-        if (minKeyMeters == null || key < minKeyMeters) minKeyMeters = key;
-        if (maxKeyMeters == null || key > maxKeyMeters) maxKeyMeters = key;
-    }
-
-    public static State getState(Distance distance){
-        double key = distance.in(Meters);
-
-        // Clamp into map domain so interpolation always has bounds
-        if (minKeyMeters != null && maxKeyMeters != null) {
-            key = MathUtil.clamp(key, minKeyMeters, maxKeyMeters);
-        }
-
-        return map.get(key);
-    }
-    
-    public static State SOTFLogic(Pose2d robotPose, Translation2d hubPos, Translation2d robotFieldVelocity) {
-            Distance dist = distanceToHub(robotPose, hubPos);
-            State base = getState(dist);
-
-            Translation2d toHub = hubPos.minus(robotPose.getTranslation()).div(dist.in(Meters));
-
-            double vHorizIdeal = getHorizontalVelocity(dist).in(MetersPerSecond);
-            Translation2d vTarget = toHub.times(vHorizIdeal);
-
-            Translation2d vShot = vTarget.minus(robotFieldVelocity);
-            double newHorizSpeed = vShot.getNorm();
-
-            double vTotal = rpmToLinear(base.getVelocity());
-            double vVert = vTotal * Math.sin(base.getAngle().in(Radians));
-            double newPitch = Math.atan2(vVert, newHorizSpeed);
-
-            return new State(
-                Radians.of(newPitch),
-                linearToRPM(Math.hypot(newHorizSpeed, vVert)),
-                base.getTof(),
-                base.getHeight()
-            );
-        }
 
     public static Angle getAngle(Distance distance){
         return getState(distance).getAngle();
-    }
-
-    // public static Angle setAngle(LinearVelocity velocity, Distance distance, Distance height) {
-    //     double value = (velocity.in(MetersPerSecond) * velocity.in(MetersPerSecond)
-    //                 + Math.sqrt(Math.pow(velocity.in(MetersPerSecond), 4) - gravity * (gravity * distance.in(Meters) * distance.in(Meters) + 2 * height.in(Meters) * velocity.in(MetersPerSecond) * velocity.in(MetersPerSecond)))
-    //                 / (gravity * distance.in(Meters))
-    //                 );
-    //         double angle = Math.atan(value);
-    //         return Degrees.of(angle);
-    // }
-
-    public static double rpmToLinear(AngularVelocity rpm) {
-        double wheelRadius = kWheelRadius.in(Meters);
-        return rpm.in(RPM) * 2.0 * Math.PI * wheelRadius / 60.0;
-    }
-
-    public static AngularVelocity linearToRPM(double metersPerSecond) {
-        double wheelRadius = kWheelRadius.in(Meters);
-        double rpm = metersPerSecond * 60.0 / (2.0 * Math.PI * wheelRadius);
-        return RPM.of(rpm);
-    }
-
-    public static LinearVelocity getHorizontalVelocity(Distance distance) {
-        State s = getState(distance);
-        
-
-        double vTotal = rpmToLinear(s.getVelocity());
-        double theta = s.getAngle().in(Radians);
-
-        double vHoriz = vTotal * Math.cos(theta);
-        return MetersPerSecond.of(vHoriz);
     }
 
     public static AngularVelocity getVelocity(Distance distance){
@@ -124,17 +56,35 @@ public class Shotmap {
         return getState(distance).getTof();
     }
 
+        //shoot on da fly 
+        public Rotation2d newTargetAngle(Pose2d robotPose, ChassisSpeeds speed) {
+            Translation2d robotPosition = robotPose.getTranslation();
+            Translation2d fakeTarget = FieldUtil.kHubTrl.minus(robotPosition);
+
+            double distanceMeters = fakeTarget.getNorm();
+
+            Shotmap.State state = Shotmap.getState(Meters.of(distanceMeters));
+            
+            double tof = state.getTof().in(Seconds);
+            Translation2d velocityOffset = new Translation2d(speed.vxMetersPerSecond * tof * targetMultiplier.get(), speed.vyMetersPerSecond * targetMultiplier.get());
+            Translation2d newTargetAngle = fakeTarget.minus(velocityOffset);
+
+            return newTargetAngle.getAngle();
+        }
+
+        // public void changeTunable() {
+        //     targetTuning.poll();
+        // }
+
     public static class State implements Interpolatable<State>{
         private Angle angle; 
         private AngularVelocity velocity; 
         private Time tof;
-        private Distance height;
 
-        public State(Angle angle, AngularVelocity velocity, Time tof, Distance height){
+        State(Angle angle, AngularVelocity velocity, Time tof){
             this.angle = angle;
             this.velocity = velocity;
             this.tof = tof;
-            this.height = height;
         }
 
         public Angle getAngle(){
@@ -149,10 +99,6 @@ public class Shotmap {
             return tof;
         }
 
-        public Distance getHeight() {
-            return height;
-        }
-
         @Override
         public State interpolate(State endValue, double t) {
             if (t <= 0) {
@@ -163,10 +109,10 @@ public class Shotmap {
                 return new State(
                     Degrees.of(MathUtil.interpolate(this.getAngle().in(Degrees), endValue.getAngle().in(Degrees), t)),                
                     RPM.of(MathUtil.interpolate(this.getVelocity().in(RPM), endValue.getVelocity().in(RPM), t)),
-                    Seconds.of(MathUtil.interpolate(this.getTof().in(Seconds), endValue.getTof().in(Seconds), t)),
-                    Meters.of(MathUtil.interpolate(this.getHeight().in(Meters), endValue.getHeight().in(Meters), t))
+                    Seconds.of(MathUtil.interpolate(this.getTof().in(Seconds), endValue.getTof().in(Seconds), t))
                 );
             }
         }
     }
+
 }
