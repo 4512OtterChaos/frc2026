@@ -1,5 +1,8 @@
 package frc.robot.subsystems.Climber;
 
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.Climber.ClimberConstants.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -22,10 +25,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.Climber.ClimberConstants.*;
-
-    
 public class Climber extends SubsystemBase {
     public TalonFX motor = new TalonFX(kMotorID);
 

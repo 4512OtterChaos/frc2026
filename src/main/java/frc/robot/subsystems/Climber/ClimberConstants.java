@@ -1,10 +1,8 @@
 package frc.robot.subsystems.Climber;
 
+import static frc.robot.util.OCUnits.PoundSquareInches;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Rotations;
-import static frc.robot.util.OCUnits.PoundSquareInches;
-
-import frc.robot.util.TunableNumber;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -14,13 +12,15 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
+import frc.robot.util.TunableNumber;
 
 public class ClimberConstants {
     public static final int kMotorID = 51; 
+    public static final double kGearRatio = 27;
+    public static final MomentOfInertia kMomentOfInertia = PoundSquareInches.of(80);//TODO: tune
 
     public static final Angle kMaxAngle = Rotations.of(5); //TODO: tune
     public static final Angle kMinAngle = Rotations.of(0); //TODO: tune
@@ -30,7 +30,6 @@ public class ClimberConstants {
     public static final TunableNumber minAngleRot = new TunableNumber("Climber/Min Angle (Rot)", kMinAngle.in(Rotations));
     public static final TunableNumber angleToleranceRot = new TunableNumber("Climber/Angle Tolerance (Rot)", kAngleTolerance.in(Rotations));
 
-    public static final MomentOfInertia kMomentOfInertia = PoundSquareInches.of(80);//TODO: tune
 
     public static final Distance kMinHeight = Inches.of(22); //TODO: tune
     public static final Distance kMaxHeight = Inches.of(30); //TODO: tune
@@ -39,10 +38,8 @@ public class ClimberConstants {
     public static final TunableNumber minHeightInches = new TunableNumber("Climber/Min Height (Inches)", kMinHeight.in(Inches));
 
     public static final double kDebounceTime = 0.25;
-
     public static final TunableNumber debounceTime = new TunableNumber("Climber/Debounce Time", kDebounceTime);
 
-    public static final double kGearRatio = 27;
     //CLIMBER sim
     public static final double climberWeight = 1; //TODO: find weight
     public static final Distance shaftRad = Inches.of((maxHeightInches.get() - minHeightInches.get()) / maxAngleRot.get() / 2 * Math.PI);

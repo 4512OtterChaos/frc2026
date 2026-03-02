@@ -1,14 +1,14 @@
 package frc.robot.util;
 
-import static frc.robot.util.FieldUtil.*;
-import static frc.robot.util.RobotConstants.driveMotor;
-import static edu.wpi.first.units.Units.*;
-
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.config.ModuleConfig;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;

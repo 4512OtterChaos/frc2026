@@ -1,35 +1,27 @@
 package frc.robot.subsystems.Shooter;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 
 public class Flywheel extends SubsystemBase {
     public TalonFX leftMotor = new TalonFX(kLeftMotorID);
@@ -109,6 +101,14 @@ public class Flywheel extends SubsystemBase {
         return new Trigger(()-> upToSpeed()).debounce(flywheelDebounceTime.get());
     }
 
+    public double wrapAngle(){
+        double angle = getAngle().in(Degrees);
+        angle %= 360;
+        if (angle <= 0) {
+            angle += 360;
+        }
+        return angle;
+    }
 
      public void changeTunable(){
         flywheelIdleRPM.poll();
@@ -132,15 +132,6 @@ public class Flywheel extends SubsystemBase {
             kFlywheelConfig.Slot0.kA = flywheelkA.get(); 
             leftMotor.getConfigurator().apply(kFlywheelConfig.Slot0);
         }
-    }
-
-    public double wrapAngle(){
-        double angle = getAngle().in(Degrees);
-        angle %= 360;
-        if (angle <= 0) {
-            angle += 360;
-        }
-        return angle;
     }
 
     public void log(){

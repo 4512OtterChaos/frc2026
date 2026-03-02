@@ -1,13 +1,13 @@
 package frc.robot.subsystems.Indexer;
 
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.Indexer.IndexerConstants.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.Indexer.IndexerConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;

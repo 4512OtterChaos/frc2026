@@ -2,13 +2,13 @@ package frc.robot.subsystems.Indexer;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Indexer.IndexerConstants.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -17,7 +17,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -25,10 +24,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Feeder extends SubsystemBase{
-    private TalonFX motor = new TalonFX(kFeederID);
+    private final TalonFX motor = new TalonFX(kFeederID);
 
-    private DigitalInput bottomSensor = new DigitalInput(0);
-    private DigitalInput topSensor = new DigitalInput(1);
+    private final DigitalInput bottomSensor = new DigitalInput(0);
+    private final DigitalInput topSensor = new DigitalInput(1);
 
     private final StatusSignal<Angle> positionStatus = motor.getPosition();
     private final StatusSignal<AngularVelocity> velocityStatus = motor.getVelocity();
@@ -80,20 +79,20 @@ public class Feeder extends SubsystemBase{
         return setVoltageC(feederVoltage.get()).withName("Feed");
     }
 
-    public Trigger bottomSensorT(){ // same as topSensorT
-        return new Trigger(()-> bottomSensor.get());
-    }
-
-    public Trigger topSensorT(){ // might change to boolean to make indexC short :)
-        return new Trigger(()-> topSensor.get());
-    }
-
     public Command passiveIndexC(){
         return Commands.either(
             setVoltageC(feedSlowVoltage.get()),
             setVoltageC(0),
             ()-> !topSensorT().getAsBoolean() && bottomSensorT().getAsBoolean()
         ).withName("Passively Index");
+    }
+
+    public Trigger bottomSensorT(){ // same as topSensorT
+        return new Trigger(()-> bottomSensor.get());
+    }
+
+    public Trigger topSensorT(){ // might change to boolean to make indexC short :)
+        return new Trigger(()-> topSensor.get());
     }
 
     public void changeTunable(){

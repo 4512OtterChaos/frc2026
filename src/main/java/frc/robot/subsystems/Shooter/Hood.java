@@ -49,8 +49,6 @@ import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMinAngle;
 import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMomentOfInertia;
 import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMotorID;
 
-
-
 public class Hood extends SubsystemBase {
     public TalonFX motor = new TalonFX(kHoodMotorID);
 

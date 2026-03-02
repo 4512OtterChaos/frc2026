@@ -28,7 +28,7 @@ public class Shotmap {
     }
 
     public void periodic() {
-        // changeTunable();
+        changeTunable();
     }
 
     private static void addState(Distance distance, Angle angle, AngularVelocity velocity, Time tof){
@@ -57,24 +57,24 @@ public class Shotmap {
     }
 
         //shoot on da fly 
-        public Rotation2d newTargetAngle(Pose2d robotPose, ChassisSpeeds speed) {
-            Translation2d robotPosition = robotPose.getTranslation();
-            Translation2d fakeTarget = FieldUtil.kHubTrl.minus(robotPosition);
+    public Rotation2d newTargetAngle(Pose2d robotPose, ChassisSpeeds speed) {
+        Translation2d robotPosition = robotPose.getTranslation();
+        Translation2d fakeTarget = FieldUtil.kHubTrl.minus(robotPosition);
 
-            double distanceMeters = fakeTarget.getNorm();
+        double distanceMeters = fakeTarget.getNorm();
 
-            Shotmap.State state = Shotmap.getState(Meters.of(distanceMeters));
-            
-            double tof = state.getTof().in(Seconds);
-            Translation2d velocityOffset = new Translation2d(speed.vxMetersPerSecond * tof * targetMultiplier.get(), speed.vyMetersPerSecond * targetMultiplier.get());
-            Translation2d newTargetAngle = fakeTarget.minus(velocityOffset);
+        Shotmap.State state = Shotmap.getState(Meters.of(distanceMeters));
+        
+        double tof = state.getTof().in(Seconds);
+        Translation2d velocityOffset = new Translation2d(speed.vxMetersPerSecond * tof * targetMultiplier.get(), speed.vyMetersPerSecond * targetMultiplier.get());
+        Translation2d newTargetAngle = fakeTarget.minus(velocityOffset);
 
-            return newTargetAngle.getAngle();
-        }
+        return newTargetAngle.getAngle();
+    }
 
-        // public void changeTunable() {
-        //     targetTuning.poll();
-        // }
+    public void changeTunable() {
+        targetMultiplier.poll();
+    }
 
     public static class State implements Interpolatable<State>{
         private Angle angle; 

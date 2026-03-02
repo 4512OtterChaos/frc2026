@@ -1,4 +1,5 @@
 package frc.robot.subsystems.Intake;
+
 import static frc.robot.util.OCUnits.*;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Feet;
@@ -24,7 +25,7 @@ public class IntakeConstants {
     public static final int kFourBarMotorID = 22;
 
     public static final double kIntakeGearRatio = 2; 
-    public static final double kFourBarGearRatio = (38/8) * (38/20) * (26/12); 
+    public static final double kFourBarGearRatio = (38.0/8.0) * (38.0/20.0) * (26.0/12.0); 
 
     public static final Distance kFourBarArmLength = Feet.of(2);
 

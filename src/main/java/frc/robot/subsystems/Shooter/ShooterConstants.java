@@ -23,14 +23,14 @@ import frc.robot.util.TunableNumber;
 
 public final class ShooterConstants {
     
-    public static int kHoodMotorID = 41;
-    public static int kLeftMotorID = 42;
-    public static int kRightMotorID = 43;
+    public static final int kHoodMotorID = 41;
+    public static final int kLeftMotorID = 42;
+    public static final int kRightMotorID = 43;
 
-    public static DCMotor kFlywheelMotor = DCMotor.getKrakenX60(2);
+    public static final DCMotor kFlywheelMotor = DCMotor.getKrakenX60(2);
 
-    public static double kFlywheelGearRatio = 20.0 / 22.0;
-    public static double kHoodGearRatio = (60.0 / 18.0) * (32.0 / 20.0) * (24.0 / 20.0) * (208.0 / 18.0);
+    public static final double kFlywheelGearRatio = 20.0 / 22.0;
+    public static final double kHoodGearRatio = (60.0 / 18.0) * (32.0 / 20.0) * (24.0 / 20.0) * (208.0 / 18.0);
 
     public static final AngularVelocity flywheelIdleVelocity = RPM.of(500); // TODO: Tune
 
@@ -51,7 +51,7 @@ public final class ShooterConstants {
     public static final AngularVelocity kVelocityTolerance = RPM.of(200); // TODO: tune tolerance
     public static final Angle kAngleTolerance = Degrees.of(0.5); // TODO: tune tolerance
 
-    public static final double kTargetMultiplier = 1.0; //TODO: tune for sotf if it works
+    public static final double kTargetMultiplier = 0.3; //TODO: tune for sotf if it works
     public static final TunableNumber targetMultiplier = new TunableNumber("Shooter/DriveFacingHub/Target Tuning", kTargetMultiplier);
 
     public static final TunableNumber RPMTolerance = new TunableNumber("Shooter/Flywheel/RPM Tolerance", kVelocityTolerance.in(RPM));

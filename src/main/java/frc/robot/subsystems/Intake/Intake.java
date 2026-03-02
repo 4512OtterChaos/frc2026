@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Intake;
 
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -7,11 +9,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.Intake.IntakeConstants.*;
-
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase{
-    private TalonFX motor = new TalonFX(kIntakeMotorID);
+    private final TalonFX motor = new TalonFX(kIntakeMotorID);
 
     private final StatusSignal<Angle> positionStatus = motor.getPosition();
     private final StatusSignal<AngularVelocity> velocityStatus = motor.getVelocity();
@@ -91,7 +91,6 @@ public class Intake extends SubsystemBase{
         }
         return angle;
     }
-
 
     public void log(){
         SmartDashboard.putNumber("Intake/Roller/Angle Degrees", getAngle().in(Degrees));

@@ -1,5 +1,8 @@
 package frc.robot.subsystems.Drivetrain;
 
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.util.RobotConstants.kPigeonID;
+
 import java.util.Optional;
 
 import com.ctre.phoenix6.Utils;
@@ -21,14 +24,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -40,7 +36,6 @@ import frc.robot.Robot;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
-import static frc.robot.util.RobotConstants.kPigeonID;
 import frc.robot.util.TunableNumber;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain {
@@ -97,6 +92,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     public ChassisSpeeds lastTargetSpeeds = new ChassisSpeeds();
+    private final Pigeon2 gyro = new Pigeon2(kPigeonID);
 
     public final SwerveDrivePoseEstimator visionEstimator = new SwerveDrivePoseEstimator(
             getKinematics(),
@@ -107,7 +103,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     private final StructPublisher<Pose2d> estimatedPosePub = NetworkTableInstance.getDefault()
             .getStructTopic("Swerve/Estimated Pose", Pose2d.struct).publish();
 
-    private final Pigeon2 gyro = new Pigeon2(kPigeonID);
 
     public OCDrivetrain(
             SwerveDrivetrainConstants drivetrainConstants,
@@ -281,23 +276,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
                             initialRot));
         });
     }
-
-    // public SwerveModuleState[] getModuleStates(){
-    // return new SwerveModuleState[]{
-    // swerveMods[0].getAbsoluteState(),
-    // swerveMods[1].getAbsoluteState(),
-    // swerveMods[2].getAbsoluteState(),
-    // swerveMods[3].getAbsoluteState()
-    // };
-    // }
-    // public SwerveModulePosition[] getModulePositions(){
-    // return new SwerveModulePosition[]{
-    // swerveMods[0].getPosition(),
-    // swerveMods[1].getPosition(),
-    // swerveMods[2].getPosition(),
-    // swerveMods[3].getPosition()
-    // };
-    // }
 
     public Command getAutonomousCommand(String pathName) {
         return new PathPlannerAuto(pathName);
