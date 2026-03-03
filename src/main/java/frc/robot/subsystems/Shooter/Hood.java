@@ -23,37 +23,21 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import static frc.robot.subsystems.Shooter.ShooterConstants.degreesTolerance;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodAcceleration;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodCruiseVelocity;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodDebounceTime;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodMaxAngle;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodMinAngle;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkA;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkD;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkG;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkI;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkP;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkS;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkV;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodConfig;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodGearRatio;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodLength;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMaxAngle;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMinAngle;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMomentOfInertia;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMotorID;
+
+import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
 public class Hood extends SubsystemBase {
     public TalonFX motor = new TalonFX(kHoodMotorID);
 
     private Angle targetAngle = Degrees.of(hoodMinAngle.get());
- 
+
     private final StatusSignal<Angle> positionStatus = motor.getPosition();
     private final StatusSignal<AngularVelocity> velocityStatus = motor.getVelocity();
     private final StatusSignal<Voltage> voltageStatus = motor.getMotorVoltage();
@@ -61,81 +45,81 @@ public class Hood extends SubsystemBase {
 
     private final MotionMagicVoltage mmRequest = new MotionMagicVoltage(0).withEnableFOC(false);
 
-    public Hood(){
+    public Hood() {
         motor.getConfigurator().apply(kHoodConfig);
         SmartDashboard.putData("Shooter/Hood/Subsystem", this);
         resetAngle(Degrees.of(hoodMinAngle.get()));
     }
 
     @Override
-    public void periodic(){
+    public void periodic() {
         BaseStatusSignal.refreshAll(
-            positionStatus,
-            velocityStatus,
-            voltageStatus,
-            statorStatus
-        );
+                positionStatus,
+                velocityStatus,
+                voltageStatus,
+                statorStatus);
         changeTunable();
         log();
         motor.setControl(mmRequest.withPosition(targetAngle));
 
-        // if (getAngle().isNear(Degrees.of(targetAngle.in(Degrees)), Degrees.of(4.5))) { //TODO: find a better way to do this
-        //     setVoltage(0);
-        // } 
-        
+        // if (getAngle().isNear(Degrees.of(targetAngle.in(Degrees)), Degrees.of(4.5)))
+        // { //TODO: find a better way to do this
+        // setVoltage(0);
+        // }
+
     }
-    
-    public Angle getAngle(){
+
+    public Angle getAngle() {
         return positionStatus.getValue();
     }
 
-    public Angle getTargetAngle(){
+    public Angle getTargetAngle() {
         return targetAngle;
     }
 
-    public AngularVelocity getAngularVelocity(){
+    public AngularVelocity getAngularVelocity() {
         return velocityStatus.getValue();
     }
 
-    public Voltage getVoltage(){
+    public Voltage getVoltage() {
         return voltageStatus.getValue();
     }
 
-    public Current getCurrent(){
+    public Current getCurrent() {
         return statorStatus.getValue();
     }
 
-    public void resetAngle(Angle angle){
+    public void resetAngle(Angle angle) {
         motor.setPosition(angle);
     }
 
-    public void setVoltage(double voltage){
-        motor.setVoltage(voltage);        
+    public void setVoltage(double voltage) {
+        motor.setVoltage(voltage);
     }
 
-    public void setAngle(Angle angle){
+    public void setAngle(Angle angle) {
         angle = Degrees.of(MathUtil.clamp(angle.in(Degrees), hoodMinAngle.get(), hoodMaxAngle.get()));
         targetAngle = angle;
     }
-    
-    public boolean atAngle(){
+
+    public boolean atAngle() {
         return Math.abs(targetAngle.in(Degrees) - getAngle().in(Degrees)) < degreesTolerance.get();
     }
 
-    public Command setVoltageC(double voltage){
-        return runOnce(()-> setVoltage(voltage)).withName("Set voltage: " + voltage);
+    public Command setVoltageC(double voltage) {
+        return runOnce(() -> setVoltage(voltage)).withName("Set voltage: " + voltage);
     }
 
-    public Command setAngleC(Angle angle){
-        return runOnce(()-> setAngle(angle)).until(atAngleT()).withName("Set angle: " + angle);
+    public Command setAngleC(Angle angle) {
+        return runOnce(() -> setAngle(angle)).until(atAngleT()).withName("Set angle: " + angle);
     }
 
-    public Command setMinAngleC(){
+    public Command setMinAngleC() {
         return setAngleC(Degrees.of(hoodMinAngle.get()));
     }
 
-    public Trigger atAngleT(){
-        return new Trigger(()-> atAngle()).debounce(hoodDebounceTime.get());
+    public Trigger atAngleT() {
+        return new Trigger(() -> atAngle()).debounce(hoodDebounceTime.get());
     }
 
     public void changeTunable() {
@@ -155,7 +139,8 @@ public class Hood extends SubsystemBase {
 
         int hash = hashCode();
 
-        if (hoodkP.hasChanged(hash) || hoodkI.hasChanged(hash) || hoodkD.hasChanged(hash) || hoodkG.hasChanged(hash) || hoodkS.hasChanged(hash) || hoodkV.hasChanged(hash) || hoodkA.hasChanged(hash)) {
+        if (hoodkP.hasChanged(hash) || hoodkI.hasChanged(hash) || hoodkD.hasChanged(hash) || hoodkG.hasChanged(hash)
+                || hoodkS.hasChanged(hash) || hoodkV.hasChanged(hash) || hoodkA.hasChanged(hash)) {
             kHoodConfig.Slot0.kP = hoodkP.get();
             kHoodConfig.Slot0.kI = hoodkI.get();
             kHoodConfig.Slot0.kD = hoodkD.get();
@@ -168,51 +153,61 @@ public class Hood extends SubsystemBase {
 
         if (hoodCruiseVelocity.hasChanged(hash) || hoodAcceleration.hasChanged(hash)) {
             kHoodConfig.MotionMagic.MotionMagicCruiseVelocity = hoodCruiseVelocity.get();
-            kHoodConfig.MotionMagic.MotionMagicAcceleration = hoodAcceleration.get();      
+            kHoodConfig.MotionMagic.MotionMagicAcceleration = hoodAcceleration.get();
             motor.getConfigurator().apply(kHoodConfig.MotionMagic);
         }
 
     }
 
-    public void log(){
+    public void log() {
         SmartDashboard.putNumber("Shooter/Hood/Angle", getAngle().in(Degrees));
         SmartDashboard.putNumber("Shooter/Hood/Target Angle", targetAngle.in(Degrees));
         SmartDashboard.putNumber("Shooter/Hood/RPM", getAngularVelocity().in(RPM));
-        // SmartDashboard.putNumber("Shooter/Hood/Wheel Radians", getAngularVelocity().in(RadiansPerSecond));
+        // SmartDashboard.putNumber("Shooter/Hood/Wheel Radians",
+        // getAngularVelocity().in(RadiansPerSecond));
         SmartDashboard.putNumber("Shooter/Hood/Voltage", getVoltage().in(Volts));
         SmartDashboard.putNumber("Shooter/Hood/Current", getCurrent().in(Amps));
         SmartDashboard.putBoolean("Shooter/Hood/At Angle", atAngleT().getAsBoolean());
         SmartDashboard.putNumber("Shooter/Hood/Angle Tolerance", degreesTolerance.get());
     }
 
-
     // Simulation
-    SingleJointedArmSim model = new SingleJointedArmSim(
-        LinearSystemId.createSingleJointedArmSystem(
+    SingleJointedArmSim hoodSim = new SingleJointedArmSim(
+            LinearSystemId.createSingleJointedArmSystem(
+                    DCMotor.getKrakenX60(1),
+                    kHoodMomentOfInertia.in(KilogramSquareMeters),
+                    kHoodGearRatio),
             DCMotor.getKrakenX60(1),
-            kHoodMomentOfInertia.in(KilogramSquareMeters),
-            kHoodGearRatio
-        ),
-        DCMotor.getKrakenX60(1),
-        kHoodGearRatio,
-        kHoodLength.in(Meters),
-        kHoodMinAngle.in(Radians),
-        kHoodMaxAngle.in(Radians),
-        true,
-        kHoodMinAngle.in(Radians)
-    );
+            kHoodGearRatio,
+            kHoodLength.in(Meters),
+            kHoodMinAngle.in(Radians),
+            kHoodMaxAngle.in(Radians),
+            true, // TODO:Include gravity?
+            kHoodMinAngle.in(Radians));
+
+    DCMotorSim motorSim = new DCMotorSim(
+            LinearSystemId.createDCMotorSystem(
+                    DCMotor.getKrakenX60(1),
+                    kHoodMomentOfInertia.in(KilogramSquareMeters),
+                    kHoodGearRatio),
+            DCMotor.getKrakenX60(1));
 
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motorSimState = motor.getSimState();
-        motorSimState.Orientation =  ChassisReference.CounterClockwise_Positive;//TODO: Fix, idk what it means
-        motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+        motorSimState.Orientation = ChassisReference.Clockwise_Positive;// TODO: Fix, idk what it means
 
-        //                                           shaft RPM --> rotations per second --> motor rotations per second
-        model.setInput(motorSimState.getMotorVoltage());
-		model.update(0.02);
+        motorSimState.setSupplyVoltage(motor.getSupplyVoltage().getValue());// TODO: Add friction? Also, idk that the
+                                                                            // voltage should be accessed like this
+        motorSim.setInputVoltage(motorSimState.getMotorVoltage());
 
-        motorSimState.setRawRotorPosition(Radians.of(model.getAngleRads()).times(kHoodGearRatio));
-        motorSimState.setRotorVelocity(RadiansPerSecond.of(model.getVelocityRadPerSec()).times(kHoodGearRatio));
+        motorSim.update(0.02);
+
+        motorSimState.setRawRotorPosition(motorSim.getAngularPositionRotations() * kHoodGearRatio);
+        motorSimState.setRotorVelocity(motorSim.getAngularVelocityRPM() / 60 * kHoodGearRatio);
+        // shaft RPM --> rotations per second --> motor rotations per second
+        double voltage = motorSim.getInputVoltage();
+        hoodSim.setInput(voltage);
+        hoodSim.update(0.02);
     }
 }

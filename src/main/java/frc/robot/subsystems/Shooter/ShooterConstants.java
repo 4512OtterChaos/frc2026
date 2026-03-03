@@ -34,19 +34,24 @@ public final class ShooterConstants {
 
     public static final AngularVelocity flywheelIdleVelocity = RPM.of(500); // TODO: Tune
 
-    public static final TunableNumber flywheelIdleRPM = new TunableNumber("Shooter/Flywheel/Idle RPM", flywheelIdleVelocity.in(RPM));
+    public static final TunableNumber flywheelIdleRPM = new TunableNumber("Shooter/Flywheel/Idle RPM",
+            flywheelIdleVelocity.in(RPM));
 
     public static final Angle kHoodMinAngle = Degrees.of(0);
-    public static final Angle kHoodMaxAngle = Degrees.of(25);
+    public static final Angle kHoodMaxAngle = Degrees.of(24);
 
-    public static final TunableNumber hoodMinAngle = new TunableNumber("Shooter/Hood/Min Angle", kHoodMinAngle.in(Degrees)); 
-    public static final TunableNumber hoodMaxAngle = new TunableNumber("Shooter/Hood/Max Angle", kHoodMaxAngle.in(Degrees));
+    public static final TunableNumber hoodMinAngle = new TunableNumber("Shooter/Hood/Min Angle",
+            kHoodMinAngle.in(Degrees));
+    public static final TunableNumber hoodMaxAngle = new TunableNumber("Shooter/Hood/Max Angle",
+            kHoodMaxAngle.in(Degrees));
 
     public static final double kFlywheelDebounceTime = 0.25;
     public static final double kHoodDebounceTime = 0.25;
 
-    public static final TunableNumber flywheelDebounceTime = new TunableNumber("Shooter/Flywheel/Debounce Time", kFlywheelDebounceTime);
-    public static final TunableNumber hoodDebounceTime = new TunableNumber("Shooter/Hood/Debounce Time", kHoodDebounceTime);
+    public static final TunableNumber flywheelDebounceTime = new TunableNumber("Shooter/Flywheel/Debounce Time",
+            kFlywheelDebounceTime);
+    public static final TunableNumber hoodDebounceTime = new TunableNumber("Shooter/Hood/Debounce Time",
+            kHoodDebounceTime);
 
     public static final AngularVelocity kVelocityTolerance = RPM.of(200); // TODO: tune tolerance
     public static final Angle kAngleTolerance = Degrees.of(0.5); // TODO: tune tolerance
@@ -59,7 +64,7 @@ public final class ShooterConstants {
     
 
     public static final MomentOfInertia kHoodMomentOfInertia = PoundSquareInches.of(168.737616);
-    public static final MomentOfInertia kFlywheelMomentOfInertia = PoundSquareInches.of(8); //TODO: Get Real
+    public static final MomentOfInertia kFlywheelMomentOfInertia = PoundSquareInches.of(8); // TODO: Get Real
 
     public static final Distance kWheelRadius = Inches.of(1.5);
     public static final Distance kHoodPivotHeight = Inches.of(18.096682);
@@ -69,17 +74,17 @@ public final class ShooterConstants {
     static {
         FeedbackConfigs feedback = kFlywheelConfig.Feedback;
         feedback.SensorToMechanismRatio = kFlywheelGearRatio;
-        
+
         MotorOutputConfigs output = kFlywheelConfig.MotorOutput;
         output.NeutralMode = NeutralModeValue.Coast;
         output.Inverted = InvertedValue.CounterClockwise_Positive; // TODO: find direction later
 
         CurrentLimitsConfigs current = kFlywheelConfig.CurrentLimits;
         current.StatorCurrentLimitEnable = true;
-        current.StatorCurrentLimit = 60; 
+        current.StatorCurrentLimit = 80;
 
         Slot0Configs control = kFlywheelConfig.Slot0;// TODO: Tune PID
-        control.kP = 0; 
+        control.kP = 0;
         control.kI = 0;
         control.kD = 0;
 
@@ -88,13 +93,19 @@ public final class ShooterConstants {
         control.kA = 0;
     }
 
-    public static final TunableNumber flywheelkP = new TunableNumber("Shooter/Flywheel/PID/P", kFlywheelConfig.Slot0.kP);
-    public static final TunableNumber flywheelkI = new TunableNumber("Shooter/Flywheel/PID/I", kFlywheelConfig.Slot0.kI);
-    public static final TunableNumber flywheelkD = new TunableNumber("Shooter/Flywheel/PID/D", kFlywheelConfig.Slot0.kD);
+    public static final TunableNumber flywheelkP = new TunableNumber("Shooter/Flywheel/PID/P",
+            kFlywheelConfig.Slot0.kP);
+    public static final TunableNumber flywheelkI = new TunableNumber("Shooter/Flywheel/PID/I",
+            kFlywheelConfig.Slot0.kI);
+    public static final TunableNumber flywheelkD = new TunableNumber("Shooter/Flywheel/PID/D",
+            kFlywheelConfig.Slot0.kD);
 
-    public static final TunableNumber flywheelkS = new TunableNumber("Shooter/Flywheel/Feed Forward/S", kFlywheelConfig.Slot0.kS);
-    public static final TunableNumber flywheelkV = new TunableNumber("Shooter/Flywheel/Feed Forward/V", kFlywheelConfig.Slot0.kV);
-    public static final TunableNumber flywheelkA = new TunableNumber("Shooter/Flywheel/Feed Forward/A", kFlywheelConfig.Slot0.kA);
+    public static final TunableNumber flywheelkS = new TunableNumber("Shooter/Flywheel/Feed Forward/S",
+            kFlywheelConfig.Slot0.kS);
+    public static final TunableNumber flywheelkV = new TunableNumber("Shooter/Flywheel/Feed Forward/V",
+            kFlywheelConfig.Slot0.kV);
+    public static final TunableNumber flywheelkA = new TunableNumber("Shooter/Flywheel/Feed Forward/A",
+            kFlywheelConfig.Slot0.kA);
 
     
     
@@ -102,20 +113,20 @@ public final class ShooterConstants {
     static {
         FeedbackConfigs feedback = kHoodConfig.Feedback;
         feedback.SensorToMechanismRatio = kHoodGearRatio;
-        
+
         MotorOutputConfigs output = kHoodConfig.MotorOutput;
         output.NeutralMode = NeutralModeValue.Brake;
-        output.Inverted = InvertedValue.CounterClockwise_Positive; // TODO: find direction later
+        output.Inverted = InvertedValue.Clockwise_Positive;
 
         CurrentLimitsConfigs current = kHoodConfig.CurrentLimits;
         current.StatorCurrentLimitEnable = true;
-        current.StatorCurrentLimit = 40; 
+        current.StatorCurrentLimit = 40;
 
         Slot0Configs control = kHoodConfig.Slot0;// TODO: Tune PID
-        control.kP = 2; //TODO: please tune with REAL motors
+        control.kP = 2; // TODO: please tune with REAL motors
         control.kI = 0;
         control.kD = 0;
-        
+
         control.kG = 0.01;
         control.kS = 0.2;
         control.kV = 0.1;
@@ -125,7 +136,7 @@ public final class ShooterConstants {
         mm.MotionMagicCruiseVelocity = Rotations.of(3).in(Rotations); // inches per second TODO: Tunable nums
         mm.MotionMagicAcceleration = Rotations.of(5).in(Rotations);
     }
-    
+
     public static final TunableNumber hoodkP = new TunableNumber("Shooter/Hood/PID/P", kHoodConfig.Slot0.kP);
     public static final TunableNumber hoodkI = new TunableNumber("Shooter/Hood/PID/I", kHoodConfig.Slot0.kI);
     public static final TunableNumber hoodkD = new TunableNumber("Shooter/Hood/PID/D", kHoodConfig.Slot0.kD);
@@ -135,7 +146,9 @@ public final class ShooterConstants {
     public static final TunableNumber hoodkV = new TunableNumber("Shooter/Hood/Feed Forward/V", kHoodConfig.Slot0.kV);
     public static final TunableNumber hoodkA = new TunableNumber("Shooter/Hood/Feed Forward/A", kHoodConfig.Slot0.kA);
 
-    public static final TunableNumber hoodCruiseVelocity = new TunableNumber("Shooter/Hood/MotionMagic/Cruise Velocity", kHoodConfig.MotionMagic.MotionMagicCruiseVelocity);
-    public static final TunableNumber hoodAcceleration = new TunableNumber("Shooter/Hood/MotionMagic/Acceleration", kHoodConfig.MotionMagic.MotionMagicAcceleration);
+    public static final TunableNumber hoodCruiseVelocity = new TunableNumber("Shooter/Hood/MotionMagic/Cruise Velocity",
+            kHoodConfig.MotionMagic.MotionMagicCruiseVelocity);
+    public static final TunableNumber hoodAcceleration = new TunableNumber("Shooter/Hood/MotionMagic/Acceleration",
+            kHoodConfig.MotionMagic.MotionMagicAcceleration);
 
 }

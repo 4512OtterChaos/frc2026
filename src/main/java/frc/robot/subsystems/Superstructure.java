@@ -17,6 +17,7 @@ import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Flywheel;
 import frc.robot.subsystems.Shooter.Hood;
+import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
 
@@ -29,9 +30,10 @@ public class Superstructure {
     private Flywheel flywheel;
     private Hood hood;
     private Climber climber;
+    private Shooter shooter;
 
     public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder,
-            Flywheel flywheel, Hood hood, Climber climber) {
+            Flywheel flywheel, Hood hood, Climber climber, Shooter shooter) {
         this.drivetrain = drivetrain;
         this.intake = intake;
         this.fourBar = fourBar;
@@ -55,8 +57,7 @@ public class Superstructure {
                     var distance = distanceSup.get();
                     var state = Shotmap.getState(distance);
 
-                    hood.setAngle(state.getAngle());
-                    flywheel.setVelocity(state.getVelocity());
+                    shooter.set(state.getAngle(), state.getVelocity());
 
                     SmartDashboard.putNumber("Shot/Distance", distance.in(Meters));
                     SmartDashboard.putNumber("Shot/Angle", state.getAngle().in(Degrees));

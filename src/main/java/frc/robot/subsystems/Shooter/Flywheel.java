@@ -8,6 +8,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -17,10 +18,12 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 
 public class Flywheel extends SubsystemBase {
@@ -35,70 +38,72 @@ public class Flywheel extends SubsystemBase {
     private final StatusSignal<Current> statorStatus = leftMotor.getStatorCurrent();
 
     private final VelocityVoltage velocityrequest = new VelocityVoltage(0);
-    
 
     public Flywheel() {
         leftMotor.getConfigurator().apply(kFlywheelConfig);
-        rightMotor.getConfigurator().apply(kFlywheelConfig);
-        rightMotor.setControl(new Follower(leftMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+        var rightConfig = kFlywheelConfig.clone();
+        rightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        rightMotor.getConfigurator().apply(rightConfig);
+        // rightMotor.setControl(new Follower(leftMotor.getDeviceID(),
+        // MotorAlignmentValue.Opposed));
         SmartDashboard.putData("Shooter/Flywheel/Subsystem", this);
     }
 
     @Override
-    public void periodic(){
+    public void periodic() {
         BaseStatusSignal.refreshAll(
-            positionStatus,
-            velocityStatus,
-            voltageStatus,
-            statorStatus
-        );
+                positionStatus,
+                velocityStatus,
+                voltageStatus,
+                statorStatus);
         changeTunable();
         leftMotor.setControl(velocityrequest.withVelocity(targetVelocity));
+        rightMotor.setControl(velocityrequest.withVelocity(targetVelocity));
         log();
     }
 
-    public Angle getAngle(){
+    public Angle getAngle() {
         return positionStatus.getValue();
     }
 
-    public AngularVelocity getAngularVelocity(){
+    public AngularVelocity getAngularVelocity() {
         return velocityStatus.getValue();
     }
 
-    public AngularVelocity getTargetVelocity(){
+    public AngularVelocity getTargetVelocity() {
         return targetVelocity;
     }
 
-    public Voltage getVoltage(){
+    public Voltage getVoltage() {
         return voltageStatus.getValue();
     }
 
-    public Current getCurrent(){
+    public Current getCurrent() {
         return statorStatus.getValue();
     }
 
-    public void setVoltage(double voltage){
-        leftMotor.setVoltage(voltage);        
+    public void setVoltage(double voltage) {
+        leftMotor.setVoltage(voltage);
     }
 
-    public void setVelocity(AngularVelocity velocity){
+    public void setVelocity(AngularVelocity velocity) {
         targetVelocity = velocity;
     }
 
-    public boolean upToSpeed(){
+    public boolean upToSpeed() {
         return Math.abs(targetVelocity.in(RPM) - getAngularVelocity().in(RPM)) < RPMTolerance.get();
     }
 
-    public Command setVoltageC(double voltage){
-        return runOnce(()-> setVoltage(voltage)).withName("Set voltage: " + voltage);
+    public Command setVoltageC(double voltage) {
+        return runOnce(() -> setVoltage(voltage)).withName("Set voltage: " + voltage);
     }
 
-    public Command setVelocityC(AngularVelocity velocity){
-        return runOnce(()-> setVelocity(velocity)).until(upToSpeedT()).withName("Set velocity: " + velocity);
+    public Command setVelocityC(AngularVelocity velocity) {
+        return runOnce(() -> setVelocity(velocity)).until(upToSpeedT()).withName("Set velocity: " + velocity);
     }
 
-    public Trigger upToSpeedT(){
-        return new Trigger(()-> upToSpeed()).debounce(flywheelDebounceTime.get());
+    public Trigger upToSpeedT() {
+        return new Trigger(() -> upToSpeed()).debounce(flywheelDebounceTime.get());
     }
 
     public double wrapAngle(){
@@ -110,7 +115,7 @@ public class Flywheel extends SubsystemBase {
         return angle;
     }
 
-     public void changeTunable(){
+    public void changeTunable(){
         flywheelIdleRPM.poll();
         flywheelDebounceTime.poll();
         RPMTolerance.poll();
@@ -123,13 +128,14 @@ public class Flywheel extends SubsystemBase {
 
         int hash = hashCode();
 
-        if (flywheelkP.hasChanged(hash) || flywheelkI.hasChanged(hash) || flywheelkD.hasChanged(hash) || flywheelkS.hasChanged(hash) || flywheelkV.hasChanged(hash) ||flywheelkA.hasChanged(hash)) {
+        if (flywheelkP.hasChanged(hash) || flywheelkI.hasChanged(hash) || flywheelkD.hasChanged(hash)
+                || flywheelkS.hasChanged(hash) || flywheelkV.hasChanged(hash) || flywheelkA.hasChanged(hash)) {
             kFlywheelConfig.Slot0.kP = flywheelkP.get();
             kFlywheelConfig.Slot0.kI = flywheelkI.get();
-            kFlywheelConfig.Slot0.kD = flywheelkD.get(); 
+            kFlywheelConfig.Slot0.kD = flywheelkD.get();
             kFlywheelConfig.Slot0.kS = flywheelkS.get();
             kFlywheelConfig.Slot0.kV = flywheelkV.get();
-            kFlywheelConfig.Slot0.kA = flywheelkA.get(); 
+            kFlywheelConfig.Slot0.kA = flywheelkA.get();
             leftMotor.getConfigurator().apply(kFlywheelConfig.Slot0);
         }
     }
@@ -138,7 +144,8 @@ public class Flywheel extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/Flywheel/Angle Degrees", getAngle().in(Degrees));
         SmartDashboard.putNumber("Shooter/Flywheel/Wrapped Angle Degrees", wrapAngle());
         SmartDashboard.putNumber("Shooter/Flywheel/RPM", getAngularVelocity().in(RPM));
-        // SmartDashboard.putNumber("Shooter/Flywheel/Wheel Radians", getAngularVelocity().in(RadiansPerSecond));
+        // SmartDashboard.putNumber("Shooter/Flywheel/Wheel Radians",
+        // getAngularVelocity().in(RadiansPerSecond));
         SmartDashboard.putNumber("Shooter/Flywheel/Voltage", getVoltage().in(Volts));
         SmartDashboard.putNumber("Shooter/Flywheel/Target RPM", targetVelocity.in(RPM));
         SmartDashboard.putNumber("Shooter/Flywheel/Current", getCurrent().in(Amps));
@@ -147,23 +154,38 @@ public class Flywheel extends SubsystemBase {
     }
 
     // Simulation
-    DCMotorSim model = new DCMotorSim(
-        LinearSystemId.createDCMotorSystem(1.0 / kFlywheelMotor.withReduction(kFlywheelGearRatio).KvRadPerSecPerVolt, 0.002),
-        kFlywheelMotor
-    );
+    FlywheelSim flywheelSim = new FlywheelSim(
+            LinearSystemId.createFlywheelSystem(
+                    DCMotor.getKrakenX60(2),
+                    kFlywheelMomentOfInertia.in(KilogramSquareMeters),
+                    kFlywheelGearRatio),
+            DCMotor.getKrakenX60(2),
+            kFlywheelGearRatio);
+
+    DCMotorSim motorSim = new DCMotorSim(
+            LinearSystemId.createDCMotorSystem(
+                    DCMotor.getKrakenX60(2),
+                    kFlywheelMomentOfInertia.in(KilogramSquareMeters),
+                    kFlywheelGearRatio),
+            DCMotor.getKrakenX60(2));
 
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motorSimState = leftMotor.getSimState();
-        motorSimState.Orientation =  ChassisReference.Clockwise_Positive;//TODO: Fix, idk what it means
-        motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+        motorSimState.Orientation = ChassisReference.Clockwise_Positive;// TODO: Fix, idk what it means
 
-        //                                           shaft RPM --> rotations per second --> motor rotations per second
-        model.setInput(motorSimState.getMotorVoltage());
-		model.update(0.02);
+        motorSimState.setSupplyVoltage(leftMotor.getSupplyVoltage().getValue());// TODO: Add friction? Also, idk that
+                                                                                // the voltage should be accessed like
+                                                                                // this
+        motorSim.setInputVoltage(motorSimState.getMotorVoltage());
 
-        motorSimState.setRawRotorPosition(model.getAngularPosition().times(kFlywheelGearRatio));
-        motorSimState.setRotorVelocity(model.getAngularVelocity().times(kFlywheelGearRatio));
-        motorSimState.setRotorAcceleration(model.getAngularAcceleration().times(kFlywheelGearRatio));
-    }   
+        motorSim.update(0.02);
+
+        motorSimState.setRawRotorPosition(motorSim.getAngularPositionRotations() * kFlywheelGearRatio);
+        motorSimState.setRotorVelocity(motorSim.getAngularVelocityRPM() / 60 * kFlywheelGearRatio);
+        // shaft RPM --> rotations per second --> motor rotations per second
+        double voltage = motorSim.getInputVoltage();
+        flywheelSim.setInput(voltage);
+        flywheelSim.update(0.02);
+    }
 }
