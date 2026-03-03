@@ -1,15 +1,5 @@
 package frc.robot.subsystems.Shooter;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Volts;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static frc.robot.subsystems.Shooter.ShooterConstants.*;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -22,6 +12,13 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -31,8 +28,43 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import static frc.robot.subsystems.Shooter.ShooterConstants.RPMTolerance;
+import static frc.robot.subsystems.Shooter.ShooterConstants.degreesTolerance;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelDebounceTime;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelIdleRPM;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkA;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkD;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkI;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkP;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkS;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkV;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodAcceleration;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodCruiseVelocity;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodDebounceTime;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodMaxAngle;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodMinAngle;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkA;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkD;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkG;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkI;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkP;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkS;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkV;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kFlywheelConfig;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kFlywheelGearRatio;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kFlywheelMomentOfInertia;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodConfig;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodGearRatio;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodLength;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMaxAngle;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMinAngle;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMomentOfInertia;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMotorID;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kLeftMotorID;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kRightMotorID;
 
 public class Shooter extends SubsystemBase {
     private Hood hood = new Hood(); // TODO: delete these later
@@ -62,14 +94,14 @@ public class Shooter extends SubsystemBase {
     public Shooter() {
         // FLYWHEEL
         fwLeftMotor.getConfigurator().apply(kFlywheelConfig);
-        var fwrightConfig = kFlywheelConfig.clone();
-        fwrightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        fwRightMotor.getConfigurator().apply(fwrightConfig);
+        var fwRightConfig = kFlywheelConfig.clone();
+        fwRightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        fwRightMotor.getConfigurator().apply(fwRightConfig);
         // fwRightMotor.setControl(new Follower(leftMotor.getDeviceID(), MotorAlignmentValue.Opposed));
 
         // HOOD
         hMotor.getConfigurator().apply(kHoodConfig);
-        resetHoodAngle(Degrees.of(hoodMinAngle.get()));
+        resetAngle(Degrees.of(hoodMinAngle.get()));
 
         SmartDashboard.putData("Shooter/Subsystem", this);
     }
@@ -84,11 +116,10 @@ public class Shooter extends SubsystemBase {
                 hStatorStatus);
         hMotor.setControl(mmHoodRequest.withPosition(targetAngle));
 
-        if (getHoodAngle().isNear(Degrees.of(targetAngle.in(Degrees)), Degrees.of(0.5)))
-        { //TODO: find a better way to do this
+        if (getHoodAngle().isNear(Degrees.of(targetAngle.in(Degrees)), Degrees.of(0.5))){
+        //TODO: find a better way to do this
         setHoodVoltage(0);
         }
-
 
         // FLYWHEEL PERIODIC
         BaseStatusSignal.refreshAll(
@@ -104,10 +135,6 @@ public class Shooter extends SubsystemBase {
     }
 
     // HOOD
-    public void resetHoodAngle(Angle angle) {
-        hMotor.setPosition(angle);
-    }
-
     public Angle getHoodAngle() {
        return hPositionStatus.getValue();
     }
@@ -124,6 +151,10 @@ public class Shooter extends SubsystemBase {
         return hStatorStatus.getValue();
     }
 
+    public void resetAngle(Angle angle) {
+        hMotor.setPosition(angle);
+    }
+
     public Angle getHoodTargetAngle() {
         return targetAngle;
     }
@@ -131,16 +162,16 @@ public class Shooter extends SubsystemBase {
         hMotor.setVoltage(voltage);
     }
 
-    public void setHoodAngle(Angle angle) {
+    public void setAngle(Angle angle) {
         angle = Degrees.of(MathUtil.clamp(angle.in(Degrees), hoodMinAngle.get(), hoodMaxAngle.get()));
         targetAngle = angle;
     }
 
     public Command setAngleC(Angle angle) {
-        return runOnce(() -> setHoodAngle(angle)).until(atAngleT()).withName("Set angle: " + angle);
+        return runOnce(() -> setAngle(angle)).until(atAngleT()).withName("Set angle: " + angle);
     }
 
-    public Command setHoodMinAngleC() {
+    public Command setMinAngleC() {
         return setAngleC(Degrees.of(hoodMinAngle.get()));
     }
 
@@ -168,6 +199,7 @@ public class Shooter extends SubsystemBase {
     public Current getFlywheelCurrent() {
         return fwStatorStatus.getValue();
     }
+
     public boolean upToSpeed() {
         return Math.abs(targetVelocity.in(RPM) - getFlywheelVelocity().in(RPM)) < RPMTolerance.get();
     }
@@ -181,10 +213,10 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command setVelocityC(AngularVelocity velocity) {
-        return runOnce(() -> setFlywheelVelocity(velocity)).until(upToSpeedT()).withName("Set velocity: " + velocity);
+        return runOnce(() -> setVelocity(velocity)).until(upToSpeedT()).withName("Set velocity: " + velocity);
     }
 
-    public void setFlywheelVelocity(AngularVelocity velocity) {
+    public void setVelocity(AngularVelocity velocity) {
         targetVelocity = velocity;
     }
     
@@ -251,16 +283,14 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/Hood/Angle", getHoodAngle().in(Degrees));
         SmartDashboard.putNumber("Shooter/Hood/Target Angle", targetAngle.in(Degrees));
         SmartDashboard.putNumber("Shooter/Hood/RPM", getFlywheelVelocity().in(RPM));
-        // SmartDashboard.putNumber("Shooter/Hood/Wheel Radians",
-        // getAngularVelocity().in(RadiansPerSecond));
+        // SmartDashboard.putNumber("Shooter/Hood/Wheel Radians",getAngularVelocity().in(RadiansPerSecond));
         SmartDashboard.putNumber("Shooter/Hood/Voltage", getHoodVoltage().in(Volts));
         SmartDashboard.putNumber("Shooter/Hood/Current", getHoodCurrent().in(Amps));
         SmartDashboard.putBoolean("Shooter/Hood/At Angle", atAngleT().getAsBoolean());
         SmartDashboard.putNumber("Shooter/Hood/Angle Tolerance", degreesTolerance.get());
 
         SmartDashboard.putNumber("Shooter/Flywheel/RPM", getFlywheelVelocity().in(RPM));
-        // SmartDashboard.putNumber("Shooter/Flywheel/Wheel Radians",
-        // getAngularVelocity().in(RadiansPerSecond));
+        // SmartDashboard.putNumber("Shooter/Flywheel/Wheel Radians", getAngularVelocity().in(RadiansPerSecond));
         SmartDashboard.putNumber("Shooter/Flywheel/Voltage", getFlywheelVoltage().in(Volts));
         SmartDashboard.putNumber("Shooter/Flywheel/Target RPM", targetVelocity.in(RPM));
         SmartDashboard.putNumber("Shooter/Flywheel/Current", getFlywheelCurrent().in(Amps));
@@ -269,7 +299,7 @@ public class Shooter extends SubsystemBase {
     }
 
 
-    //SIMULATION
+    // SIMULATION
     SingleJointedArmSim hoodSim = new SingleJointedArmSim(
             LinearSystemId.createSingleJointedArmSystem(
                     DCMotor.getKrakenX60(1),
@@ -310,10 +340,9 @@ public class Shooter extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         TalonFXSimState hMotorSimState = hMotor.getSimState();
-        hMotorSimState.Orientation = ChassisReference.Clockwise_Positive;// TODO: Fix, idk what it means
+        hMotorSimState.Orientation = ChassisReference.Clockwise_Positive;
 
-        hMotorSimState.setSupplyVoltage(hMotor.getSupplyVoltage().getValue());// TODO: Add friction? Also, idk that the
-                                                                            // voltage should be accessed like this
+        hMotorSimState.setSupplyVoltage(hMotor.getSupplyVoltage().getValue());
         hMotorSim.setInputVoltage(hMotorSimState.getMotorVoltage());
 
         hMotorSim.update(0.02);
