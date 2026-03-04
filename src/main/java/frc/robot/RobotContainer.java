@@ -13,6 +13,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.run;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelDebounceTime;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMinAngle;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -25,9 +26,7 @@ import com.pathplanner.lib.events.EventTrigger;
 
 import choreo.auto.AutoChooser;
 import edu.wpi.first.math.geometry.Rotation2d;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,8 +42,7 @@ import frc.robot.subsystems.Indexer.Feeder;
 import frc.robot.subsystems.Indexer.Spindexer;
 import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
-import frc.robot.subsystems.Shooter.Flywheel;
-import frc.robot.subsystems.Shooter.Hood;
+import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.subsystems.Superstructure;
@@ -62,22 +60,17 @@ public class RobotContainer {
 
     private final OCDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final Telemetry logger = new Telemetry(MaxSpeed);
-    // private final Intake intake = new Intake();
-    // private final FourBar fourBar = new FourBar();
-    // private final Spindexer spindexer = new Spindexer();
+    private final Intake intake = new Intake();
+    private final FourBar fourBar = new FourBar();
+    private final Spindexer spindexer = new Spindexer();
     private final Feeder feeder = new Feeder();
-    private final Flywheel flywheel = new Flywheel();
-    private final Hood hood = new Hood();
+    private final Shooter shooter = new Shooter();
     private final Climber climber = new Climber();
     private final Shotmap shotmap = new Shotmap();
     private final Vision vision = new Vision();
 
-    // private final Superstructure superstructure = new Superstructure(drivetrain,
-    // intake, fourBar, spindexer, feeder,
-    // flywheel, hood, climber);
-    // private final SuperstructureViz superstructureViz = new
-    // SuperstructureViz(drivetrain, intake, fourBar, spindexer,
-    // feeder, flywheel, hood, climber);
+    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, shooter, climber);
+    private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, fourBar, spindexer, feeder, shooter, climber);
 
     // // private final PathPlannerAuto pathPlannerAuto = new PathPlannerAuto("Top
     // // Depot Climb");
@@ -98,12 +91,10 @@ public class RobotContainer {
 
     public void configureDefaultCommands() {
         drivetrain.setDefaultCommand(drivetrain.drive(driver));
-        // spindexer.setDefaultCommand(superstructure.passiveSpindexC());
-        // feeder.setDefaultCommand(feeder.passiveIndexC());
-        flywheel.setDefaultCommand(flywheel.setVelocityC(ShooterConstants.flywheelIdleVelocity));
-        // intake.setDefaultCommand(intake.setVoltageC(0));
-        hood.setDefaultCommand(hood.setAngleC(Degrees.of(0)));
-        // drivetrain.setDefaultCommand(drivetrain.faceHub());
+        spindexer.setDefaultCommand(superstructure.passiveSpindexC());
+        feeder.setDefaultCommand(feeder.passiveIndexC());
+        shooter.setDefaultCommand(shooter.setState(kHoodMinAngle, RPM.of(ShooterConstants.flywheelIdleRPM.get())));
+        intake.setDefaultCommand(intake.setVoltageC(0));
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -112,34 +103,32 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        driver.a().whileTrue(run(() -> flywheel.setVelocity(RPM.of(flywheelVelocity.get())), flywheel));
-        driver.b().whileTrue(run(() -> hood.setAngle(Degrees.of(hoodAngle.get())), hood));
-        driver.rightTrigger().whileTrue(run(() -> feeder.setVoltage(feederVoltage.get()), feeder))
-                .onFalse(runOnce(() -> feeder.setVoltage(0), feeder));
-        // driver.back().onTrue(runOnce(() ->
-        // drivetrain.resetRotation(Rotation2d.kZero)));
-        // driver.rightTrigger()
-        // .whileTrue(parallel(
-        // superstructure.shootShotMapC(
-        // () -> Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate(),
-        // FieldUtil.kHubTrl)),
-        // drivetrain.driveFacingHub(driver)));
-        // driver.leftTrigger().whileTrue(intake.setVoltageInC());
-        // driver.a().whileTrue(fourBar.setMinAngleC());
-        // driver.y().whileTrue(fourBar.setMaxAngleC());
-        // driver.povUp().whileTrue(climber.setMaxHeightC());
-        // driver.povDown().whileTrue(climber.setMinHeightC());
+        // driver.a().whileTrue(run(() -> flywheel.setVelocity(RPM.of(flywheelVelocity.get())), flywheel));
+        // driver.b().whileTrue(run(() -> hood.setAngle(Degrees.of(hoodAngle.get())), hood));
+        // driver.rightTrigger().whileTrue(run(() -> feeder.setVoltage(feederVoltage.get()), feeder))
+        //         .onFalse(runOnce(() -> feeder.setVoltage(0), feeder));
+        driver.back().onTrue(runOnce(() ->
+        drivetrain.resetRotation(Rotation2d.kZero)));
+        driver.rightTrigger()
+        .whileTrue(parallel(
+        superstructure.shootShotMapC(
+            () -> Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate(), FieldUtil.kHubTrl)), drivetrain.driveFacingHub(driver)));
+        driver.leftTrigger().whileTrue(intake.setVoltageInC());
+        driver.a().whileTrue(fourBar.setMinAngleC());
+        driver.y().whileTrue(fourBar.setMaxAngleC());
+        driver.povUp().whileTrue(climber.setMaxHeightC());
+        driver.povDown().whileTrue(climber.setMinHeightC());
 
-        // drivetrain.registerTelemetry(logger::telemeterize);
+        drivetrain.registerTelemetry(logger::telemeterize);
 
-        // autoBindings();
+        autoBindings();
     }
 
     private void autoBindings() {
-        // new EventTrigger("Climber Up").whileTrue(climber.setMaxHeightC());
-        // new EventTrigger("Climber Down").whileTrue(climber.setMinHeightC());
-        // new EventTrigger("Shoot").whileTrue(superstructure.shootShotMapC());
-        // new EventTrigger("Intake").whileTrue(intake.setVoltageInC());
+        new EventTrigger("Climber Up").whileTrue(climber.setMaxHeightC());
+        new EventTrigger("Climber Down").whileTrue(climber.setMinHeightC());
+        new EventTrigger("Shoot").whileTrue(superstructure.shootShotMapC());
+        new EventTrigger("Intake").whileTrue(intake.setVoltageInC());
 
         // autoChooser.addCmd(null, null);
     }

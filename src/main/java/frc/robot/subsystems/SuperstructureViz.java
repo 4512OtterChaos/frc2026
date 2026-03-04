@@ -12,8 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.IntakeConstants;
-import frc.robot.subsystems.Shooter.Flywheel;
-import frc.robot.subsystems.Shooter.Hood;
+import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
@@ -26,8 +25,7 @@ public class SuperstructureViz extends SubsystemBase{
     private FourBar fourBar;
     private Spindexer spindexer;
     private Feeder feeder;
-    private Flywheel flywheel;
-    private Hood hood;
+    private Shooter shooter;
     private Climber climber;
 
     private final Color8Bit kWindowColor = new Color8Bit(0, 100, 150);
@@ -38,17 +36,16 @@ public class SuperstructureViz extends SubsystemBase{
     private final double kMechWidth = 9;
 
     private final double kDefaultHoodDeg = 90;
-    private final double kDefaultFourBar1Deg = 90; // TODO: elijah what do i do here
+    private final double kDefaultFourBar1Deg = 90;
     private final double kDefaultFourBar2Deg = 90-3;
 
-    public SuperstructureViz(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Flywheel flywheel, Hood hood, Climber climber){
+    public SuperstructureViz(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter, Climber climber){
         this.drivetrain = drivetrain;
         this.intake = intake;
         this.fourBar = fourBar;
         this.spindexer = spindexer;
         this.feeder = feeder;
-        this.flywheel = flywheel;
-        this.hood = hood;
+        this.shooter = shooter;
         this.climber = climber;
     }
 
@@ -106,8 +103,8 @@ public class SuperstructureViz extends SubsystemBase{
     
     @Override
     public void simulationPeriodic() {
-        hoodMech.setAngle(kDefaultHoodDeg - hood.getAngle().in(Degrees));
-        hoodSetpoint.setAngle(kDefaultHoodDeg - hood.getTargetAngle().in(Degrees));
+        hoodMech.setAngle(kDefaultHoodDeg - shooter.getHoodAngle().in(Degrees));
+        hoodSetpoint.setAngle(kDefaultHoodDeg - shooter.getHoodTargetAngle().in(Degrees));
 
         fourBarMech1.setAngle(kDefaultFourBar1Deg - fourBar.getAngle().in(Degrees));
         fourBarMech1Setpoint.setAngle(kDefaultFourBar1Deg - fourBar.getTargetAngle().in(Degrees));

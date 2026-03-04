@@ -32,10 +32,10 @@ public final class ShooterConstants {
     public static final double kFlywheelGearRatio = 20.0 / 22.0;
     public static final double kHoodGearRatio = (60.0 / 18.0) * (32.0 / 20.0) * (24.0 / 20.0) * (208.0 / 18.0);
 
-    public static final AngularVelocity flywheelIdleVelocity = RPM.of(500); // TODO: Tune
+    public static final AngularVelocity kFlywheelIdleVelocity = RPM.of(500); // TODO: Tune
 
     public static final TunableNumber flywheelIdleRPM = new TunableNumber("Shooter/Flywheel/Idle RPM",
-            flywheelIdleVelocity.in(RPM));
+            kFlywheelIdleVelocity.in(RPM));
 
     public static final Angle kHoodMinAngle = Degrees.of(0);
     public static final Angle kHoodMaxAngle = Degrees.of(24);

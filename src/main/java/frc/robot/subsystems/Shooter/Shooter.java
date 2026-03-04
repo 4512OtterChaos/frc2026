@@ -1,5 +1,9 @@
 package frc.robot.subsystems.Shooter;
 
+import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static frc.robot.subsystems.Shooter.ShooterConstants.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -10,6 +14,7 @@ import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import static edu.wpi.first.units.Units.Amps;
@@ -22,13 +27,14 @@ import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static frc.robot.subsystems.Shooter.ShooterConstants.RPMTolerance;
@@ -67,9 +73,6 @@ import static frc.robot.subsystems.Shooter.ShooterConstants.kLeftMotorID;
 import static frc.robot.subsystems.Shooter.ShooterConstants.kRightMotorID;
 
 public class Shooter extends SubsystemBase {
-    private Hood hood = new Hood(); // TODO: delete these later
-    private Flywheel flywheel = new Flywheel();
-
     public TalonFX fwLeftMotor = new TalonFX(kLeftMotorID);
     public TalonFX fwRightMotor = new TalonFX(kRightMotorID);
 
@@ -167,12 +170,8 @@ public class Shooter extends SubsystemBase {
         targetAngle = angle;
     }
 
-    public Command setAngleC(Angle angle) {
+    private Command setAngleC(Angle angle) {
         return runOnce(() -> setAngle(angle)).until(atAngleT()).withName("Set angle: " + angle);
-    }
-
-    public Command setMinAngleC() {
-        return setAngleC(Degrees.of(hoodMinAngle.get()));
     }
 
     public boolean atAngle() {
@@ -192,6 +191,10 @@ public class Shooter extends SubsystemBase {
         return fwVelocityStatus.getValue();
     }
 
+    public AngularVelocity getTargetVelocity() {
+        return targetVelocity;
+    }
+
     public Voltage getFlywheelVoltage() {
         return fwVoltageStatus.getValue();
     }
@@ -208,12 +211,8 @@ public class Shooter extends SubsystemBase {
         return new Trigger(() -> upToSpeed()).debounce(flywheelDebounceTime.get());
     }
 
-    public AngularVelocity getTargetVelocity() {
-        return targetVelocity;
-    }
-
-    public Command setVelocityC(AngularVelocity velocity) {
-        return runOnce(() -> setVelocity(velocity)).until(upToSpeedT()).withName("Set velocity: " + velocity);
+    private Command setVelocityC(AngularVelocity velocity) {
+        return Commands.runOnce(() -> setVelocity(velocity)).until(upToSpeedT()).withName("Set velocity: " + velocity);
     }
 
     public void setVelocity(AngularVelocity velocity) {
@@ -221,7 +220,7 @@ public class Shooter extends SubsystemBase {
     }
     
     //OVERALL
-    public Command set(Angle angle, AngularVelocity velocity) {
+    public Command setState(Angle angle, AngularVelocity velocity) {
         return parallel(setAngleC(angle), setVelocityC(velocity));
     }
 
