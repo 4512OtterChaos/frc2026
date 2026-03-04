@@ -107,17 +107,6 @@ public class RobotContainer {
         driver.povDown().whileTrue(climber.setMinHeightC());
 
         drivetrain.registerTelemetry(logger::telemeterize);
-
-        autoBindings();
-    }
-
-    private void autoBindings() {
-        new EventTrigger("Climber Up").whileTrue(climber.setMaxHeightC());
-        new EventTrigger("Climber Down").whileTrue(climber.setMinHeightC());
-        new EventTrigger("Shoot").whileTrue(superstructure.shootShotMapC());
-        new EventTrigger("Intake").whileTrue(intake.setVoltageInC());
-
-        // autoChooser.addCmd(null, null);
     }
 
     public Command getAutonomousCommand() {
