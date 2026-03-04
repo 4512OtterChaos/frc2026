@@ -3,11 +3,9 @@ package frc.robot.subsystems.Shooter;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -18,8 +16,8 @@ import edu.wpi.first.units.measure.Time;
 import frc.robot.util.FieldUtil;
 
 public class Shotmap {
-    private static InterpolatingTreeMap<Double, State> map = 
-        new InterpolatingTreeMap<Double, State>(InverseInterpolator.forDouble(), (State startValue, State endValue, double t)-> startValue.interpolate(endValue, t));
+    private static InterpolatingTreeMap<Double, Shooter.State> map = 
+        new InterpolatingTreeMap<Double, Shooter.State>(InverseInterpolator.forDouble(), (Shooter.State startValue, Shooter.State endValue, double t)-> startValue.interpolate(endValue, t));
 
     static {
         addState(Inches.of(100),Degrees.of(5), RPM.of(2800),Seconds.of(1.5));// TODO: use real values
@@ -32,10 +30,10 @@ public class Shotmap {
     }
 
     private static void addState(Distance distance, Angle angle, AngularVelocity velocity, Time tof){
-        map.put(distance.in(Meters), new State(angle, velocity, tof));
+        map.put(distance.in(Meters), new Shooter.State(angle, velocity, tof));
     }
 
-    public static State getState(Distance distance){
+    public static Shooter.State getState(Distance distance){
         return map.get(distance.in(Meters));
     }
 
@@ -57,13 +55,13 @@ public class Shotmap {
     }
 
         //shoot on da fly 
-    public Rotation2d newTargetAngle(Pose2d robotPose, ChassisSpeeds speed) {
+    public Rotation2d newTargetAngle(Pose2d robotPose, ChassisSpeeds speed) { // TODO: check
         Translation2d robotPosition = robotPose.getTranslation();
         Translation2d fakeTarget = FieldUtil.kHubTrl.minus(robotPosition);
 
         double distanceMeters = fakeTarget.getNorm();
 
-        Shotmap.State state = Shotmap.getState(Meters.of(distanceMeters));
+        Shooter.State state = Shotmap.getState(Meters.of(distanceMeters));
         
         double tof = state.getTof().in(Seconds);
         Translation2d velocityOffset = new Translation2d(speed.vxMetersPerSecond * tof * targetMultiplier.get(), speed.vyMetersPerSecond * targetMultiplier.get());
@@ -74,45 +72,6 @@ public class Shotmap {
 
     public void changeTunable() {
         targetMultiplier.poll();
-    }
-
-    public static class State implements Interpolatable<State>{
-        private Angle angle; 
-        private AngularVelocity velocity; 
-        private Time tof;
-
-        State(Angle angle, AngularVelocity velocity, Time tof){
-            this.angle = angle;
-            this.velocity = velocity;
-            this.tof = tof;
-        }
-
-        public Angle getAngle(){
-            return angle; 
-        }
-
-        public AngularVelocity getVelocity(){
-            return velocity;
-        }
-
-        public Time getTof() {
-            return tof;
-        }
-
-        @Override
-        public State interpolate(State endValue, double t) {
-            if (t <= 0) {
-                return this;
-            } else if (t >= 1) {
-                return endValue;
-            } else {
-                return new State(
-                    Degrees.of(MathUtil.interpolate(this.getAngle().in(Degrees), endValue.getAngle().in(Degrees), t)),                
-                    RPM.of(MathUtil.interpolate(this.getVelocity().in(RPM), endValue.getVelocity().in(RPM), t)),
-                    Seconds.of(MathUtil.interpolate(this.getTof().in(Seconds), endValue.getTof().in(Seconds), t))
-                );
-            }
-        }
     }
 
 }

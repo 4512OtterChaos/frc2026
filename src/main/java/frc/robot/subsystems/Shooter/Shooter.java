@@ -220,6 +220,10 @@ public class Shooter extends SubsystemBase {
     }
     
     //OVERALL
+    public Command setState(State state) {
+        return setState(state.getAngle(), state.getVelocity());
+    }    
+    
     public Command setState(Angle angle, AngularVelocity velocity) {
         return parallel(setAngleC(angle), setVelocityC(velocity));
     }
@@ -370,5 +374,44 @@ public class Shooter extends SubsystemBase {
         double voltage = fwMotorSim.getInputVoltage();
         flywheelSim.setInput(voltage);
         flywheelSim.update(0.02);
+    }
+
+    public static class State implements Interpolatable<State>{
+        private Angle angle; 
+        private AngularVelocity velocity; 
+        private Time tof;
+
+        State(Angle angle, AngularVelocity velocity, Time tof){
+            this.angle = angle;
+            this.velocity = velocity;
+            this.tof = tof;
+        }
+
+        public Angle getAngle(){
+            return angle; 
+        }
+
+        public AngularVelocity getVelocity(){
+            return velocity;
+        }
+
+        public Time getTof() {
+            return tof;
+        }
+
+        @Override
+        public State interpolate(State endValue, double t) {
+            if (t <= 0) {
+                return this;
+            } else if (t >= 1) {
+                return endValue;
+            } else {
+                return new State(
+                    Degrees.of(MathUtil.interpolate(this.getAngle().in(Degrees), endValue.getAngle().in(Degrees), t)),                
+                    RPM.of(MathUtil.interpolate(this.getVelocity().in(RPM), endValue.getVelocity().in(RPM), t)),
+                    Seconds.of(MathUtil.interpolate(this.getTof().in(Seconds), endValue.getTof().in(Seconds), t))
+                );
+            }
+        }
     }
 }
