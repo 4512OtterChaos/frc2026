@@ -5,6 +5,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,6 +19,7 @@ import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
+import frc.robot.util.OCXboxController;
 
 public class Superstructure {
     private OCDrivetrain drivetrain;
@@ -46,24 +48,31 @@ public class Superstructure {
                 feeder.topSensorT().negate()).withName("Index");
     }
 
-    public Command shootShotMapC(Supplier<Distance> distanceSup) {
-        return run(
-                () -> {
-                    var distance = distanceSup.get();
-                    var state = Shotmap.getState(distance);
-
-                    shooter.setState(state.getAngle(), state.getVelocity());
-
-                    SmartDashboard.putNumber("Shot/Distance", distance.in(Meters));
-                    SmartDashboard.putNumber("Shot/Angle", state.getAngle().in(Degrees));
-                    SmartDashboard.putNumber("Shot/RPM", state.getVelocity().in(RPM));
-                },
-                shooter);
+    public Command shootShotMapControllerC(Supplier<OCXboxController> controller) {
+        return shootShotMapC(OCDrivetrain.controllerToChassisSpeeds(controller));
     }
 
-    public Command shootShotMapC() {
-        Supplier<Distance> distanceSup = () -> Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate(),
-                FieldUtil.kHubTrl);
-        return shootShotMapC(distanceSup);
+    public Command shootShotMapC(Supplier<ChassisSpeeds> speeds) {
+        return parallel(
+            run(
+                () -> {
+                    var distance = Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate());
+                    var state = Shotmap.getState(distance);
+
+                    shooter.setState(state);
+
+                    SmartDashboard.putNumber("Shooter/Shot/Distance", distance.in(Meters));
+                    SmartDashboard.putNumber("Shooter/Shot/Angle", state.getAngle().in(Degrees));
+                    SmartDashboard.putNumber("Shooter/Shot/RPM", state.getVelocity().in(RPM));
+                },
+                shooter
+            ), 
+            drivetrain.driveFacingHub(speeds),
+            sequence(
+                waitUntil(() -> drivetrain.facingHubT().getAsBoolean() && shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean()),
+                feeder.feedC(),
+                spindexer.spindexC()
+            )
+        ).withName("ShootShotMapLive");
     }
 }

@@ -17,13 +17,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -37,40 +30,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import static frc.robot.subsystems.Shooter.ShooterConstants.RPMTolerance;
-import static frc.robot.subsystems.Shooter.ShooterConstants.degreesTolerance;
-import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelDebounceTime;
-import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelIdleRPM;
-import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkA;
-import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkD;
-import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkI;
-import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkP;
-import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkS;
-import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkV;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodAcceleration;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodCruiseVelocity;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodDebounceTime;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodMaxAngle;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodMinAngle;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkA;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkD;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkG;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkI;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkP;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkS;
-import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkV;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kFlywheelConfig;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kFlywheelGearRatio;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kFlywheelMomentOfInertia;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodConfig;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodGearRatio;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodLength;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMaxAngle;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMinAngle;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMomentOfInertia;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMotorID;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kLeftMotorID;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kRightMotorID;
 
 public class Shooter extends SubsystemBase {
     public TalonFX fwLeftMotor = new TalonFX(kLeftMotorID);
@@ -203,20 +162,20 @@ public class Shooter extends SubsystemBase {
         return fwStatorStatus.getValue();
     }
 
-    public boolean upToSpeed() {
-        return Math.abs(targetVelocity.in(RPM) - getFlywheelVelocity().in(RPM)) < RPMTolerance.get();
-    }
-
-    public Trigger upToSpeedT() {
-        return new Trigger(() -> upToSpeed()).debounce(flywheelDebounceTime.get());
+    public void setVelocity(AngularVelocity velocity) {
+        targetVelocity = velocity;
     }
 
     private Command setVelocityC(AngularVelocity velocity) {
         return Commands.runOnce(() -> setVelocity(velocity)).until(upToSpeedT()).withName("Set velocity: " + velocity);
     }
 
-    public void setVelocity(AngularVelocity velocity) {
-        targetVelocity = velocity;
+    public boolean upToSpeed() {
+        return Math.abs(targetVelocity.in(RPM) - getFlywheelVelocity().in(RPM)) < RPMTolerance.get();
+    }
+
+    public Trigger upToSpeedT() {
+        return new Trigger(() -> upToSpeed()).debounce(flywheelDebounceTime.get());
     }
     
     //OVERALL

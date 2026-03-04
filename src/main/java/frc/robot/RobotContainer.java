@@ -4,16 +4,9 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.run;
-import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelDebounceTime;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMinAngle;
+import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
+import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -66,7 +59,6 @@ public class RobotContainer {
     private final Feeder feeder = new Feeder();
     private final Shooter shooter = new Shooter();
     private final Climber climber = new Climber();
-    private final Shotmap shotmap = new Shotmap();
     private final Vision vision = new Vision();
 
     private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, shooter, climber);
@@ -77,7 +69,6 @@ public class RobotContainer {
     // private final AutoOptions autoOptions = new AutoOptions(drivetrain, intake,
     // hood, flywheel, spindexer, fourBar,
     // climber, feeder, superstructure);
-    // private final AutoChooser autoChooser = new AutoChooser();
 
     TunableNumber feederVoltage = new TunableNumber("test/feederVoltage", 4);
     TunableNumber flywheelVelocity = new TunableNumber("test/flywheelVelocity", 1000);
@@ -107,12 +98,8 @@ public class RobotContainer {
         // driver.b().whileTrue(run(() -> hood.setAngle(Degrees.of(hoodAngle.get())), hood));
         // driver.rightTrigger().whileTrue(run(() -> feeder.setVoltage(feederVoltage.get()), feeder))
         //         .onFalse(runOnce(() -> feeder.setVoltage(0), feeder));
-        driver.back().onTrue(runOnce(() ->
-        drivetrain.resetRotation(Rotation2d.kZero)));
-        driver.rightTrigger()
-        .whileTrue(parallel(
-        superstructure.shootShotMapC(
-            () -> Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate(), FieldUtil.kHubTrl)), drivetrain.driveFacingHub(driver)));
+        driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
+        driver.rightTrigger().whileTrue(superstructure.shootShotMapControllerC(()->driver));
         driver.leftTrigger().whileTrue(intake.setVoltageInC());
         driver.a().whileTrue(fourBar.setMinAngleC());
         driver.y().whileTrue(fourBar.setMaxAngleC());
@@ -149,9 +136,9 @@ public class RobotContainer {
     }
 
     public void periodic() {
-        // shotmap.periodic();
-        // vision.periodic();
-        // changeTuneable();
+        Shotmap.periodic();
+        vision.periodic();
+        changeTunable();
 
         // double phoenixTimeOffset = Timer.getFPGATimestamp() -
         // Utils.getCurrentTimeSeconds();

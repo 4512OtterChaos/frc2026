@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.util.RobotConstants.kPigeonID;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -62,8 +63,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
             kAngularAccel);
     public static final TunableNumber angularDecel = new TunableNumber("Drivetrain/Angular Deceleration",
             kAngularDecel);
-
-    private final Shotmap shotmap = new Shotmap();
 
     public final SwerveDriveLimiter kStandardLimiter = new SwerveDriveLimiter(
             MetersPerSecond.of(getDriveSpeed()),
@@ -164,13 +163,17 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         return applyRequest(() -> face.withTargetDirection(Rotation2d.fromDegrees(angle.in(Degrees))));
     }
 
-    public Command driveFacingHub(OCXboxController controller) {
+    public Command driveFacingHubController(Supplier<OCXboxController> controller) {
+        return driveFacingHub(controllerToChassisSpeeds(controller));
+    }
+    
+    public Command driveFacingHub(Supplier<ChassisSpeeds> speeds) {
         return applyRequest(() -> {
-            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate), lastTargetSpeeds, Robot.kDefaultPeriod);
+            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds.get(), lastTargetSpeeds, Robot.kDefaultPeriod);
             lastTargetSpeeds = targetSpeeds;
             return face.withVelocityX(targetSpeeds.vxMetersPerSecond)
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(shotmap.newTargetAngle(getGlobalPoseEstimate(), targetSpeeds).plus(Rotation2d.k180deg));
+                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate(), targetSpeeds).plus(Rotation2d.k180deg));
         });
     }
 
@@ -178,6 +181,10 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         return new Trigger(() -> getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle()
                 .getDegrees() == getState().Pose.getRotation().getDegrees())
                 .debounce(0.25);// TODO: Tune
+    }
+
+    public static Supplier<ChassisSpeeds> controllerToChassisSpeeds(Supplier<OCXboxController> controller) {
+        return ()->controller.get().getSpeeds(MaxSpeed, MaxAngularRate);
     }
 
     public void disturbSimPose() {
@@ -348,7 +355,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     private void log() {
         var state = getState();
         if (state != null && state.Pose != null) {
-            Rotation2d targetAngle = shotmap.newTargetAngle(getGlobalPoseEstimate(), lastTargetSpeeds);
+            Rotation2d targetAngle = Shotmap.newTargetAngle(getGlobalPoseEstimate(), lastTargetSpeeds);
             Rotation2d rawAngle = FieldUtil.kHubTrl.minus(getGlobalPoseEstimate().getTranslation()).getAngle();
 
             SmartDashboard.putNumber("Shooter/DriveFacingHub/TargetAngleDeg", targetAngle.plus(Rotation2d.k180deg).getDegrees());

@@ -25,7 +25,7 @@ public class Shotmap {
         addState(Inches.of(300),Degrees.of(15), RPM.of(4200),Seconds.of(2.5));// TODO: use real values
     }
 
-    public void periodic() {
+    public static void periodic() {
         changeTunable();
     }
 
@@ -37,8 +37,8 @@ public class Shotmap {
         return map.get(distance.in(Meters));
     }
 
-    public static Distance distanceToHub(Pose2d robotPose , Translation2d kHubPos) {
-        double meters = robotPose.getTranslation().getDistance(kHubPos);
+    public static Distance distanceToHub(Pose2d robotPose) {
+        double meters = robotPose.getTranslation().getDistance(FieldUtil.kHubTrl);
         return Meters.of(meters);
     }   
 
@@ -55,7 +55,7 @@ public class Shotmap {
     }
 
         //shoot on da fly 
-    public Rotation2d newTargetAngle(Pose2d robotPose, ChassisSpeeds speed) { // TODO: check
+    public static Rotation2d newTargetAngle(Pose2d robotPose, ChassisSpeeds speed) { // TODO: check
         Translation2d robotPosition = robotPose.getTranslation();
         Translation2d fakeTarget = FieldUtil.kHubTrl.minus(robotPosition);
 
@@ -70,7 +70,7 @@ public class Shotmap {
         return newTargetAngle.getAngle();
     }
 
-    public void changeTunable() {
+    public static void changeTunable() {
         targetMultiplier.poll();
     }
 
