@@ -84,7 +84,7 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(drivetrain.drive(driver));
         spindexer.setDefaultCommand(superstructure.passiveSpindexC());
         feeder.setDefaultCommand(feeder.passiveIndexC());
-        shooter.setDefaultCommand(shooter.setState(kHoodMinAngle, RPM.of(ShooterConstants.flywheelIdleRPM.get())));
+        shooter.setDefaultCommand(shooter.setStateC(kHoodMinAngle, RPM.of(ShooterConstants.flywheelIdleRPM.get())));
         intake.setDefaultCommand(intake.setVoltageC(0));
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -113,11 +113,11 @@ public class RobotContainer {
         // Simple drive forward auton
         final var idle = new SwerveRequest.Idle();
         return Commands.none();// sequence(
-        // // Reset our field centric heading to match the robot
-        // // facing away from our alliance station wall (0 deg).
+        // Reset our field centric heading to match the robot
+        // facing away from our alliance station wall (0 deg).
         // drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-        // // Finally idle for the rest of auton
-        // // drivetrain.applyRequest(() -> idle),
+        // Finally idle for the rest of auton
+        // drivetrain.applyRequest(() -> idle),
 
         // run(() -> CommandScheduler.getInstance().schedule(autoOptions.getAuto())),
 
@@ -129,14 +129,14 @@ public class RobotContainer {
         vision.periodic();
         changeTunable();
 
-        // double phoenixTimeOffset = Timer.getFPGATimestamp() -
-        // Utils.getCurrentTimeSeconds();
-        // var swerveState = drivetrain.getState();
-        // vision.update(
-        // drivetrain.visionEstimator,
-        // swerveState.Pose.getRotation(),
-        // RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
-        // swerveState.Timestamp + phoenixTimeOffset);
+        double phoenixTimeOffset = Timer.getFPGATimestamp() -
+        Utils.getCurrentTimeSeconds();
+        var swerveState = drivetrain.getState();
+        vision.update(
+        drivetrain.visionEstimator,
+        swerveState.Pose.getRotation(),
+        RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
+        swerveState.Timestamp + phoenixTimeOffset);
     }
 
     public void simulationPeriodic() {

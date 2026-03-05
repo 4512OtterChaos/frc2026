@@ -18,7 +18,6 @@ import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.Shotmap;
-import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
 
 public class Superstructure {
@@ -56,8 +55,8 @@ public class Superstructure {
         return parallel(
             run(
                 () -> {
-                    var distance = Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate());
-                    var state = Shotmap.getState(distance);
+                    Distance distance = Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate());
+                    Shooter.State state = Shotmap.getState(distance);
 
                     shooter.setState(state);
 
@@ -71,7 +70,8 @@ public class Superstructure {
             sequence(
                 waitUntil(() -> drivetrain.facingHubT().getAsBoolean() && shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean()),
                 feeder.feedC(),
-                spindexer.spindexC()
+                spindexer.spindexC(),
+                fourBar.oscillateC()
             )
         ).withName("ShootShotMapLive");
     }

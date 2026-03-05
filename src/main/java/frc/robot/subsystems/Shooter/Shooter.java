@@ -6,10 +6,12 @@ import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -56,10 +58,11 @@ public class Shooter extends SubsystemBase {
     public Shooter() {
         // FLYWHEEL
         fwLeftMotor.getConfigurator().apply(kFlywheelConfig);
-        var fwRightConfig = kFlywheelConfig.clone();
-        fwRightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        fwRightMotor.getConfigurator().apply(fwRightConfig);
-        // fwRightMotor.setControl(new Follower(leftMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+        // var fwRightConfig = kFlywheelConfig.clone();
+        // fwRightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        // fwRightMotor.getConfigurator().apply(fwRightConfig);
+        fwRightMotor.getConfigurator().apply(kFlywheelConfig);
+        fwRightMotor.setControl(new Follower(fwLeftMotor.getDeviceID(), MotorAlignmentValue.Opposed));
 
         // HOOD
         hMotor.getConfigurator().apply(kHoodConfig);
@@ -75,20 +78,19 @@ public class Shooter extends SubsystemBase {
                 hPositionStatus,
                 hVelocityStatus,
                 hVoltageStatus,
-                hStatorStatus);
-        hMotor.setControl(mmHoodRequest.withPosition(targetAngle));
+                hStatorStatus,
 
-        if (getHoodAngle().isNear(Degrees.of(targetAngle.in(Degrees)), Degrees.of(0.5))){
-        //TODO: find a better way to do this
-        setHoodVoltage(0);
-        }
-
-        // FLYWHEEL PERIODIC
-        BaseStatusSignal.refreshAll(
                 fwPositionStatus,
                 fwVelocityStatus,
                 fwVoltageStatus,
                 fwStatorStatus);
+        hMotor.setControl(mmHoodRequest.withPosition(targetAngle));
+
+        if (getHoodAngle().isNear(Degrees.of(targetAngle.in(Degrees)), Degrees.of(0.5))){//TODO: find a better way to do this
+            setHoodVoltage(0);
+        }
+
+        // FLYWHEEL PERIODIC
         fwLeftMotor.setControl(velocityrequest.withVelocity(targetVelocity));
         fwRightMotor.setControl(velocityrequest.withVelocity(targetVelocity));
 
@@ -129,10 +131,6 @@ public class Shooter extends SubsystemBase {
         targetAngle = angle;
     }
 
-    private Command setAngleC(Angle angle) {
-        return runOnce(() -> setAngle(angle)).until(atAngleT()).withName("Set angle: " + angle);
-    }
-
     public boolean atAngle() {
         return Math.abs(targetAngle.in(Degrees) - getHoodAngle().in(Degrees)) < degreesTolerance.get();
     }
@@ -166,10 +164,6 @@ public class Shooter extends SubsystemBase {
         targetVelocity = velocity;
     }
 
-    private Command setVelocityC(AngularVelocity velocity) {
-        return Commands.runOnce(() -> setVelocity(velocity)).until(upToSpeedT()).withName("Set velocity: " + velocity);
-    }
-
     public boolean upToSpeed() {
         return Math.abs(targetVelocity.in(RPM) - getFlywheelVelocity().in(RPM)) < RPMTolerance.get();
     }
@@ -179,13 +173,22 @@ public class Shooter extends SubsystemBase {
     }
     
     //OVERALL
-    public Command setState(State state) {
-        return setState(state.getAngle(), state.getVelocity());
+    public void setState(State state) {
+        setState(state.getAngle(), state.getVelocity());
+    }    
+
+    public void setState(Angle angle, AngularVelocity velocity) {
+        setAngle(angle);
+        setVelocity(velocity);
+    }
+    
+    public Command setStateC(State state) {
+        return setStateC(state.getAngle(), state.getVelocity());
     }    
     
-    public Command setState(Angle angle, AngularVelocity velocity) {
-        return parallel(setAngleC(angle), setVelocityC(velocity));
-    }
+    public Command setStateC(Angle angle, AngularVelocity velocity) {
+        return run(() -> setState(angle, velocity));
+    }  
 
     public void changeTunable() {
         hoodMinAngle.poll();
@@ -244,7 +247,7 @@ public class Shooter extends SubsystemBase {
     public void log() {
         SmartDashboard.putNumber("Shooter/Hood/Angle", getHoodAngle().in(Degrees));
         SmartDashboard.putNumber("Shooter/Hood/Target Angle", targetAngle.in(Degrees));
-        SmartDashboard.putNumber("Shooter/Hood/RPM", getFlywheelVelocity().in(RPM));
+        SmartDashboard.putNumber("Shooter/Hood/RPM", getHoodVelocity().in(RPM));
         // SmartDashboard.putNumber("Shooter/Hood/Wheel Radians",getAngularVelocity().in(RadiansPerSecond));
         SmartDashboard.putNumber("Shooter/Hood/Voltage", getHoodVoltage().in(Volts));
         SmartDashboard.putNumber("Shooter/Hood/Current", getHoodCurrent().in(Amps));
