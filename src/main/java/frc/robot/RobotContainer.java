@@ -101,8 +101,8 @@ public class RobotContainer {
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.rightTrigger().whileTrue(superstructure.shootShotMapControllerC(()->driver));
         driver.leftTrigger().whileTrue(intake.setVoltageInC());
-        driver.a().whileTrue(fourBar.setMinAngleC());
-        driver.y().whileTrue(fourBar.setMaxAngleC());
+        driver.a().whileTrue(fourBar.setCurrentOutC());
+        driver.y().whileTrue(fourBar.setCurrentInC());
         driver.povUp().whileTrue(climber.setMaxHeightC());
         driver.povDown().whileTrue(climber.setMinHeightC());
 

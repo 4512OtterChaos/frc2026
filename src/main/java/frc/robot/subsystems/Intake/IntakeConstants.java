@@ -1,10 +1,7 @@
 package frc.robot.subsystems.Intake;
 
 import static frc.robot.util.OCUnits.*;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Feet;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -12,12 +9,15 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.units.measure.Torque;
 import frc.robot.util.TunableNumber;
 
 public class IntakeConstants {
@@ -47,6 +47,12 @@ public class IntakeConstants {
     public static final TunableNumber intakeVoltageOut = new TunableNumber("Intake/Roller/Voltage Out", kIntakeVoltageOut);
     public static final TunableNumber fourBarVoltageIn = new TunableNumber("Intake/Four Bar/Voltage In", kFourBarVoltageIn);
     public static final TunableNumber fourBarVoltageOut = new TunableNumber("Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
+
+    public static final Current kAmpsIn = Amps.of(1); //TODO: Tune
+    public static final Current kAmpsOut = Amps.of(-1); //TODO: Tune
+
+    public static final TunableNumber ampsIn = new TunableNumber("Intake/Four Bar/Amps In", kAmpsIn.in(Amps));
+    public static final TunableNumber ampsOut = new TunableNumber("Intake/Four Bar/Amps Out", kAmpsOut.in(Amps));
 
     public static final MomentOfInertia kFourBarMomentOfInertia = PoundSquareInches.of(10);//TODO: tune
     public static final MomentOfInertia kIntakeMomentOfInertia = PoundSquareInches.of(10);//TODO: tune
@@ -106,7 +112,5 @@ public class IntakeConstants {
         MotionMagicConfigs mm = kFourBarConfig.MotionMagic;
         mm.MotionMagicCruiseVelocity = Rotations.of(3).in(Rotations); // inches per second
         mm.MotionMagicAcceleration = Rotations.of(5).in(Rotations);
-
-            
     }
 }

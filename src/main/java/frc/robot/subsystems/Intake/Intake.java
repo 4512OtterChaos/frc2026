@@ -109,7 +109,7 @@ public class Intake extends SubsystemBase{
         ),
         DCMotor.getKrakenX60(1),
         kIntakeGearRatio
-        );
+    );
 
     @Override
     public void simulationPeriodic() {
