@@ -101,8 +101,8 @@ public class RobotContainer {
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.rightTrigger().whileTrue(superstructure.shootShotMapControllerC(()->driver));
         driver.leftTrigger().whileTrue(intake.setVoltageInC());
-        driver.a().whileTrue(fourBar.setCurrentOutC());
-        driver.y().whileTrue(fourBar.setCurrentInC());
+        driver.a().whileTrue(fourBar.setVoltageOutC());
+        driver.y().whileTrue(fourBar.setVoltageInC());
         driver.povUp().whileTrue(climber.setMaxHeightC());
         driver.povDown().whileTrue(climber.setMinHeightC());
 
@@ -131,12 +131,13 @@ public class RobotContainer {
 
         double phoenixTimeOffset = Timer.getFPGATimestamp() -
         Utils.getCurrentTimeSeconds();
+        
         var swerveState = drivetrain.getState();
         vision.update(
-        drivetrain.visionEstimator,
-        swerveState.Pose.getRotation(),
-        RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
-        swerveState.Timestamp + phoenixTimeOffset);
+            drivetrain.visionEstimator,
+            swerveState.Pose.getRotation(),
+            RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
+            swerveState.Timestamp + phoenixTimeOffset);
     }
 
     public void simulationPeriodic() {

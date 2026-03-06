@@ -123,7 +123,7 @@ public final class ShooterConstants {
         current.StatorCurrentLimit = 40;
 
         Slot0Configs control = kHoodConfig.Slot0;// TODO: Tune PID
-        control.kP = 2; // TODO: please tune with REAL motors
+        control.kP = 9; // TODO: please tune with REAL motors
         control.kI = 0;
         control.kD = 0;
 

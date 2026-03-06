@@ -42,7 +42,7 @@ public class FourBar extends SubsystemBase {
     
     private Voltage targetVoltage = Volts.of(0);
 
-    private ControlMode controlMode = ControlMode.Torque;
+    private ControlMode controlMode = ControlMode.MotionMagic;
 
     public FourBar() {
         motor.getConfigurator().apply(kFourBarConfig);
@@ -65,9 +65,6 @@ public class FourBar extends SubsystemBase {
                 break;
             case MotionMagic:
                 motor.setControl(mmRequest.withPosition(targetAngle));
-                if (getAngle().isNear(Degrees.of(targetAngle.in(Degrees)), Degrees.of(0.2))) { //TODO: find a better way to do this
-                    setVoltage(0);
-                }
                 break;
             case Voltage:
                 motor.setVoltage(targetVoltage.in(Volts));
@@ -187,42 +184,34 @@ public class FourBar extends SubsystemBase {
         SmartDashboard.putNumber("Intake/Four Bar/RPM", getVelocity().in(RPM));
         SmartDashboard.putNumber("Intake/Four Bar/Voltage", getVoltage().in(Volts));
         SmartDashboard.putNumber("Intake/Four Bar/Current", getCurrent().in(Amps));
+        SmartDashboard.putBoolean("Intake/Four Bar/lower", fourBarSim.hasHitLowerLimit());
+        SmartDashboard.putBoolean("Intake/Four Bar/upper", fourBarSim.hasHitUpperLimit());
     }
 
     // Simulation
     SingleJointedArmSim fourBarSim = new SingleJointedArmSim(
-            DCMotor.getKrakenX60(1),
-            kFourBarGearRatio,
-            kFourBarMomentOfInertia.in(KilogramSquareMeters),
-            kFourBarArmLength.in(Meters),
-            fourBarMinDegrees.get(),
-            fourBarMaxDegrees.get(),
-            true,
-            fourBarMinDegrees.get());
-
-    DCMotorSim motorSim = new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(
-                    DCMotor.getKrakenX60(2),
-                    kFourBarMomentOfInertia.in(KilogramSquareMeters),
-                    kFourBarGearRatio),
-            DCMotor.getKrakenX60(2));
+        DCMotor.getKrakenX60(1),
+        kFourBarGearRatio,
+        kFourBarMomentOfInertia.in(KilogramSquareMeters),
+        kFourBarArmLength.in(Meters),
+        Degrees.of(fourBarMinDegrees.get()).in(Radians),
+        Degrees.of(fourBarMaxDegrees.get()).in(Radians),
+        false,
+        Degrees.of(fourBarMaxDegrees.get()).in(Radians)
+    );
 
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motorSimState = motor.getSimState();
         motorSimState.Orientation = ChassisReference.Clockwise_Positive;
 
-        motorSimState.setSupplyVoltage(motor.getSupplyVoltage().getValue());// TODO: Add friction? Also, idk that the
-                                                                            // voltage should be accessed like this
-        motorSim.setInputVoltage(motorSimState.getMotorVoltage());
+        motorSimState.setSupplyVoltage(motor.getSupplyVoltage().getValue());// TODO: Add friction? Also, idk that the voltage should be accessed like this
+        fourBarSim.setInputVoltage(motorSimState.getMotorVoltage());
 
-        motorSim.update(0.02);
-
-        motorSimState.setRawRotorPosition(motorSim.getAngularPositionRotations() * kFourBarGearRatio);
-        motorSimState.setRotorVelocity(motorSim.getAngularVelocityRPM() / 60 * kFourBarGearRatio);
-        double voltage = motorSim.getInputVoltage();
-        fourBarSim.setInput(voltage);
         fourBarSim.update(0.02);
+
+        motorSimState.setRawRotorPosition(Radians.of(fourBarSim.getAngleRads()*kFourBarGearRatio));
+        motorSimState.setRotorVelocity(RadiansPerSecond.of(fourBarSim.getVelocityRadPerSec()*kFourBarGearRatio));
     }
 
     private enum ControlMode {

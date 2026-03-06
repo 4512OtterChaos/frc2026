@@ -48,8 +48,8 @@ public class IntakeConstants {
     public static final TunableNumber fourBarVoltageIn = new TunableNumber("Intake/Four Bar/Voltage In", kFourBarVoltageIn);
     public static final TunableNumber fourBarVoltageOut = new TunableNumber("Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
 
-    public static final Current kAmpsIn = Amps.of(1); //TODO: Tune
-    public static final Current kAmpsOut = Amps.of(-1); //TODO: Tune
+    public static final Current kAmpsIn = Amps.of(20); //TODO: Tune
+    public static final Current kAmpsOut = Amps.of(-20); //TODO: Tune
 
     public static final TunableNumber ampsIn = new TunableNumber("Intake/Four Bar/Amps In", kAmpsIn.in(Amps));
     public static final TunableNumber ampsOut = new TunableNumber("Intake/Four Bar/Amps Out", kAmpsOut.in(Amps));
@@ -98,10 +98,10 @@ public class IntakeConstants {
 
         CurrentLimitsConfigs current = kFourBarConfig.CurrentLimits;
         current.StatorCurrentLimitEnable = true;
-        current.StatorCurrentLimit = 40; 
+        current.StatorCurrentLimit = 50; 
 
         Slot0Configs control = kFourBarConfig.Slot0;// TODO: Tune PID
-            control.kP = 0.1; 
+            control.kP = 20; 
             control.kI = 0.1;
             control.kD = 0;
             

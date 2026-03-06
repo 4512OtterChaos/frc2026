@@ -92,7 +92,6 @@ public class Shooter extends SubsystemBase {
 
         // FLYWHEEL PERIODIC
         fwLeftMotor.setControl(velocityrequest.withVelocity(targetVelocity));
-        fwRightMotor.setControl(velocityrequest.withVelocity(targetVelocity));
 
         changeTunable();
         log();    

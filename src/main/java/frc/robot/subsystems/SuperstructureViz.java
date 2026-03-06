@@ -80,12 +80,12 @@ public class SuperstructureViz extends SubsystemBase{
     private final MechanismLigament2d fourBarMech1SetpointBase = fourBarMech1Root.append(
             new MechanismLigament2d("FourBar 1 SetpointBase", IntakeConstants.kFourBar1PivotHeight.in(Meters), 90, kSetpointWidth, kSetpointBaseColor));
     private final MechanismLigament2d fourBarMech1Setpoint = fourBarMech1SetpointBase.append(
-            new MechanismLigament2d("FourBar 1 Setpoint", IntakeConstants.kFourBar1Length.in(Meters), kDefaultHoodDeg, kSetpointWidth, kSetpointBaseColor));
+            new MechanismLigament2d("FourBar 1 Setpoint", IntakeConstants.kFourBar1Length.in(Meters), kDefaultFourBar1Deg, kSetpointWidth, kSetpointBaseColor));
 
     private final MechanismLigament2d fourBarMech2SetpointBase = fourBarMech2Root.append(
             new MechanismLigament2d("FourBar 2 SetpointBase", IntakeConstants.kFourBar2PivotHeight.in(Meters), 90, kSetpointWidth, kSetpointBaseColor));
     private final MechanismLigament2d fourBarMech2Setpoint = fourBarMech2SetpointBase.append(
-            new MechanismLigament2d("FourBar 2 Setpoint", IntakeConstants.kFourBar2Length.in(Meters), kDefaultHoodDeg, kSetpointWidth, kSetpointBaseColor));
+            new MechanismLigament2d("FourBar 2 Setpoint", IntakeConstants.kFourBar2Length.in(Meters), kDefaultFourBar2Deg, kSetpointWidth, kSetpointBaseColor));
 
     Mechanism2d climberMechWindow = new Mechanism2d(.5, .6, kWindowColor);
     MechanismRoot2d climberMechRoot = climberMechWindow.getRoot("Climber", 0.25, .1);
