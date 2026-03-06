@@ -63,15 +63,15 @@ public class Superstructure {
                     SmartDashboard.putNumber("Shooter/Shot/Distance", distance.in(Meters));
                     SmartDashboard.putNumber("Shooter/Shot/Angle", state.getAngle().in(Degrees));
                     SmartDashboard.putNumber("Shooter/Shot/RPM", state.getVelocity().in(RPM));
+                    fourBar.oscillateC();
                 },
-                shooter
+                shooter, fourBar
             ), 
             drivetrain.driveFacingHub(speeds),
             sequence(
                 waitUntil(() -> drivetrain.facingHubT().getAsBoolean() && shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean()),
                 feeder.feedC(),
-                spindexer.spindexC(),
-                fourBar.oscillateC()
+                spindexer.spindexC()
             )
         ).withName("ShootShotMapLive");
     }
