@@ -91,10 +91,6 @@ public class Shooter extends SubsystemBase {
                 fwStatorStatus);
         hMotor.setControl(mmHoodRequest.withPosition(targetAngle));
 
-        if (getHoodAngle().isNear(Degrees.of(targetAngle.in(Degrees)), Degrees.of(0.5))){//TODO: find a better way to do this
-            setHoodVoltage(0);
-        }
-
         // FLYWHEEL PERIODIC
         fwLeftMotor.setControl(velocityrequest.withVelocity(targetVelocity));
 

@@ -12,16 +12,16 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
-    public static final String kCameraNameFacingLeft = "OV9281"; // TODO: change name to actual
-    public static final String kCameraNameFacingRight = "OV9281_2nd"; // TODO: change name to actual
+    public static final String kCameraNameLeft = "OV9281";
+    public static final String kCameraNameRight = "OV9281_2nd";
     // Cam mounting pose
-    public static final Transform3d kRobotToCamFacingLeft = new Transform3d( //TODO: update
-        new Translation3d(Units.inchesToMeters(4.5), Units.inchesToMeters(8.5), Units.inchesToMeters(11.75)), // 9 holes between gusset to mount Z
-        new Rotation3d(0, 0, Math.toRadians(-5))
+    public static final Transform3d kRobotToCamLeft = new Transform3d(
+        new Translation3d(Units.inchesToMeters(-11.45), Units.inchesToMeters(-10.875), Units.inchesToMeters(-12.75)),
+        new Rotation3d(0, Math.toRadians(-23), Math.toRadians(-163))
     );
-    public static final Transform3d kRobotToCamFacingRight = new Transform3d( //TODO: update
-        new Translation3d(Units.inchesToMeters(5.25), Units.inchesToMeters(10.5), Units.inchesToMeters(11.75)),
-        new Rotation3d(0, 0, Math.toRadians(-40))
+    public static final Transform3d kRobotToCamRight = new Transform3d(
+        new Translation3d(Units.inchesToMeters(-11.45), Units.inchesToMeters(-0.125), Units.inchesToMeters(-12.75)), // 9 holes between gusset to mount Z
+        new Rotation3d(0, Math.toRadians(-23), Math.toRadians(160))
     );
     
     // The layout of the AprilTags on the field

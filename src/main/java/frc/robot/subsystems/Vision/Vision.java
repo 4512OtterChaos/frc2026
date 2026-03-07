@@ -38,8 +38,8 @@ import frc.robot.Robot;
 import frc.robot.util.TunableNumber;
 
 public class Vision {
-    private final PhotonCamera cameraLeft = new PhotonCamera(kCameraNameFacingLeft);
-    private final PhotonCamera cameraRight = new PhotonCamera(kCameraNameFacingRight);
+    private final PhotonCamera cameraLeft = new PhotonCamera(kCameraNameLeft);
+    private final PhotonCamera cameraRight = new PhotonCamera(kCameraNameRight);
     private final TimeInterpolatableBuffer<Rotation2d> headingBuffer =
             TimeInterpolatableBuffer.createBuffer(1.0);
 
@@ -60,8 +60,8 @@ public class Vision {
     private final TunableNumber distanceTrustScale = new TunableNumber("Vision/distanceTrustScale", kDistanceTrustScale);
     private final TunableNumber rotSpeedTrustScale = new TunableNumber("Vision/rotSpeedTrustScale", kRotSpeedTrustScale);
     //----- Simulation
-    private PhotonCameraSim cameraSimFacingLeft;
-    private PhotonCameraSim cameraSimFacingRight;
+    private PhotonCameraSim cameraSimLeft;
+    private PhotonCameraSim cameraSimRight;
     private VisionSystemSim visionSim;
     {
         if (Robot.isSimulation()) {
@@ -90,13 +90,13 @@ public class Vision {
 
             // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible
             // targets.
-            cameraSimFacingLeft = new PhotonCameraSim(cameraLeft, leftCamProp);
-            cameraSimFacingLeft.setMinTargetAreaPixels(400);
-            cameraSimFacingRight = new PhotonCameraSim(cameraRight, leftCamProp);
-            cameraSimFacingRight.setMinTargetAreaPixels(400);
+            cameraSimLeft = new PhotonCameraSim(cameraLeft, leftCamProp);
+            cameraSimLeft.setMinTargetAreaPixels(400);
+            cameraSimRight = new PhotonCameraSim(cameraRight, leftCamProp);
+            cameraSimRight.setMinTargetAreaPixels(400);
             // Add the simulated camera to view the targets on this simulated field.
-            visionSim.addCamera(cameraSimFacingLeft, kRobotToCamFacingLeft);
-            visionSim.addCamera(cameraSimFacingRight, kRobotToCamFacingRight);
+            visionSim.addCamera(cameraSimLeft, kRobotToCamLeft);
+            visionSim.addCamera(cameraSimRight, kRobotToCamRight);
         }
     }
 
@@ -128,21 +128,21 @@ public class Vision {
 
         // Update estimator for new left-facing camera results
         var leftResults = cameraLeft.getAllUnreadResults();
-        processResults(leftResults, estimator, kRobotToCamFacingLeft, rotSpeed).ifPresent(latestEstimate -> {
+        processResults(leftResults, estimator, kRobotToCamLeft, rotSpeed).ifPresent(latestEstimate -> {
             leftEstimatePosePub.set(latestEstimate);
         });
 
         // Update estimator for new right-facing camera results
         var rightResults = cameraRight.getAllUnreadResults();
-        processResults(rightResults, estimator, kRobotToCamFacingRight, rotSpeed).ifPresent(latestEstimate -> {
+        processResults(rightResults, estimator, kRobotToCamRight, rotSpeed).ifPresent(latestEstimate -> {
             rightEstimatePosePub.set(latestEstimate);
         });
 
         // Grab updated pose for logging
         var updatedRobotPose = estimator.getEstimatedPosition();
         var updatedRobotPose3d = new Pose3d(updatedRobotPose);
-        leftCamPose.set(updatedRobotPose3d.plus(kRobotToCamFacingLeft));
-        rightCamPose.set(updatedRobotPose3d.plus(kRobotToCamFacingRight));
+        leftCamPose.set(updatedRobotPose3d.plus(kRobotToCamLeft));
+        rightCamPose.set(updatedRobotPose3d.plus(kRobotToCamRight));
 
         // Log last left-facing camera estimate and visible tags
         if (leftResults.isEmpty()) {
@@ -150,7 +150,7 @@ public class Vision {
         }
         else {
             leftVisibleTagsPub.set(leftResults.get(leftResults.size() - 1).targets.stream()
-                    .map(tag -> updatedRobotPose3d.plus(kRobotToCamFacingLeft).plus(tag.bestCameraToTarget))
+                    .map(tag -> updatedRobotPose3d.plus(kRobotToCamLeft).plus(tag.bestCameraToTarget))
                     .collect(Collectors.toList()).toArray(Pose3d[]::new));
         }
 
@@ -160,7 +160,7 @@ public class Vision {
         }
         else {
             rightVisibleTagsPub.set(rightResults.get(rightResults.size() - 1).targets.stream()
-                    .map(tag -> updatedRobotPose3d.plus(kRobotToCamFacingRight).plus(tag.bestCameraToTarget))
+                    .map(tag -> updatedRobotPose3d.plus(kRobotToCamRight).plus(tag.bestCameraToTarget))
                     .collect(Collectors.toList()).toArray(Pose3d[]::new));
         }
     }
