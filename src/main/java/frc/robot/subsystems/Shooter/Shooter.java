@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
@@ -17,6 +19,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.interpolation.Interpolatable;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
@@ -34,10 +37,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Shooter extends SubsystemBase {
-    public TalonFX fwLeftMotor = new TalonFX(kLeftMotorID);
-    public TalonFX fwRightMotor = new TalonFX(kRightMotorID);
+    private TalonFX fwLeftMotor = new TalonFX(kLeftMotorID);
+    private TalonFX fwRightMotor = new TalonFX(kRightMotorID);
 
-    public TalonFX hMotor = new TalonFX(kHoodMotorID);
+    private TalonFX hMotor = new TalonFX(kHoodMotorID);
+    private ChassisSpeeds speeds = new ChassisSpeeds();
+    private Supplier<ChassisSpeeds> supSpeeds = ()-> speeds;
 
     private AngularVelocity targetVelocity = RPM.of(0); // flywheel
     private Angle targetAngle = Degrees.of(hoodMinAngle.get()); //hood
@@ -160,7 +165,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setVelocity(AngularVelocity velocity) {
-        targetVelocity = velocity;
+        targetVelocity = velocity.plus(RPM.of(supSpeeds.get().vyMetersPerSecond));
     }
 
     public boolean upToSpeed() {
@@ -252,6 +257,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/Hood/Current", getHoodCurrent().in(Amps));
         SmartDashboard.putBoolean("Shooter/Hood/At Angle", atAngleT().getAsBoolean());
         SmartDashboard.putNumber("Shooter/Hood/Angle Tolerance", degreesTolerance.get());
+
+        SmartDashboard.putNumber("Shooter/Hood/vel", supSpeeds.get().vyMetersPerSecond);
 
         SmartDashboard.putNumber("Shooter/Flywheel/RPM", getFlywheelVelocity().in(RPM));
         // SmartDashboard.putNumber("Shooter/Flywheel/Wheel Radians", getAngularVelocity().in(RadiansPerSecond));
@@ -347,9 +354,9 @@ public class Shooter extends SubsystemBase {
             this.velocity = velocity;
             this.tof = tof;
         }
-
+        ChassisSpeeds speeds = new ChassisSpeeds();
         public Angle getAngle(){
-            return angle; 
+            return angle.plus(Degrees.of(speeds.vyMetersPerSecond)); 
         }
 
         public AngularVelocity getVelocity(){

@@ -56,9 +56,12 @@ public final class ShooterConstants {
     public static final AngularVelocity kVelocityTolerance = RPM.of(200); // TODO: tune tolerance
     public static final Angle kAngleTolerance = Degrees.of(0.5); // TODO: tune tolerance
 
-    public static final double kTargetMultiplier = 0.3; //TODO: tune for sotf if it works
+    public static final double kTargetMultiplier = 1; //TODO: tune for sotf if it works
     public static final TunableNumber targetMultiplier = new TunableNumber("Shooter/DriveFacingHub/Target Tuning", kTargetMultiplier);
-
+    
+    public static final double kVelocityTuner = 1;
+    public static final TunableNumber velocityTuner = new TunableNumber("Shooter/DriveFacingHub/Velocity Tuning", kVelocityTuner);
+    
     public static final TunableNumber RPMTolerance = new TunableNumber("Shooter/Flywheel/RPM Tolerance", kVelocityTolerance.in(RPM));
     public static final TunableNumber degreesTolerance = new TunableNumber("Shooter/Hood/Degrees Tolerance", kAngleTolerance.in(Degrees));
     
