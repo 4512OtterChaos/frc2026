@@ -54,15 +54,15 @@ public class RobotContainer {
     private final OCDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final Telemetry logger = new Telemetry(MaxSpeed);
     private final Intake intake = new Intake();
-    private final FourBar fourBar = new FourBar();
+    // private final FourBar fourBar = new FourBar(); //TODO: Re-enable
     private final Spindexer spindexer = new Spindexer();
     private final Feeder feeder = new Feeder();
     private final Shooter shooter = new Shooter();
-    private final Climber climber = new Climber();
-    private final Vision vision = new Vision();
+    // private final Climber climber = new Climber(); //TODO: Re-enable
+    // private final Vision vision = new Vision(); //TODO: Re-enable
 
-    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, shooter, climber);
-    private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, fourBar, spindexer, feeder, shooter, climber);
+    private final Superstructure superstructure = new Superstructure(drivetrain, intake, null, spindexer, feeder, shooter, null);
+    private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, null, spindexer, feeder, shooter, null);
 
     // // private final PathPlannerAuto pathPlannerAuto = new PathPlannerAuto("Top
     // // Depot Climb");
@@ -82,8 +82,10 @@ public class RobotContainer {
 
     public void configureDefaultCommands() {
         drivetrain.setDefaultCommand(drivetrain.drive(driver));
-        spindexer.setDefaultCommand(superstructure.passiveSpindexC());
-        feeder.setDefaultCommand(feeder.passiveIndexC());
+        // spindexer.setDefaultCommand(superstructure.passiveSpindexC());
+        // feeder.setDefaultCommand(feeder.passiveIndexC());
+        spindexer.setDefaultCommand(spindexer.setVoltageC(0));
+        feeder.setDefaultCommand(feeder.setVoltageC(0));
         shooter.setDefaultCommand(shooter.setStateC(kHoodMinAngle, RPM.of(ShooterConstants.flywheelIdleRPM.get())));
         intake.setDefaultCommand(intake.setVoltageC(0));
         // Idle while the robot is disabled. This ensures the configured
@@ -94,18 +96,19 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // driver.a().whileTrue(run(() -> flywheel.setVelocity(RPM.of(flywheelVelocity.get())), flywheel));
-        // driver.b().whileTrue(run(() -> hood.setAngle(Degrees.of(hoodAngle.get())), hood));
-        // driver.rightTrigger().whileTrue(run(() -> feeder.setVoltage(feederVoltage.get()), feeder))
-        //         .onFalse(runOnce(() -> feeder.setVoltage(0), feeder));
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
-        driver.rightTrigger().whileTrue(superstructure.shootShotMapControllerC(()->driver));
+        // driver.rightTrigger().whileTrue(superstructure.shootShotMapControllerC(()->driver)); //TODO: Re-enable
+        driver.rightTrigger().whileTrue(run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get()))));
+        driver.a().whileTrue(parallel(
+            spindexer.spindexC(),
+            feeder.feedC()
+        ));
         driver.leftTrigger().whileTrue(intake.setVoltageInC());
-        driver.leftTrigger().whileTrue(fourBar.oscillateC());
-        driver.y().whileTrue(fourBar.setMinAngleC());
-        driver.a().whileTrue(fourBar.setMaxAngleC());
-        driver.povUp().whileTrue(climber.setMaxHeightC());
-        driver.povDown().whileTrue(climber.setMinHeightC());
+        // driver.leftTrigger().whileTrue(fourBar.oscillateC()); //TODO: Re-enable
+        // driver.y().whileTrue(fourBar.setMinAngleC()); //TODO: Re-enable
+        // driver.a().whileTrue(fourBar.setMaxAngleC()); //TODO: Re-enable
+        // driver.povUp().whileTrue(climber.setMaxHeightC()); //TODO: Re-enable
+        // driver.povDown().whileTrue(climber.setMinHeightC()); //TODO: Re-enable
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
@@ -127,28 +130,28 @@ public class RobotContainer {
 
     public void periodic() {
         Shotmap.periodic();
-        vision.periodic();
+        // vision.periodic(); //TODO: Re-enable
         changeTunable();
 
         double phoenixTimeOffset = Timer.getFPGATimestamp() -
         Utils.getCurrentTimeSeconds();
         
         var swerveState = drivetrain.getState();
-        vision.update(
-            drivetrain.visionEstimator,
-            swerveState.Pose.getRotation(),
-            RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
-            swerveState.Timestamp + phoenixTimeOffset);
+        // vision.update( //TODO: Re-enable
+        //     drivetrain.visionEstimator,
+        //     swerveState.Pose.getRotation(),
+        //     RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
+        //     swerveState.Timestamp + phoenixTimeOffset);
     }
 
     public void simulationPeriodic() {
-        vision.simulationPeriodic(drivetrain.getState().Pose);
+        // vision.simulationPeriodic(drivetrain.getState().Pose); //TODO: Re-enable
 
-        vision.update(
-                drivetrain.visionEstimator,
-                drivetrain.getState().Pose.getRotation(),
-                RadiansPerSecond.of(drivetrain.getState().Speeds.omegaRadiansPerSecond),
-                drivetrain.getState().Timestamp + Timer.getFPGATimestamp() - Utils.getCurrentTimeSeconds());
+        // vision.update(
+        //         drivetrain.visionEstimator,
+        //         drivetrain.getState().Pose.getRotation(),
+        //         RadiansPerSecond.of(drivetrain.getState().Speeds.omegaRadiansPerSecond),
+        //         drivetrain.getState().Timestamp + Timer.getFPGATimestamp() - Utils.getCurrentTimeSeconds());
     }
 
     public void autonomousInit() {

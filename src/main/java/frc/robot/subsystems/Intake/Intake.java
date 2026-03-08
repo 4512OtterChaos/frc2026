@@ -71,11 +71,11 @@ public class Intake extends SubsystemBase{
     }
 
     public Command setVoltageInC(){
-        return setVoltageC(intakeVoltageIn.get()).withName("Voltage In");
+        return run(()->setVoltage(intakeVoltageIn.get())).withName("Voltage In");
     }
 
     public Command setVoltageOutC(){
-        return setVoltageC(intakeVoltageOut.get()).withName("Voltage Out");
+        return run(()->setVoltage(intakeVoltageOut.get())).withName("Voltage Out");
     }
 
     public void changeTunable(){

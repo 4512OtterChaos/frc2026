@@ -41,10 +41,11 @@ public class Superstructure {
     }
 
     public Command passiveSpindexC() {
-        return either(
-                spindexer.setVoltageC(IndexerConstants.spindexSlowVoltage.get()),
-                spindexer.setVoltageC(0),
-                feeder.topSensorT().negate()).withName("Index");
+        return run(()->spindexer.setVoltage(IndexerConstants.spindexSlowVoltage.get()), spindexer);
+        // either(
+        //         run(()->spindexer.setVoltage(IndexerConstants.spindexSlowVoltage.get()), spindexer),
+        //         spindexer.setVoltageC(0),
+        //         feeder.topSensorT().negate()).withName("Index");
     }
 
     public Command shootShotMapControllerC(Supplier<OCXboxController> controller) {

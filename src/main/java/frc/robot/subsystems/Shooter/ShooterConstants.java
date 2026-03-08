@@ -92,7 +92,7 @@ public final class ShooterConstants {
         control.kD = 0;
 
         control.kS = 0;
-        control.kV = 0.1;
+        control.kV = 0.175;
         control.kA = 0;
     }
 
@@ -126,13 +126,13 @@ public final class ShooterConstants {
         current.StatorCurrentLimit = 40;
 
         Slot0Configs control = kHoodConfig.Slot0;// TODO: Tune PID
-        control.kP = 9; // TODO: please tune with REAL motors
+        control.kP = 250; // TODO: please tune with REAL motors
         control.kI = 0;
         control.kD = 0;
 
-        control.kG = 0.01;
-        control.kS = 0.2;
-        control.kV = 0.1;
+        control.kG = 0.2;
+        control.kS = 0;
+        control.kV = 0;
         control.kA = 0;
 
         MotionMagicConfigs mm = kHoodConfig.MotionMagic;

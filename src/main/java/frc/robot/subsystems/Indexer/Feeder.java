@@ -72,11 +72,11 @@ public class Feeder extends SubsystemBase{
     }
 
     public Command setVoltageC(double voltage){
-        return runOnce(()-> setVoltage(voltage)).withName("Set Voltage: " + voltage);    
+        return run(()-> setVoltage(voltage)).withName("Set Voltage: " + voltage);    
     }
 
     public Command feedC(){
-        return setVoltageC(feederVoltage.get()).withName("Feed");
+        return run(()->setVoltage(feederVoltage.get())).withName("Feed");
     }
 
     public Command passiveIndexC(){

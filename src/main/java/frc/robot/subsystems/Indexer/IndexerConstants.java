@@ -24,10 +24,9 @@ public class IndexerConstants {
     public static final double kFeederGearRatio = 32.0 / 12.0;
     
     public static final double kSpindexerVoltage = 4;// TODO: Tune
-    public static final double kFeederVoltage = 4;// TODO: Tune
+    public static final double kFeederVoltage = 8;// TODO: Tune
 
-    public static final TunableNumber spindexerVoltage = new TunableNumber("Indexer/Spindexer/Volatge",
-            kSpindexerVoltage);
+    public static final TunableNumber spindexerVoltage = new TunableNumber("Indexer/Spindexer/Voltage", kSpindexerVoltage);
     public static final TunableNumber feederVoltage = new TunableNumber("Indexer/Feeder/Voltage", kFeederVoltage);
 
     public static final double kFeedSlowVoltage = 2;// TODO: Tune
@@ -48,7 +47,7 @@ public class IndexerConstants {
 
         MotorOutputConfigs output = kSpindexerConfig.MotorOutput;
         output.NeutralMode = NeutralModeValue.Coast;
-        output.Inverted = InvertedValue.CounterClockwise_Positive; // TODO: find direction later
+        output.Inverted = InvertedValue.Clockwise_Positive; 
 
         CurrentLimitsConfigs current = kSpindexerConfig.CurrentLimits;
         current.StatorCurrentLimitEnable = true;
