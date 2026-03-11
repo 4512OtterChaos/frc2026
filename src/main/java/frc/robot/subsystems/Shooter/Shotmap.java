@@ -13,7 +13,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
-import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.util.FieldUtil;
 
 public class Shotmap {
@@ -21,9 +20,11 @@ public class Shotmap {
         new InterpolatingTreeMap<Double, Shooter.State>(InverseInterpolator.forDouble(), (Shooter.State startValue, Shooter.State endValue, double t)-> startValue.interpolate(endValue, t));
 
     static {
-        addState(Inches.of(100), Degrees.of(5), RPM.of(2800), Seconds.of(1.5));// TODO: use real values
-        addState(Inches.of(200), Degrees.of(10), RPM.of(3500), Seconds.of(2));// TODO: use real values
-        addState(Inches.of(300), Degrees.of(15), RPM.of(4200), Seconds.of(2.5));// TODO: use real values
+        addState(Meters.of(6.523654706), Degrees.of(10), RPM.of(2400), Seconds.of(1.5));// TODO: use real tof
+        addState(Meters.of(5.24860998), Degrees.of(7), RPM.of(2200), Seconds.of(2));// TODO: use real tof
+        addState(Meters.of(4.716783828), Degrees.of(5), RPM.of(2200), Seconds.of(2.5));// TODO: use real tof
+        addState(Meters.of(3.55593061), Degrees.of(0), RPM.of(1900), Seconds.of(2.5));// TODO: use real tof
+        addState(Meters.of(2.342913695), Degrees.of(0), RPM.of(1800), Seconds.of(2));// TODO: use real tof
     }
 
     public static void periodic() {
