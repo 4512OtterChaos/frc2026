@@ -106,14 +106,14 @@ public class SuperstructureViz extends SubsystemBase{
         hoodMech.setAngle(kDefaultHoodDeg - shooter.getHoodAngle().in(Degrees));
         hoodSetpoint.setAngle(kDefaultHoodDeg - shooter.getHoodTargetAngle().in(Degrees));
 
-        fourBarMech1.setAngle(kDefaultFourBar1Deg - fourBar.getAngle().in(Degrees));
-        fourBarMech1Setpoint.setAngle(kDefaultFourBar1Deg - fourBar.getTargetAngle().in(Degrees));
+        // fourBarMech1.setAngle(kDefaultFourBar1Deg - fourBar.getAngle().in(Degrees));
+        // fourBarMech1Setpoint.setAngle(kDefaultFourBar1Deg - fourBar.getTargetAngle().in(Degrees));
 
-        fourBarMech2.setAngle(kDefaultFourBar2Deg - fourBar.getAngle().in(Degrees));
-        fourBarMech2Setpoint.setAngle(kDefaultFourBar2Deg - fourBar.getTargetAngle().in(Degrees));
+        // fourBarMech2.setAngle(kDefaultFourBar2Deg - fourBar.getAngle().in(Degrees));
+        // fourBarMech2Setpoint.setAngle(kDefaultFourBar2Deg - fourBar.getTargetAngle().in(Degrees));
 
-        climberMech.setLength(climber.getHeightDistance().in(Meters));
-        climberSetpoint.setLength(climber.getTargetHeight().in(Meters));
+        // climberMech.setLength(climber.getHeightDistance().in(Meters));
+        // climberSetpoint.setLength(climber.getTargetHeight().in(Meters));
 
 
 

@@ -84,10 +84,13 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+    private final SwerveRequest.RobotCentric driveautos = new SwerveRequest.RobotCentric()
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.FieldCentricFacingAngle face = new SwerveRequest.FieldCentricFacingAngle()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
-            .withHeadingPID(9, 0, 0); // TODO: tune PID
+            .withHeadingPID(4, 0, 0); // TODO: tune PID
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -138,26 +141,34 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         return visionEstimator.sampleAt(timestampSeconds);
     }
 
-    public Command drive(OCXboxController controller) {
+    public Command driveC(OCXboxController controller) {
         return applyRequest(() -> {
             ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate),
                     lastTargetSpeeds, Robot.kDefaultPeriod);
             lastTargetSpeeds = targetSpeeds;
             return drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
-                    .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withRotationalRate(targetSpeeds.omegaRadiansPerSecond);
+                .withVelocityY(targetSpeeds.vyMetersPerSecond)
+                .withRotationalRate(targetSpeeds.omegaRadiansPerSecond);
         });
     }
 
-    public Command drive(ChassisSpeeds chassisSpeeds) {
+    public Command driveC(ChassisSpeeds chassisSpeeds) {
         return applyRequest(() -> {
-            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(chassisSpeeds, lastTargetSpeeds,
+            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(chassisSpeeds, lastTargetSpeeds, //why do we call it last target speeds
                     Robot.kDefaultPeriod);
             lastTargetSpeeds = targetSpeeds;
             return drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
-                    .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withRotationalRate(targetSpeeds.omegaRadiansPerSecond);
+                .withVelocityY(targetSpeeds.vyMetersPerSecond)
+                .withRotationalRate(targetSpeeds.omegaRadiansPerSecond);
         });
+    }
+
+    public void driveAutos(ChassisSpeeds chassisSpeeds) {
+        setControl(
+            drive.withVelocityX(chassisSpeeds.vxMetersPerSecond)
+                .withVelocityY(chassisSpeeds.vyMetersPerSecond)
+                .withRotationalRate(chassisSpeeds.omegaRadiansPerSecond)
+        );
     }
 
     public Command faceAngle(Angle angle) {
@@ -174,13 +185,23 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
             lastTargetSpeeds = targetSpeeds;
             return face.withVelocityX(targetSpeeds.vxMetersPerSecond)
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate(), targetSpeeds).plus(Rotation2d.k180deg));
+                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate(), targetSpeeds, FieldUtil.kHubTrl).plus(Rotation2d.k180deg));
+        });
+    }
+
+    public Command driveFacingSetpoint(Supplier<ChassisSpeeds> speeds) { // TODO: probably shouldnt have duplicate commands, what do u think elijah
+        return applyRequest(() -> {
+            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds.get(), lastTargetSpeeds, Robot.kDefaultPeriod);
+            lastTargetSpeeds = targetSpeeds;
+            return face.withVelocityX(targetSpeeds.vxMetersPerSecond)
+                    .withVelocityY(targetSpeeds.vyMetersPerSecond)
+                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate(), targetSpeeds, getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation()).plus(Rotation2d.k180deg));
         });
     }
 
     public Trigger facingHubT() {
-        return new Trigger(() -> getState().Pose.getTranslation().minus(FieldUtil.kHubTrl).getAngle()
-                .getDegrees() == getState().Pose.getRotation().getDegrees())
+        return new Trigger(() -> getGlobalPoseEstimate().getTranslation().minus(FieldUtil.kHubTrl).getAngle()
+                .getDegrees() == getGlobalPoseEstimate().getRotation().getDegrees())
                 .debounce(0.25);// TODO: Tune
     }
 
@@ -356,12 +377,14 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     private void log() {
         var state = getState();
         if (state != null && state.Pose != null) {
-            Rotation2d targetAngle = Shotmap.newTargetAngle(getGlobalPoseEstimate(), lastTargetSpeeds);
+            Rotation2d targetAngle = Shotmap.newTargetAngle(getGlobalPoseEstimate(), lastTargetSpeeds, FieldUtil.kHubTrl);
             Rotation2d rawAngle = FieldUtil.kHubTrl.minus(getGlobalPoseEstimate().getTranslation()).getAngle();
 
             SmartDashboard.putNumber("Shooter/DriveFacingHub/TargetAngleDeg", targetAngle.plus(Rotation2d.k180deg).getDegrees());
             SmartDashboard.putNumber("Shooter/DriveFacingHub/RotationDeg", getGlobalPoseEstimate().getRotation().getDegrees());
             SmartDashboard.putNumber("Shooter/DriveFacingHub/RawAngleDeg", rawAngle.plus(Rotation2d.k180deg).getDegrees());
+            SmartDashboard.putNumber("Drivetrain/Dist from hub", Shotmap.distanceToHub(getGlobalPoseEstimate()).in(Meters));
+            
         }
     }
 }

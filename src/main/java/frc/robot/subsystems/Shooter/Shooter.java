@@ -370,7 +370,7 @@ public class Shooter extends SubsystemBase {
             } else if (t >= 1) {
                 return endValue;
             } else {
-                return new State(
+                return new State( //TODO: might need to convert to absolute values
                     Degrees.of(MathUtil.interpolate(this.getAngle().in(Degrees), endValue.getAngle().in(Degrees), t)),                
                     RPM.of(MathUtil.interpolate(this.getVelocity().in(RPM), endValue.getVelocity().in(RPM), t)),
                     Seconds.of(MathUtil.interpolate(this.getTof().in(Seconds), endValue.getTof().in(Seconds), t))

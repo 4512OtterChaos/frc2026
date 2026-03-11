@@ -24,25 +24,13 @@ public class AutoConstants {
     // public static final double kMaxAngularSpeed = Units.rotationsToRadians(1.75);
     // public static final double kMaxAngularAcceleration = Units.rotationsToRadians(3);
 
-    // pose PID control. 1 meter error in x = kP meters per second in target x velocity 
-    public static final double kPXController = 3;
-    public static final double kPYController = 3;
-    public static final double kPThetaController = 5;
-    public static final double kDThetaController = 0.1;
-
-    // constraints for the theta controller on velocity (omega) and acceleration (alpha)
-    public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
-        Units.rotationsToRadians(1.5), //   TODO: Tune
-        Units.rotationsToRadians(3) // TODO: Tune
-    );
-
     public static final double kThetaPositionTolerance = Units.degreesToRadians(3.5);
     public static final double kThetaVelocityTolerance = Units.degreesToRadians(10);
 
     // The max speed used here is for ensuring rotating while translating doesnt command more speed than is possible
     public static final PPHolonomicDriveController kPathConfig = new PPHolonomicDriveController( //TODO: tune later >:(
-        new PIDConstants(7, 0, 0),
-        new PIDConstants(9, 0, 0)
+        new PIDConstants(3, 0, 0),
+        new PIDConstants(3, 0, 0)
     );
 
     RobotConfig robotConfig = new RobotConfig(kRobotWeight, kMOI, kModuleConfig, FL, FR, BL, BR);
