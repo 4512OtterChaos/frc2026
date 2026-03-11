@@ -4,6 +4,7 @@
   "holonomicMode": true,
   "pathFolders": [
     "Bottom Shoot Climb",
+    "Top Depot Climb",
     "Top Shoot Climb"
   ],
   "autoFolders": [
@@ -22,7 +23,7 @@
   "maxDriveSpeed": 10.46,
   "driveMotorType": "krakenX60",
   "driveCurrentLimit": 60.0,
-  "wheelCOF": 1.2,
+  "wheelCOF": 1.0,
   "flModuleX": 0.254,
   "flModuleY": 0.306,
   "frModuleX": 0.254,
