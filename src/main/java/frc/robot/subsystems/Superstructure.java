@@ -47,33 +47,39 @@ public class Superstructure {
         //         spindexer.setVoltageC(0),
         //         feeder.topSensorT().negate()).withName("Index");
     }
-
-    public Command shootShotMapControllerC(Supplier<OCXboxController> controller) {
-        return shootShotMapC(OCDrivetrain.controllerToChassisSpeeds(controller));
+    
+    /**
+     * @param speeds
+     * @param targetChooser true for hub, false for setpoint
+     * @return
+     */
+    public Command shootShotMapControllerC(Supplier<OCXboxController> controller, boolean targetChooser) {
+        return shootShotMapC(OCDrivetrain.controllerToChassisSpeeds(controller), targetChooser);
     }
 
-    public Command shootShotMapC(Supplier<ChassisSpeeds> speeds) {
+    /**
+     * @param speeds
+     * @param targetChooser true for hub, false for setpoint
+     * @return
+     */
+    public Command shootShotMapC(Supplier<ChassisSpeeds> speeds, boolean targetChooser) {
         return parallel(
-            run(
-                () -> {
-                    Distance distance = Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate());
-                    Shooter.State state = Shotmap.getState(distance);
+            // run(
+            //     () -> {
+            //         Distance distance = Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate());
+            //         Shooter.State state = Shotmap.getState(distance);
 
-                    shooter.setState(state);
-
-                    SmartDashboard.putNumber("Shooter/Shot/Distance", distance.in(Meters));
-                    SmartDashboard.putNumber("Shooter/Shot/Angle", state.getAngle().in(Degrees));
-                    SmartDashboard.putNumber("Shooter/Shot/RPM", state.getVelocity().in(RPM));
-                    fourBar.oscillateC();
-                },
-                shooter, fourBar
-            ), 
-            drivetrain.driveFacingHub(speeds),
-            sequence(
-                waitUntil(() -> drivetrain.facingHubT().getAsBoolean() && shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean()),
-                feeder.feedC(),
-                spindexer.spindexC()
-            )
-        ).withName("ShootShotMapLive");
+            //         shooter.setState(state);
+            //     },
+            //     shooter
+            // ), 
+            targetChooser ? drivetrain.driveFacingHub(speeds): drivetrain.driveFacingSetpoint(speeds)//, // TODO: use drivefacingHubController() instead?
+            // sequence(
+            //     waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean()),
+            //     feeder.feedC(),
+            //     spindexer.spindexC()
+            // )//, 
+            // fourBar.oscillateC().repeatedly()
+        ).withName("ShootShotMap");
     }
 }

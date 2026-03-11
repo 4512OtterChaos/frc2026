@@ -56,9 +56,9 @@ public class Shotmap {
     }
 
         //shoot on da fly 
-    public static Rotation2d newTargetAngle(Pose2d robotPose, ChassisSpeeds speed) { // TODO: check
+    public static Rotation2d newTargetAngle(Pose2d robotPose, ChassisSpeeds speed, Translation2d target) { // TODO: check
         Translation2d robotPosition = robotPose.getTranslation();
-        Translation2d fakeTarget = FieldUtil.kHubTrl.minus(robotPosition);
+        Translation2d fakeTarget = target.minus(robotPosition);
 
         double distanceMeters = fakeTarget.getNorm();
 

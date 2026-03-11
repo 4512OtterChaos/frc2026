@@ -5,56 +5,28 @@ import com.pathplanner.lib.config.ModuleConfig;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Kilograms;
-import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
-import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
 
 public class RobotConstants {
-    private static final OCDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
-    public static final Mass kRobotWeight = Kilograms.of(45.359);
+    public static final Mass kRobotWeight = Kilograms.of(100);
     public static final MomentOfInertia kMOI = KilogramSquareMeters.of(8.874);
-    public static final Distance kWheelRad = Inches.of(2);
-    public static final LinearVelocity kMaxDriveVelocity = MetersPerSecond.of(6);
-    public static DCMotor driveMotor = DCMotor.getKrakenX60(1);
-    public static final ModuleConfig kModuleConfig = new ModuleConfig(kWheelRad, kMaxDriveVelocity, 1, driveMotor, Amps.of(40), 2);
+    public static final Distance kWheelRad = Meters.of(TunerConstants.BackLeft.WheelRadius);
+    public static final LinearVelocity kMaxDriveVelocity = TunerConstants.kSpeedAt12Volts;
+    public static DCMotor driveMotor = DCMotor.getKrakenX60(1).withReduction(TunerConstants.BackLeft.DriveMotorGearRatio);
+    public static final ModuleConfig kModuleConfig = new ModuleConfig(kWheelRad, kMaxDriveVelocity, 1, driveMotor, Amps.of(60), 1);
     
     // Module Offsets
-    public static final Translation2d FL = new Translation2d(0.254, 0.306);
-    public static final Translation2d FR = new Translation2d(0.254, -0.306);
-    public static final Translation2d BL = new Translation2d(-0.254, 0.306);
-    public static final Translation2d BR = new Translation2d(-0.254, -0.306);
-    public static int kPigeonID = 51; //TODO: change later?
-    
-    // public enum Module {
-    //     FL(1, 2, 6, 1, -172.353, kTrackLength/2, kTrackWidth/2), // Front Right
-    //     FR(2, 1, 5, 4, -104.414, kTrackLength/2, -kTrackWidth/2), // Back Left
-    //     BL(3, 7, 3, 3, 68.554, -kTrackLength/2, kTrackWidth/2), // Front left
-    //     BR(4, 4, 8, 2, 66.357, -kTrackLength/2, -kTrackWidth/2); // Back Right
+    public static final Translation2d FL = new Translation2d(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY);
+    public static final Translation2d FR = new Translation2d(TunerConstants.FrontRight.LocationX, TunerConstants.FrontRight.LocationY);
+    public static final Translation2d BL = new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY);
+    public static final Translation2d BR = new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY);
+    public static int kPigeonID = 11;
 
-    //     public final int moduleNum;
-    //     public final int driveMotorID;
-    //     public final int steerMotorID;
-    //     public final int cancoderID;
-    //     public final double angleOffset;
-    //     public final Translation2d centerOffset;
-
-    //     private Module(int moduleNum, int driveMotorID, int steerMotorID, int cancoderID, double angleOffset, double xOffset, double yOffset){
-    //         this.moduleNum = moduleNum;
-    //         this.driveMotorID = driveMotorID;
-    //         this.steerMotorID = steerMotorID;
-    //         this.cancoderID = cancoderID;
-    //         this.angleOffset = angleOffset;
-    //         centerOffset = new Translation2d(xOffset, yOffset);
-    //     }
-    // }
-
-    
 }

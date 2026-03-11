@@ -2,6 +2,8 @@ package frc.robot.subsystems.Intake;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
+import static frc.robot.subsystems.Climber.ClimberConstants.maxAngleRot;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -38,7 +40,7 @@ public class FourBar extends SubsystemBase {
     private Angle targetAngle = Degrees.of(fourBarMaxDegrees.get());
     private MotionMagicVoltage mmRequest = new MotionMagicVoltage(0);
 
-       private Current targetCurrent = Amps.of(ampsIn.get());
+    private Current targetCurrent = Amps.of(ampsIn.get());
     private TorqueCurrentFOC torqueRequest = new TorqueCurrentFOC(0);
 
     
@@ -149,11 +151,13 @@ public class FourBar extends SubsystemBase {
         return setCurrentC(Amps.of(ampsOut.get()));
     }
 
-    public Command oscillateC() {
+    public Command oscillateC() { // TODO: make sure this doesnt break the bot
         return sequence(
             setMinAngleC(),
-            setMaxAngleC()
-        ).repeatedly().finallyDo(()-> setMaxAngleC());
+            waitSeconds(0.2),
+            setMaxAngleC(),
+            waitSeconds(0.2)
+        ).finallyDo(()-> setAngle(Degrees.of(fourBarMinDegrees.get())));
     }
 
     public void changeTunable(){
