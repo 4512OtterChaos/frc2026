@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Auto.AutoOptions;
 import frc.robot.subsystems.Climber.Climber;
@@ -98,6 +99,11 @@ public class RobotContainer {
         // driver.povDown().whileTrue(climber.setMinHeightC()); //TODO: Re-enable
 
         drivetrain.registerTelemetry(logger::telemeterize);
+        
+        // Setup HubShiftUtil
+        RobotModeTriggers.teleop().onTrue(Commands.runOnce(HubShiftUtil::initialize));
+        RobotModeTriggers.autonomous().onTrue(Commands.runOnce(HubShiftUtil::initialize));
+        RobotModeTriggers.disabled().onTrue(Commands.runOnce(HubShiftUtil::initialize).ignoringDisable(true));
     }
 
     public Command getAutonomousCommand() {
