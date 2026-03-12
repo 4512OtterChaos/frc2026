@@ -5,6 +5,7 @@ import com.pathplanner.lib.config.ModuleConfig;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
@@ -28,5 +29,7 @@ public class RobotConstants {
     public static final Translation2d BL = new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY);
     public static final Translation2d BR = new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY);
     public static int kPigeonID = 11;
+
+    public static final Translation2d ShooterTranslation = new Translation2d(Inches.of(-6.486584), Inches.of(-5.500000));
 
 }

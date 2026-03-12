@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.util.RobotConstants.ShooterTranslation;
 import static frc.robot.util.RobotConstants.kPigeonID;
 
 import java.util.Optional;
@@ -38,6 +39,7 @@ import frc.robot.Robot;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
+import frc.robot.util.RobotConstants;
 import frc.robot.util.TunableNumber;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain {
@@ -90,7 +92,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     private final SwerveRequest.FieldCentricFacingAngle face = new SwerveRequest.FieldCentricFacingAngle()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
-            .withHeadingPID(4, 0, 0); // TODO: tune PID
+            .withHeadingPID(3, 0, 0); // TODO: tune PID
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -180,27 +182,25 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
     
     public Command driveFacingHub(Supplier<ChassisSpeeds> speeds) {
-        return applyRequest(() -> {
-            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds.get(), lastTargetSpeeds, Robot.kDefaultPeriod);
-            lastTargetSpeeds = targetSpeeds;
-            return face.withVelocityX(targetSpeeds.vxMetersPerSecond)
-                    .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate(), targetSpeeds, FieldUtil.kHubTrl).plus(Rotation2d.k180deg));
-        });
+        return driveFacingTarget(speeds, () -> FieldUtil.kHubTrl);
     }
 
-    public Command driveFacingSetpoint(Supplier<ChassisSpeeds> speeds) { // TODO: probably shouldnt have duplicate commands, what do u think elijah
+    public Command driveFacingSetpoint(Supplier<ChassisSpeeds> speeds) {
+        return driveFacingTarget(speeds, () -> getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
+    }
+
+    public Command driveFacingTarget(Supplier<ChassisSpeeds> speeds, Supplier<Translation2d> target) {
         return applyRequest(() -> {
             ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds.get(), lastTargetSpeeds, Robot.kDefaultPeriod);
             lastTargetSpeeds = targetSpeeds;
             return face.withVelocityX(targetSpeeds.vxMetersPerSecond)
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate(), targetSpeeds, getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation()).plus(Rotation2d.k180deg));
+                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate().plus(new Transform2d(RobotConstants.ShooterTranslation, Rotation2d.kZero)), targetSpeeds, target.get()).plus(Rotation2d.k180deg));
         });
     }
 
     public Trigger facingHubT() {
-        return new Trigger(() -> getGlobalPoseEstimate().getTranslation().minus(FieldUtil.kHubTrl).getAngle()
+        return new Trigger(() -> getGlobalPoseEstimate().getTranslation().minus(FieldUtil.kHubTrl).plus(RobotConstants.ShooterTranslation).getAngle()
                 .getDegrees() == getGlobalPoseEstimate().getRotation().getDegrees())
                 .debounce(0.25);// TODO: Tune
     }
