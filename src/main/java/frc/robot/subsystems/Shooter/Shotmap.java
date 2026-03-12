@@ -19,6 +19,9 @@ public class Shotmap {
     private static InterpolatingTreeMap<Double, Shooter.State> map = 
         new InterpolatingTreeMap<Double, Shooter.State>(InverseInterpolator.forDouble(), (Shooter.State startValue, Shooter.State endValue, double t)-> startValue.interpolate(endValue, t));
 
+    private static Time minTof = null;
+    private static Time maxTof = null;
+
     static {
         addState(Meters.of(6.523654706), Degrees.of(10), RPM.of(2400), Seconds.of(1.5));// TODO: use real tof
         addState(Meters.of(5.24860998), Degrees.of(7), RPM.of(2200), Seconds.of(2));// TODO: use real tof
@@ -33,6 +36,12 @@ public class Shotmap {
 
     private static void addState(Distance distance, Angle angle, AngularVelocity velocity, Time tof){
         map.put(distance.in(Meters), new Shooter.State(angle, velocity, tof));
+        if (minTof == null || tof.in(Seconds) < minTof.in(Seconds)){
+            minTof = tof;
+        }
+        if (maxTof == null || tof.in(Seconds) > maxTof.in(Seconds)){
+            maxTof = tof;
+        }
     }
 
     public static Shooter.State getState(Distance distance){
@@ -54,6 +63,14 @@ public class Shotmap {
 
     public static Time tof(Distance distance){
         return getState(distance).getTof();
+    }
+    
+    public static Time getMinTof() {
+        return minTof;
+    }
+
+    public static Time getMaxTof() {
+        return maxTof;
     }
 
         //shoot on da fly 
