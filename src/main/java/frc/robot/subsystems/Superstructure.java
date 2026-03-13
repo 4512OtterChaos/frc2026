@@ -5,10 +5,13 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Indexer.Feeder;
@@ -67,7 +70,8 @@ public class Superstructure {
         return parallel(
             run(
                 () -> {
-                    Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
+                    // Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
+                    Distance distance = Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate());
                     Shooter.State state = Shotmap.getState(distance);
 
                     shooter.setState(state);
@@ -82,5 +86,23 @@ public class Superstructure {
             ), 
             fourBar.oscillateC()
         ).withName("ShootShotMap");
+    }
+
+    Translation2d botTrl = drivetrain.getGlobalPoseEstimate().getTranslation();
+
+    boolean inBottomTrench = botTrl.getX() >= FieldUtil.kBottomTrenchZoneMin.getX()
+                        && botTrl.getX() <= FieldUtil.kBottomTrenchZoneMax.getX()
+                        && botTrl.getY() >= FieldUtil.kBottomTrenchZoneMin.getY()
+                        && botTrl.getY() <= FieldUtil.kBottomTrenchZoneMax.getY();
+
+    boolean inTopTrench = botTrl.getX() >= FieldUtil.kTopTrenchZoneMin.getX()
+                    && botTrl.getX() <= FieldUtil.kTopTrenchZoneMax.getX()
+                    && botTrl.getY() >= FieldUtil.kTopTrenchZoneMin.getY()
+                    && botTrl.getY() <= FieldUtil.kTopTrenchZoneMax.getY();
+
+    boolean inTrenchZone = inBottomTrench || inTopTrench;
+
+    if (inTrenchZone) {
+        hood.setAngle(Hood.MIN_ANGLE);
     }
 }
