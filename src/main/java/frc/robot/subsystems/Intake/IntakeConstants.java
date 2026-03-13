@@ -108,9 +108,9 @@ public class IntakeConstants {
             control.kS = 0;
             control.kV = 0;
             control.kA = 0;
-
+            
         MotionMagicConfigs mm = kFourBarConfig.MotionMagic;
-        mm.MotionMagicCruiseVelocity = Rotations.of(300).in(Rotations); // inches per second
-        mm.MotionMagicAcceleration = Rotations.of(500).in(Rotations);
+        mm.MotionMagicCruiseVelocity = Rotations.of(3).in(Rotations); // inches per second
+        mm.MotionMagicAcceleration = Rotations.of(5).in(Rotations);
     }
 }

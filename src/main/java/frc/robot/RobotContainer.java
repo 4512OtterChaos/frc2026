@@ -54,8 +54,8 @@ public class RobotContainer {
     private final Climber climber = new Climber(); //TODO: Re-enable
     private final Vision vision = new Vision();
 
-    private final Superstructure superstructure = new Superstructure(drivetrain, intake, null, spindexer, feeder, shooter, null); // TODO: turn off climber/FB when testing
-    private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, null, spindexer, feeder, shooter, null);
+    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, shooter, null); // TODO: turn off climber/FB when testing
+    private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, fourBar, spindexer, feeder, shooter, null);
 
     private final AutoOptions autos = new AutoOptions(drivetrain, intake, shooter, spindexer, fourBar, climber, feeder, superstructure);
 
@@ -88,13 +88,13 @@ public class RobotContainer {
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.rightTrigger().whileTrue(parallel(superstructure.shootShotMapControllerC(()->driver, true), run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get()))))); //TODO: Re-enable
         driver.rightBumper().whileTrue(superstructure.shootShotMapControllerC(()->driver, false)); //TODO: Re-enable if working
-        driver.a().whileTrue(parallel(
-            spindexer.spindexC(),
-            feeder.feedC()
-        ));
+        // driver.a().whileTrue(parallel(
+        //     spindexer.spindexC(),
+        //     feeder.feedC()
+        // ));
         driver.leftTrigger().whileTrue(intake.setVoltageInC()); // TODO: use while testing - turned off for agitation testing
-        // driver.y().whileTrue(fourBar.setMaxAngleC()); //TODO: Re-enable
-        // driver.a().whileTrue(fourBar.setMinAngleC()); //TODO: Re-enable
+        driver.y().whileTrue(fourBar.setCurrentInC()); //TODO: Re-enable
+        driver.a().whileTrue(fourBar.setCurrentOutC()); //TODO: Re-enable
         // driver.povUp().whileTrue(climber.setMaxHeightC()); //TODO: Re-enable
         // driver.povDown().whileTrue(climber.setMinHeightC()); //TODO: Re-enable
 

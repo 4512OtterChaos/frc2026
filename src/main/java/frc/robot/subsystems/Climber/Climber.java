@@ -35,7 +35,7 @@ public class Climber extends SubsystemBase {
     private final StatusSignal<Voltage> voltageStatus = motor.getMotorVoltage();
     private final StatusSignal<Current> statorStatus = motor.getStatorCurrent();
 
-    private final MotionMagicVoltage mmRequest = new MotionMagicVoltage(0).withEnableFOC(false);
+    private final MotionMagicVoltage mmRequest = new MotionMagicVoltage(0).withEnableFOC(true);
 
 
     public Climber(){
