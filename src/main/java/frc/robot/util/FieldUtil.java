@@ -12,6 +12,24 @@ import edu.wpi.first.units.measure.Distance;
 public class FieldUtil {
     public static final Distance kFieldWidth = Inches.of(317.7);
     public static final Distance kFieldLength = Inches.of(651.2);
+
+    public static final Translation2d kBottomTrenchZoneMax = new Translation2d(
+        Inches.of(182.1).plus(Inches.of(10)).in(Meters),
+        Inches.of(47).in(Meters)
+    );
+    public static final Translation2d kBottomTrenchZoneMin = new Translation2d(
+        Inches.of(182.1).minus(Inches.of(10)).in(Meters),
+        0
+    ); // make
+
+    public static final Translation2d kTopTrenchZoneMin = new Translation2d(
+        Inches.of(182.1).minus(Inches.of(10)).in(Meters),
+        kFieldWidth.minus(Inches.of(47)).in(Meters)
+    ); // make
+    public static final Translation2d kTopTrenchZoneMax = new Translation2d(
+        Inches.of(182.1).plus(Inches.of(10)).in(Meters),
+        kFieldWidth.in(Meters)
+    );
  
     public static final Translation2d kHubTrl = new Translation2d(
         Inches.of(182.1).in(Meters),
