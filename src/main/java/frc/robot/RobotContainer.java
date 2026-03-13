@@ -86,7 +86,7 @@ public class RobotContainer {
 
     private void configureBindings() {
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
-        driver.rightTrigger().whileTrue(parallel(superstructure.shootShotMapControllerC(()->driver, true), run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get()))))); //TODO: Re-enable
+        driver.rightTrigger().whileTrue(superstructure.shootShotMapControllerC(() -> driver, true)); //TODO: Re-enable
         driver.rightBumper().whileTrue(superstructure.shootShotMapControllerC(()->driver, false)); //TODO: Re-enable if working
         // driver.a().whileTrue(parallel(
         //     spindexer.spindexC(),

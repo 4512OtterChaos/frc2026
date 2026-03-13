@@ -53,7 +53,7 @@ public final class ShooterConstants {
     public static final TunableNumber hoodDebounceTime = new TunableNumber("Shooter/Hood/Debounce Time",
             kHoodDebounceTime);
 
-    public static final AngularVelocity kVelocityTolerance = RPM.of(200); // TODO: tune tolerance
+    public static final AngularVelocity kVelocityTolerance = RPM.of(100); // TODO: tune tolerance
     public static final Angle kAngleTolerance = Degrees.of(0.5); // TODO: tune tolerance
 
     public static final double kTargetMultiplier = 0; //TODO: tune for sotf if it works

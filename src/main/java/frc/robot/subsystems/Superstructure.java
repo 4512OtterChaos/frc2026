@@ -18,6 +18,7 @@ import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.Shotmap;
+import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
 
 public class Superstructure {
@@ -64,22 +65,22 @@ public class Superstructure {
      */
     public Command shootShotMapC(Supplier<ChassisSpeeds> speeds, boolean targetChooser) {
         return parallel(
-            // run(
-            //     () -> {
-            //         Distance distance = Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate());
-            //         Shooter.State state = Shotmap.getState(distance);
+            run(
+                () -> {
+                    Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
+                    Shooter.State state = Shotmap.getState(distance);
 
-            //         shooter.setState(state);
-            //     },
-            //     shooter
-            // ), 
-            targetChooser ? drivetrain.driveFacingHub(speeds): drivetrain.driveFacingSetpoint(speeds)//, // TODO: use drivefacingHubController() instead?
-            // sequence(
-            //     waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean()),
-            //     feeder.feedC(),
-            //     spindexer.spindexC()
-            // )//, 
-            // fourBar.oscillateC().repeatedly()
+                    shooter.setState(state);
+                },
+                shooter
+            ), 
+            targetChooser ? drivetrain.driveFacingHub(speeds) : drivetrain.driveFacingSetpoint(speeds), // TODO: use drivefacingHubController() instead?
+            sequence(
+                waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean()),
+                feeder.feedC(),
+                spindexer.spindexC()
+            ), 
+            fourBar.oscillateC()
         ).withName("ShootShotMap");
     }
 }

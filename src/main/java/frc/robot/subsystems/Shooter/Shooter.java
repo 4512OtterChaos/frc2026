@@ -42,7 +42,7 @@ public class Shooter extends SubsystemBase {
 
     private TalonFX hMotor = new TalonFX(kHoodMotorID);
     private ChassisSpeeds speeds = new ChassisSpeeds();
-    private Supplier<ChassisSpeeds> supSpeeds = ()-> speeds;
+    // private Supplier<ChassisSpeeds> suppliedSpeeds = ()-> speeds;
 
     private AngularVelocity targetVelocity = RPM.of(0); // flywheel
     private Angle targetAngle = Degrees.of(hoodMinAngle.get()); //hood
@@ -57,7 +57,7 @@ public class Shooter extends SubsystemBase {
     private final StatusSignal<Voltage> hVoltageStatus = hMotor.getMotorVoltage();
     private final StatusSignal<Current> hStatorStatus = hMotor.getStatorCurrent();
 
-    private final MotionMagicVoltage mmHoodRequest = new MotionMagicVoltage(0).withEnableFOC(false);
+    private final MotionMagicVoltage mmHoodRequest = new MotionMagicVoltage(0).withEnableFOC(true);
     private final VelocityVoltage velocityrequest = new VelocityVoltage(0);
 
     public Shooter() {
@@ -89,6 +89,7 @@ public class Shooter extends SubsystemBase {
                 fwVelocityStatus,
                 fwVoltageStatus,
                 fwStatorStatus);
+
         hMotor.setControl(mmHoodRequest.withPosition(targetAngle));
 
         // FLYWHEEL PERIODIC
@@ -161,7 +162,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setVelocity(AngularVelocity velocity) {
-        targetVelocity = velocity.plus(RPM.of(supSpeeds.get().vyMetersPerSecond));
+        targetVelocity = velocity;
+        //.plus(RPM.of(suppliedSpeeds.get().vyMetersPerSecond))
     }
 
     public boolean upToSpeed() {
@@ -174,7 +176,7 @@ public class Shooter extends SubsystemBase {
     
     //OVERALL
     public void setState(State state) {
-        setState(state.getAngle(), state.getVelocity());
+        setStateC(state.getAngle(), state.getVelocity());
     }    
 
     public void setState(Angle angle, AngularVelocity velocity) {
@@ -183,7 +185,7 @@ public class Shooter extends SubsystemBase {
     }
     
     public Command setStateC(State state) {
-        return setStateC(state.getAngle(), state.getVelocity());
+        return run(() -> setStateC(state.getAngle(), state.getVelocity()));
     }    
     
     public Command setStateC(Angle angle, AngularVelocity velocity) {
@@ -254,7 +256,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putBoolean("Shooter/Hood/At Angle", atAngleT().getAsBoolean());
         SmartDashboard.putNumber("Shooter/Hood/Angle Tolerance", degreesTolerance.get());
 
-        SmartDashboard.putNumber("Shooter/Hood/vel", supSpeeds.get().vyMetersPerSecond);
+        // SmartDashboard.putNumber("Shooter/Hood/vel", suppliedSpeeds.get().vyMetersPerSecond);
 
         SmartDashboard.putNumber("Shooter/Flywheel/RPM", getFlywheelVelocity().in(RPM));
         // SmartDashboard.putNumber("Shooter/Flywheel/Wheel Radians", getAngularVelocity().in(RadiansPerSecond));
@@ -350,7 +352,9 @@ public class Shooter extends SubsystemBase {
             this.velocity = velocity;
             this.tof = tof;
         }
+
         ChassisSpeeds speeds = new ChassisSpeeds();
+
         public Angle getAngle(){
             return angle.plus(Degrees.of(speeds.vyMetersPerSecond)); 
         }
