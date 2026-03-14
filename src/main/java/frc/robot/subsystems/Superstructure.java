@@ -44,16 +44,23 @@ public class Superstructure {
         this.climber = climber;
     }
 
-    public Command passiveSpindexC() {
-        return run(() -> spindexer.setVoltage(IndexerConstants.spindexSlowVoltage.get()), spindexer);
-        // either(
-        //         run(()->spindexer.setVoltage(IndexerConstants.spindexSlowVoltage.get()), spindexer),
-        //         spindexer.setVoltageC(0),
-        //         feeder.topSensorT().negate()).withName("Index");
+    // public Command passiveSpindexC() {
+    //     return either(
+    //             run(()->spindexer.setVoltage(IndexerConstants.spindexSlowVoltage.get()), spindexer),
+    //             spindexer.setVoltageC(0),
+    //             feeder.topSensorT().negate()).withName("Index");
+    // }
+    
+    /**
+     * @param speeds Field relative chassis speeds
+     * @return
+     */
+    public Command shootShotMapControllerC(Supplier<OCXboxController> controller) {
+        return shootShotMapC(OCDrivetrain.controllerToChassisSpeeds(controller));
     }
     
     /**
-     * @param speeds
+     * @param speeds Field relative chassis speeds
      * @param targetChooser true for hub, false for setpoint
      * @return
      */
@@ -62,7 +69,7 @@ public class Superstructure {
     }
 
     /**
-     * @param speeds Robot relative
+     * @param speeds Field relative chassis speeds
      * @return
      */
     public Command shootShotMapC(Supplier<ChassisSpeeds> speeds) {
@@ -76,7 +83,7 @@ public class Superstructure {
     }
 
     /**
-     * @param speeds
+     * @param speeds Field relative chassis speeds
      * @param targetChooser true for hub, false for setpoint
      * @return
      */

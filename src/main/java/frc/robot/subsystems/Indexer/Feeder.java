@@ -26,8 +26,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class Feeder extends SubsystemBase{
     private final TalonFX motor = new TalonFX(kFeederID);
 
-    private final DigitalInput bottomSensor = new DigitalInput(0);
-    private final DigitalInput topSensor = new DigitalInput(1);
+    // private final DigitalInput bottomSensor = new DigitalInput(0);
+    // private final DigitalInput topSensor = new DigitalInput(1);
 
     private final StatusSignal<Angle> positionStatus = motor.getPosition();
     private final StatusSignal<AngularVelocity> velocityStatus = motor.getVelocity();
@@ -79,21 +79,21 @@ public class Feeder extends SubsystemBase{
         return run(()->setVoltage(feederVoltage.get())).withName("Feed");
     }
 
-    public Command passiveIndexC(){
-        return Commands.either(
-            setVoltageC(feedSlowVoltage.get()),
-            setVoltageC(0),
-            ()-> !topSensorT().getAsBoolean() && bottomSensorT().getAsBoolean()
-        ).withName("Passively Index");
-    }
+    // public Command passiveIndexC(){
+    //     return Commands.either(
+    //         setVoltageC(feedSlowVoltage.get()),
+    //         setVoltageC(0),
+    //         ()-> !topSensorT().getAsBoolean() && bottomSensorT().getAsBoolean()
+    //     ).withName("Passively Index");
+    // }
 
-    public Trigger bottomSensorT(){ // same as topSensorT
-        return new Trigger(()-> bottomSensor.get());
-    }
+    // public Trigger bottomSensorT(){ // same as topSensorT
+    //     return new Trigger(()-> bottomSensor.get());
+    // }
 
-    public Trigger topSensorT(){ // might change to boolean to make indexC short :)
-        return new Trigger(()-> topSensor.get());
-    }
+    // public Trigger topSensorT(){ // might change to boolean to make indexC short :)
+    //     return new Trigger(()-> topSensor.get());
+    // }
 
     public void changeTunable(){
         feederVoltage.poll();

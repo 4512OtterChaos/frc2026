@@ -75,8 +75,8 @@ public class RobotContainer {
 
     public void configureDefaultCommands() {
         drivetrain.setDefaultCommand(drivetrain.driveC(driver));
-        // spindexer.setDefaultCommand(superstructure.passiveSpindexC());
-        // feeder.setDefaultCommand(feeder.passiveIndexC());
+        spindexer.setDefaultCommand(spindexer.setVoltageC(0));
+        feeder.setDefaultCommand(feeder.setVoltageC(0));
         spindexer.setDefaultCommand(spindexer.setVoltageC(0));
         feeder.setDefaultCommand(feeder.setVoltageC(0));
         shooter.setDefaultCommand(shooter.setStateC(kHoodMinAngle, RPM.of(ShooterConstants.flywheelIdleRPM.get())));
