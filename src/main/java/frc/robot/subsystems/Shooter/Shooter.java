@@ -1,10 +1,7 @@
 package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
-
-import java.util.function.Supplier;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -12,7 +9,6 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -32,7 +28,6 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -41,7 +36,7 @@ public class Shooter extends SubsystemBase {
     private TalonFX fwRightMotor = new TalonFX(kRightMotorID);
 
     private TalonFX hMotor = new TalonFX(kHoodMotorID);
-    private ChassisSpeeds speeds = new ChassisSpeeds();
+    // private ChassisSpeeds speeds = new ChassisSpeeds();
     // private Supplier<ChassisSpeeds> suppliedSpeeds = ()-> speeds;
 
     private AngularVelocity targetVelocity = RPM.of(0); // flywheel
@@ -63,9 +58,6 @@ public class Shooter extends SubsystemBase {
     public Shooter() {
         // FLYWHEEL
         fwLeftMotor.getConfigurator().apply(kFlywheelConfig);
-        // var fwRightConfig = kFlywheelConfig.clone();
-        // fwRightConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        // fwRightMotor.getConfigurator().apply(fwRightConfig);
         fwRightMotor.getConfigurator().apply(kFlywheelConfig);
         fwRightMotor.setControl(new Follower(fwLeftMotor.getDeviceID(), MotorAlignmentValue.Opposed));
 

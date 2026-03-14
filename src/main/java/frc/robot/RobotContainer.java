@@ -11,8 +11,6 @@ import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -21,7 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Auto.AutoOptions;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
@@ -37,7 +34,6 @@ import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SuperstructureViz;
 import frc.robot.subsystems.Vision.Vision;
-import frc.robot.util.FieldUtil;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.OCXboxController;
 import frc.robot.util.TunableNumber;
@@ -47,6 +43,7 @@ public class RobotContainer {
                                                                                         // speed
 
     private final OCXboxController driver = new OCXboxController(0);
+    private final OCXboxController operator = new OCXboxController(1);
 
     private final OCDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final Telemetry logger = new Telemetry(MaxSpeed);
@@ -68,9 +65,10 @@ public class RobotContainer {
     TunableNumber hoodAngle = new TunableNumber("test/hoodAngle", 15);
 
     public RobotContainer() {
-        setupPathPlanner();
         configureDefaultCommands();
-        configureBindings();
+        configureGeneralBindings();
+        configureDriverBindings();
+        configureOperatorBindings();
     }
 
     public void configureDefaultCommands() {
@@ -88,26 +86,32 @@ public class RobotContainer {
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
     }
 
-    private void configureBindings() {
-        driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
-        driver.rightTrigger().whileTrue(superstructure.shootShotMapControllerC(() -> driver, true)); //TODO: Re-enable
-        driver.rightBumper().whileTrue(superstructure.shootShotMapControllerC(()->driver, false)); //TODO: Re-enable if working
-        // driver.a().whileTrue(parallel(
-        //     spindexer.spindexC(),
-        //     feeder.feedC()
-        // ));
-        driver.leftTrigger().whileTrue(intake.setVoltageInC()); // TODO: use while testing - turned off for agitation testing
-        driver.y().whileTrue(fourBar.setCurrentInC()); //TODO: Re-enable
-        driver.a().whileTrue(fourBar.setCurrentOutC()); //TODO: Re-enable
-        // driver.povUp().whileTrue(climber.setMaxHeightC()); //TODO: Re-enable
-        // driver.povDown().whileTrue(climber.setMinHeightC()); //TODO: Re-enable
-
+    private void configureGeneralBindings() {
         drivetrain.registerTelemetry(logger::telemeterize);
         
         // Setup HubShiftUtil
         RobotModeTriggers.teleop().onTrue(Commands.runOnce(HubShiftUtil::initialize));
         RobotModeTriggers.autonomous().onTrue(Commands.runOnce(HubShiftUtil::initialize));
         RobotModeTriggers.disabled().onTrue(Commands.runOnce(HubShiftUtil::initialize).ignoringDisable(true));
+    }
+
+    private void configureDriverBindings() {
+        driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
+        driver.rightTrigger().whileTrue(superstructure.shootShotMapControllerC(() -> driver));
+        // driver.a().whileTrue(parallel(
+        //     spindexer.spindexC(),
+        //     feeder.feedC()
+        // ));
+        driver.leftTrigger().whileTrue(intake.setVoltageInC());
+        driver.y().whileTrue(fourBar.setCurrentInC()); //TODO: Re-enable
+        driver.a().whileTrue(fourBar.setCurrentOutC()); //TODO: Re-enable
+        // driver.povUp().whileTrue(climber.setMaxHeightC()); //TODO: Re-enable
+        // driver.povDown().whileTrue(climber.setMinHeightC()); //TODO: Re-enable
+    }
+
+    private void configureOperatorBindings() {
+        // operator.y().whileTrue(); //TODO: Re-enable
+        // operator.a().whileTrue(); //TODO: Re-enable
     }
 
     public Command getAutonomousCommand() {
@@ -118,7 +122,6 @@ public class RobotContainer {
         Shotmap.periodic();
         vision.periodic();
         autos.periodic();
-        drivetrain.inTrenchZone().onTrue(run(()-> shooter.setAngle(Degrees.of(0))));
         log();
         changeTunable();
 
@@ -137,48 +140,9 @@ public class RobotContainer {
         vision.simulationPeriodic(drivetrain.getState().Pose); 
     }
 
-    public void autonomousInit() {
+    public void AutonomousInit() {
         // CommandScheduler.getInstance().schedule(autoOptions.getAuto());
         // autoOptions.log();
-    }
-
-    public void AutonomousInit() {
-        autonomousInit();
-    }
-
-    public void setupPathPlanner() {
-        // try {
-        // RobotConfig config = RobotConfig.fromGUISettings();
-
-        // AutoBuilder.configure(
-        // () -> drivetrain.getGlobalPoseEstimate(),
-        // drivetrain::resetOdometry,
-        // () ->
-        // drivetrain.getKinematics().toChassisSpeeds(drivetrain.getState().ModuleStates),
-        // (speeds) -> {
-        // drivetrain.setControl(drivetrain.getDriveRequest()
-        // .withVelocityX(speeds.vxMetersPerSecond)
-        // .withVelocityY(speeds.vyMetersPerSecond)
-        // .withRotationalRate(speeds.omegaRadiansPerSecond));
-        // },
-
-        // new PPHolonomicDriveController(
-        // new PIDConstants(5.0, 0.0, 0.0), // Translation
-        // new PIDConstants(5.0, 0.0, 0.0) // Rotation
-        // ),
-        // config,
-
-        // () -> DriverStation.getAlliance()
-        // .map(a -> a == DriverStation.Alliance.Red)
-        // .orElse(false),
-
-        // drivetrain);
-
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // }
-
-        // CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
     }
 
     public void log(){

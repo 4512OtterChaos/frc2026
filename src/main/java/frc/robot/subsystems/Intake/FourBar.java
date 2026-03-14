@@ -130,8 +130,8 @@ public class FourBar extends SubsystemBase {
 
     public Command oscillateC() {
         return sequence(
-            setCurrentInC().withTimeout(0.2),
-            setCurrentOutC().withTimeout(0.2)
+            setCurrentInC().withTimeout(0.3),
+            setCurrentOutC().withTimeout(0.3)
         ).finallyDo(()-> setAngle(Degrees.of(fourBarMinDegrees.get()))).repeatedly();
     }
 
