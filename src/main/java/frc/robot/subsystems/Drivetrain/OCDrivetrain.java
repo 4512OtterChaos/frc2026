@@ -205,6 +205,44 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
                 .debounce(0.25);// TODO: Tune
     }
 
+    public Trigger inAllianceZone() {
+        return new Trigger(() -> {
+            Pose2d botTrl = getGlobalPoseEstimate();
+            return botTrl.getX() <= FieldUtil.kAllianceZoneMax.getX() &&
+                botTrl.getY() <= FieldUtil.kAllianceZoneMax.getY();
+            }
+        );
+    }    
+
+    public Trigger inTrenchZone() {
+        return new Trigger(() -> {
+            Pose2d botTrl = getGlobalPoseEstimate();
+            boolean inBottomTrench = botTrl.getX() >= FieldUtil.kBottomTrenchZoneMin.getX()
+                && botTrl.getX() <= FieldUtil.kBottomTrenchZoneMax.getX()
+                && botTrl.getY() >= FieldUtil.kBottomTrenchZoneMin.getY()
+                && botTrl.getY() <= FieldUtil.kBottomTrenchZoneMax.getY();
+
+            boolean inTopTrench = botTrl.getX() >= FieldUtil.kTopTrenchZoneMin.getX()
+                && botTrl.getX() <= FieldUtil.kTopTrenchZoneMax.getX()
+                && botTrl.getY() >= FieldUtil.kTopTrenchZoneMin.getY()
+                && botTrl.getY() <= FieldUtil.kTopTrenchZoneMax.getY();
+
+            return inBottomTrench || inTopTrench;
+            }
+        );
+    } 
+
+    public Trigger inNeutralZone() {
+        return new Trigger(() -> {
+            Pose2d botTrl = getGlobalPoseEstimate();
+            return botTrl.getX() >= FieldUtil.kNeutralZoneMin.getX() &&
+                botTrl.getX() <= FieldUtil.kNeutralZoneMax.getX() &&
+                botTrl.getY() >= FieldUtil.kNeutralZoneMin.getY() &&
+                botTrl.getY() <= FieldUtil.kNeutralZoneMax.getY();
+            }
+        );
+    }
+
     public static Supplier<ChassisSpeeds> controllerToChassisSpeeds(Supplier<OCXboxController> controller) {
         return ()->controller.get().getSpeeds(MaxSpeed, MaxAngularRate);
     }
