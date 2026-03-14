@@ -6,6 +6,7 @@ import static frc.robot.subsystems.Climber.ClimberConstants.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -40,6 +41,14 @@ public class Climber extends SubsystemBase {
 
     public Climber(){
         motor.getConfigurator().apply(kConfig);
+        
+        positionStatus.setUpdateFrequency(100);
+        velocityStatus.setUpdateFrequency(100);
+        voltageStatus.setUpdateFrequency(100);
+        statorStatus.setUpdateFrequency(50);
+
+        ParentDevice.optimizeBusUtilizationForAll(motor);
+
         SmartDashboard.putData("Climber/Subsystem", this);
         resetHeight(Degrees.of(0));
     }

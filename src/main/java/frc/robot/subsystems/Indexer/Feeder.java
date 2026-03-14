@@ -5,6 +5,7 @@ import static frc.robot.subsystems.Indexer.IndexerConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -36,6 +37,14 @@ public class Feeder extends SubsystemBase{
 
     public Feeder(){
         motor.getConfigurator().apply(kFeederConfig);
+        
+        positionStatus.setUpdateFrequency(100);
+        velocityStatus.setUpdateFrequency(100);
+        voltageStatus.setUpdateFrequency(100);
+        statorStatus.setUpdateFrequency(50);
+
+        ParentDevice.optimizeBusUtilizationForAll(motor);
+
         SmartDashboard.putData("Indexer/Feeder/Subsystem", this);
     }
 

@@ -5,6 +5,7 @@ import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -29,6 +30,19 @@ public class Intake extends SubsystemBase{
     private final StatusSignal<Voltage> voltageStatus = motor.getMotorVoltage();
     private final StatusSignal<Current> statorStatus = motor.getStatorCurrent();
 
+    public Intake(){
+        motor.getConfigurator().apply(kIntakeConfig);
+        
+        positionStatus.setUpdateFrequency(100);
+        velocityStatus.setUpdateFrequency(100);
+        voltageStatus.setUpdateFrequency(100);
+        statorStatus.setUpdateFrequency(50);
+
+        ParentDevice.optimizeBusUtilizationForAll(motor);
+        
+        SmartDashboard.putData("Intake/Roller/Subsystem", this);
+    }
+
     @Override
     public void periodic(){
         BaseStatusSignal.refreshAll(
@@ -39,11 +53,6 @@ public class Intake extends SubsystemBase{
         );
         changeTunable();
         log();
-    }
-
-    public Intake(){
-        motor.getConfigurator().apply(kIntakeConfig);
-        SmartDashboard.putData("Intake/Roller/Subsystem", this);
     }
 
     public Angle getAngle() {

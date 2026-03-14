@@ -8,6 +8,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.ChassisReference;
@@ -61,9 +62,21 @@ public class Shooter extends SubsystemBase {
         fwRightMotor.getConfigurator().apply(kFlywheelConfig);
         fwRightMotor.setControl(new Follower(fwLeftMotor.getDeviceID(), MotorAlignmentValue.Opposed));
 
+        fwPositionStatus.setUpdateFrequency(100);
+        fwVelocityStatus.setUpdateFrequency(100);
+        fwVoltageStatus.setUpdateFrequency(100);
+        fwStatorStatus.setUpdateFrequency(50);
+
         // HOOD
         hMotor.getConfigurator().apply(kHoodConfig);
         resetAngle(Degrees.of(hoodMinAngle.get()));
+        
+        hPositionStatus.setUpdateFrequency(100);
+        hVelocityStatus.setUpdateFrequency(100);
+        hVoltageStatus.setUpdateFrequency(100);
+        hStatorStatus.setUpdateFrequency(50);
+
+        ParentDevice.optimizeBusUtilizationForAll(fwLeftMotor, fwRightMotor, hMotor);
 
         SmartDashboard.putData("Shooter/Subsystem", this);
     }

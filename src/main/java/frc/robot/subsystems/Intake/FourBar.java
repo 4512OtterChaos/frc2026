@@ -11,6 +11,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -49,7 +50,16 @@ public class FourBar extends SubsystemBase {
 
     public FourBar() {
         motor.getConfigurator().apply(kFourBarConfig);
+        
+        positionStatus.setUpdateFrequency(100);
+        velocityStatus.setUpdateFrequency(100);
+        voltageStatus.setUpdateFrequency(100);
+        statorStatus.setUpdateFrequency(50);
+
+        ParentDevice.optimizeBusUtilizationForAll(motor);
+
         SmartDashboard.putData("Intake/Four Bar/Subsystem", this);
+        
         resetAngle(Degrees.of(fourBarMaxDegrees.get()));
         if (Utils.isSimulation()) {
             resetAngle(Degrees.of(0));
