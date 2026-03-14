@@ -49,7 +49,11 @@ public class Shotmap {
     }
 
     public static Distance distanceToHub(Pose2d robotPose) {
-        double meters = robotPose.getTranslation().getDistance(FieldUtil.kHubTrl);
+        return distanceToTarget(robotPose, FieldUtil.kHubTrl);
+    }  
+
+    public static Distance distanceToTarget(Pose2d robotPose, Translation2d targetTranslation) {
+        double meters = robotPose.getTranslation().getDistance(targetTranslation);
         return Meters.of(meters);
     }   
 
