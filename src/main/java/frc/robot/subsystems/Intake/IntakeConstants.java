@@ -48,11 +48,17 @@ public class IntakeConstants {
     public static final TunableNumber fourBarVoltageIn = new TunableNumber("Intake/Four Bar/Voltage In", kFourBarVoltageIn);
     public static final TunableNumber fourBarVoltageOut = new TunableNumber("Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
 
-    public static final Current kAmpsIn = Amps.of(20); //TODO: Tune
-    public static final Current kAmpsOut = Amps.of(-20); //TODO: Tune
+    public static final Current kAmpsIn = Amps.of(10); //TODO: Tune
+    public static final Current kAmpsOut = Amps.of(-10); //TODO: Tune
+
+    public static final Current kSmallAmpsIn = Amps.of(5); //TODO: Tune
+    public static final Current kSmallAmpsOut = Amps.of(-5); //TODO: Tune
 
     public static final TunableNumber ampsIn = new TunableNumber("Intake/Four Bar/Amps In", kAmpsIn.in(Amps));
     public static final TunableNumber ampsOut = new TunableNumber("Intake/Four Bar/Amps Out", kAmpsOut.in(Amps));
+
+    public static final TunableNumber smallAmpsIn = new TunableNumber("Intake/Four Bar/Small Amps In", kSmallAmpsIn.in(Amps));
+    public static final TunableNumber smallAmpsOut = new TunableNumber("Intake/Four Bar/Small Amps Out", kSmallAmpsIn.in(Amps));
 
     public static final MomentOfInertia kFourBarMomentOfInertia = PoundSquareInches.of(10);//TODO: tune
     public static final MomentOfInertia kIntakeMomentOfInertia = PoundSquareInches.of(10);//TODO: tune

@@ -67,6 +67,14 @@ public class FourBar extends SubsystemBase {
 
         switch (controlMode) {
             case Torque: 
+                if (motor.getPosition().isNear(fourBarMaxDegrees.get(), degreeTolerance.get())) {
+                    motor.setControl(torqueRequest.withOutput(MathUtil.clamp(targetCurrent.in(Amps), targetCurrent.in(Amps), smallAmpsIn.get())));
+                    break;   
+                }
+                else if (motor.getPosition().isNear(fourBarMinDegrees.get(), degreeTolerance.get())) {
+                    motor.setControl(torqueRequest.withOutput(MathUtil.clamp(targetCurrent.in(Amps), smallAmpsOut.get(), targetCurrent.in(Amps)))); 
+                    break;
+                }
                 motor.setControl(torqueRequest.withOutput(targetCurrent));
                 break;
             case MotionMagic:
@@ -77,10 +85,6 @@ public class FourBar extends SubsystemBase {
                 break;
         }
         log();
-
-        if (motor.getPosition().isNear(fourBarMaxDegrees.get(), degreeTolerance.get())) {
-            setCurrentC(Amps.of(0)); //elijahgagha my king
-        }
     }
 
     public Angle getAngle() {
@@ -157,7 +161,7 @@ public class FourBar extends SubsystemBase {
     }
 
     public void setVoltage(double voltage) {
-        // if (getAngle().in(Degrees) >= fourBarMaxDegrees.get()) {
+        // if (getAngle().in(Degrees) >= fourBarMaxDegrees.get()) { //TODO: Re-enable?
         //     voltage = MathUtil.clamp(voltage, -12, 0);
         // } else if (getAngle().in(Degree) <= fourBarMinDegrees.get()) {
         //     voltage = MathUtil.clamp(voltage, 0, 12);
@@ -191,11 +195,12 @@ public class FourBar extends SubsystemBase {
     public void log() {
         SmartDashboard.putNumber("Intake/Four Bar/Angle Degrees", getAngle().in(Degrees));
         SmartDashboard.putNumber("Intake/Four Bar/Target Angle Degrees", targetAngle.in(Degrees));
-        SmartDashboard.putNumber("Intake/Four Bar/RPM", getVelocity().in(RPM));
+        // SmartDashboard.putNumber("Intake/Four Bar/RPM", getVelocity().in(RPM));
         SmartDashboard.putNumber("Intake/Four Bar/Voltage", getVoltage().in(Volts));
+        SmartDashboard.putNumber("Intake/Four Bar/Target Voltage", targetVoltage.in(Volts));
         SmartDashboard.putNumber("Intake/Four Bar/Current", getCurrent().in(Amps));
-        SmartDashboard.putBoolean("Intake/Four Bar/lower", fourBarSim.hasHitLowerLimit());
-        SmartDashboard.putBoolean("Intake/Four Bar/upper", fourBarSim.hasHitUpperLimit());
+        SmartDashboard.putNumber("Intake/Four Bar/Target Current", targetCurrent.in(Amps));
+        SmartDashboard.putString("Intake/Four Bar/Control Mode", controlMode.toString());
     }
 
     // Simulation
