@@ -1,8 +1,5 @@
 package frc.robot.subsystems.Shooter;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.Shooter.ShooterConstants.*;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
@@ -19,9 +16,18 @@ import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -31,6 +37,40 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import static frc.robot.subsystems.Shooter.ShooterConstants.RPMTolerance;
+import static frc.robot.subsystems.Shooter.ShooterConstants.degreesTolerance;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelDebounceTime;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelIdleRPM;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkA;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkD;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkI;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkP;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkS;
+import static frc.robot.subsystems.Shooter.ShooterConstants.flywheelkV;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodAcceleration;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodCruiseVelocity;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodDebounceTime;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodMaxAngle;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodMinAngle;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkA;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkD;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkG;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkI;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkP;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkS;
+import static frc.robot.subsystems.Shooter.ShooterConstants.hoodkV;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kFlywheelConfig;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kFlywheelGearRatio;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kFlywheelMomentOfInertia;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodConfig;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodGearRatio;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodLength;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMaxAngle;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMinAngle;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMomentOfInertia;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kHoodMotorID;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kLeftMotorID;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kRightMotorID;
 
 public class Shooter extends SubsystemBase {
     private TalonFX fwLeftMotor = new TalonFX(kLeftMotorID);
@@ -367,12 +407,22 @@ public class Shooter extends SubsystemBase {
         private AngularVelocity velocity; 
         private Time tof;
 
+        public static State operatorState = new State(kHoodMinAngle, RPM.of(0), Seconds.of(0));
+
         State(Angle angle, AngularVelocity velocity, Time tof){
             this.angle = angle;
             this.velocity = velocity;
             this.tof = tof;
         }
 
+        public static void setOperatorState(Distance dist) {
+            operatorState = Shotmap.getState(dist);
+        }
+        
+        public static Shooter.State getOperatorState() {
+            return operatorState;
+        } 
+    
         ChassisSpeeds speeds = new ChassisSpeeds();
 
         public Angle getAngle(){
