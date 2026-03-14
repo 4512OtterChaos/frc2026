@@ -131,8 +131,8 @@ public class RobotContainer {
         operator.a().whileTrue(run(() -> Shooter.State.setOperatorState(frontOfTower))); //TODO: Re-enable
         operator.x().whileTrue(run(() -> Shooter.State.setOperatorState(nextToTower))); //TODO: Re-enable
 
-        operator.back().onTrue(runOnce(()-> driverShoot = true)); // Is this ok?
-        operator.start().onTrue(runOnce(()-> driverShoot = false));
+        operator.rightBumper().onTrue(runOnce(()-> driverShoot = true)); // Is this ok?
+        operator.leftBumper().onTrue(runOnce(()-> driverShoot = false));
 
     }
 
@@ -144,6 +144,7 @@ public class RobotContainer {
         Shotmap.periodic();
         vision.periodic();
         autos.periodic();
+        // shooter.in
         log();
         changeTunable();
 

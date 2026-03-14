@@ -2,29 +2,30 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-
-import static edu.wpi.first.wpilibj2.command.Commands.*;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import static edu.wpi.first.wpilibj2.command.Commands.either;
+import static edu.wpi.first.wpilibj2.command.Commands.none;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
-import frc.robot.subsystems.Drivetrain.TunerConstants;
 import frc.robot.subsystems.Indexer.Feeder;
-import frc.robot.subsystems.Indexer.IndexerConstants;
 import frc.robot.subsystems.Indexer.Spindexer;
 import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.Shotmap;
-import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
 
-public class Superstructure {
+public class Superstructure extends SubsystemBase{
     private OCDrivetrain drivetrain;
     private Intake intake;
     private FourBar fourBar;
@@ -32,6 +33,7 @@ public class Superstructure {
     private Feeder feeder;
     private Shooter shooter;
     private Climber climber;
+    private RobotContainer robot;
 
     public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder,
              Shooter shooter, Climber climber) {
@@ -42,6 +44,15 @@ public class Superstructure {
         this.feeder = feeder;
         this.shooter = shooter;
         this.climber = climber;
+    }
+
+    @Override
+    public void periodic() { // TODO: remove this method
+        SmartDashboard.putBoolean("Superstructure/In Trench Zone", drivetrain.inTrenchZone().getAsBoolean());
+        SmartDashboard.putBoolean("Superstructure/In Aliiance Zone", drivetrain.inAllianceZone().getAsBoolean());
+        SmartDashboard.putBoolean("Superstructure/In Neutral Zone", drivetrain.inNeutralZone().getAsBoolean());
+
+        SmartDashboard.putBoolean("Superstructure/Operator Control", robot.driverShoot);
     }
 
     // public Command passiveSpindexC() {
@@ -89,15 +100,15 @@ public class Superstructure {
      */
     public Command shootShotMapC(Supplier<ChassisSpeeds> speeds, boolean targetChooser) {
         return parallel(
-            run(
+            Commands.run(
                 () -> {
                     // Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
                     Distance distance = Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate());
                     Shooter.State state = Shotmap.getState(distance);
-                    // Shooter.State downState = Shotmap.getState(Meters.of(2.3429136952));
+                    Shooter.State downState = Shotmap.getState(Meters.of(2.3429136952));
 
                     shooter.setState(state);
-                    // inTrenchZone().whileTrue(shooter.setStateC(downState));
+                    drivetrain.inTrenchZone().whileTrue(run(()-> shooter.setState(downState))); // works surprisingly well in sim
                 },
                 shooter
             ),

@@ -19,20 +19,20 @@ public class FieldUtil {
     );
 
     public static final Translation2d kBottomTrenchZoneMin = new Translation2d(
-        Inches.of(182.1).minus(Inches.of(10)).in(Meters),
+        Inches.of(182.1).minus(Inches.of(50)).in(Meters),
         0
     );
     public static final Translation2d kBottomTrenchZoneMax = new Translation2d(
-        Inches.of(182.1).plus(Inches.of(10)).in(Meters),
+        Inches.of(182.1).plus(Inches.of(50)).in(Meters),
         Inches.of(47).in(Meters)
     );
 
     public static final Translation2d kTopTrenchZoneMin = new Translation2d(
-        Inches.of(182.1).minus(Inches.of(10)).in(Meters),
+        Inches.of(182.1).minus(Inches.of(50)).in(Meters),
         kFieldWidth.minus(Inches.of(47)).in(Meters)
     );
     public static final Translation2d kTopTrenchZoneMax = new Translation2d(
-        Inches.of(182.1).plus(Inches.of(10)).in(Meters),
+        Inches.of(182.1).plus(Inches.of(50)).in(Meters),
         kFieldWidth.in(Meters)
     );
 

@@ -303,6 +303,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Shooter/Flywheel/Voltage", getFlywheelVoltage().in(Volts));
         SmartDashboard.putNumber("Shooter/Flywheel/Current", getFlywheelCurrent().in(Amps));
         SmartDashboard.putBoolean("Shooter/Up to speed", upToSpeedT().getAsBoolean());
+    
 
         // ##### Component Logs
 
