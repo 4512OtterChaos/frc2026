@@ -112,7 +112,7 @@ public class RobotContainer {
         ));
 
         driver.rightBumper().whileTrue(parallel(
-            run(()-> shooter.setState(Shotmap.getState(Shotmap.nextToTower))), 
+            run(()-> shooter.setState(Degrees.of(5), RPM.of(2200))), 
             sequence(
                 waitSeconds(0.6),
                 parallel(
