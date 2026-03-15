@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.units.measure.Distance;
@@ -12,6 +13,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.either;
 import static edu.wpi.first.wpilibj2.command.Commands.none;
 import static edu.wpi.first.wpilibj2.command.Commands.parallel;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
@@ -23,6 +25,7 @@ import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.Shotmap;
+import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
 
 public class Superstructure extends SubsystemBase{
@@ -51,8 +54,6 @@ public class Superstructure extends SubsystemBase{
         SmartDashboard.putBoolean("Superstructure/In Trench Zone", drivetrain.inTrenchZone().getAsBoolean());
         SmartDashboard.putBoolean("Superstructure/In Aliiance Zone", drivetrain.inAllianceZone().getAsBoolean());
         SmartDashboard.putBoolean("Superstructure/In Neutral Zone", drivetrain.inNeutralZone().getAsBoolean());
-
-        SmartDashboard.putBoolean("Superstructure/Operator Control", robot.driverShoot);
     }
 
     // public Command passiveSpindexC() {
@@ -99,26 +100,29 @@ public class Superstructure extends SubsystemBase{
      * @return
      */
     public Command shootShotMapC(Supplier<ChassisSpeeds> speeds, boolean targetChooser) {
+        Supplier<Translation2d> target = ()-> targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation();
         return parallel(
             Commands.run(
                 () -> {
                     // Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
                     Distance distance = Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate());
                     Shooter.State state = Shotmap.getState(distance);
-                    Shooter.State downState = Shotmap.getState(Meters.of(2.3429136952));
 
                     shooter.setState(state);
-                    drivetrain.inTrenchZone().whileTrue(run(()-> shooter.setState(downState))); // works surprisingly well in sim
+                    drivetrain.inTrenchZone().whileTrue(run(()-> shooter.setState(Shotmap.idleState))); // works surprisingly well in sim
                 },
                 shooter
             ),
-            targetChooser ? drivetrain.driveFacingHub(speeds) : drivetrain.driveFacingSetpoint(speeds), // TODO: use drivefacingHubController() instead?
+            drivetrain.driveFacingTarget(speeds, target), // TODO: use drivefacingHubController() instead?
             sequence(
-                waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean()),
-                feeder.feedC(),
-                spindexer.spindexC()
-            ), 
-            fourBar.oscillateC()
+                // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
+                waitSeconds(0.7),
+                parallel(
+                    feeder.feedC(),
+                    spindexer.spindexC()
+                )
+            )//, 
+            // fourBar.oscillateC()
         ).withName("ShootShotMap");
     }
 }

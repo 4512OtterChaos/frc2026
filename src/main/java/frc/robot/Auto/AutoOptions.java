@@ -1,7 +1,10 @@
 package frc.robot.Auto;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj2.command.Commands.none;
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static frc.robot.util.RobotConstants.*;
 
 import java.io.IOException;
@@ -16,11 +19,15 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 
 import choreo.auto.AutoChooser;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
@@ -29,6 +36,7 @@ import frc.robot.subsystems.Indexer.Spindexer;
 import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.util.FieldUtil;
 
 public class AutoOptions {
     private final AutoChooser autoChooser = new AutoChooser();
@@ -62,7 +70,7 @@ public class AutoOptions {
         (chassisSpeeds) -> drivetrain.driveAutos(chassisSpeeds),
         AutoConstants.kPathConfig,
         robotConfig,
-        () -> drivetrain.driveMirror(),
+        () -> false,
         drivetrain);
 
         addAutoMethods();
@@ -71,8 +79,9 @@ public class AutoOptions {
     private void addAutoMethods() {
         NamedCommands.registerCommand("Intake", intake.setVoltageInC());
         NamedCommands.registerCommand("Shoot", superstructure.shootShotMapC(()-> new ChassisSpeeds(), true).withTimeout(5));
-        NamedCommands.registerCommand("Climber Up", climber.setMaxHeightC());
-        NamedCommands.registerCommand("Climber Down", climber.setMinHeightC());
+        // NamedCommands.registerCommand("Climber Up", climber.setMaxHeightC());
+        // NamedCommands.registerCommand("Climber Down", climber.setMinHeightC());
+        NamedCommands.registerCommand("Lower Fourbar", fourBar.setCurrentOutC());
     }
 
     public void periodic() {
@@ -84,9 +93,18 @@ public class AutoOptions {
     }
 
     public void addClimbOptions() {
+        autoChooser.addCmd("New and super cool", 
+            ()->sequence(
+                runOnce(()->drivetrain.resetPose(new Pose2d(Meters.of(4.5), FieldUtil.kFieldWidth.div(2), Rotation2d.k180deg)), drivetrain),
+                drivetrain.driveC(new ChassisSpeeds(-1, 0, 0)).withTimeout(3.5),
+                drivetrain.driveC(new ChassisSpeeds(0, 0, 0)).withTimeout(3.5),
+                waitSeconds(5),
+                superstructure.shootShotMapC(()->new ChassisSpeeds())
+        ));
         autoChooser.addCmd("Top Shoot Climb", ()-> AutoBuilder.buildAuto("Top Shoot Climb"));
         autoChooser.addCmd("Bottom Shoot Climb", ()-> AutoBuilder.buildAuto("Bottom Shoot Climb"));
         autoChooser.addCmd("Top Depot Climb", ()-> AutoBuilder.buildAuto("Top Depot Climb"));
+        autoChooser.addCmd("Top Double Cycle", ()-> AutoBuilder.buildAuto("Top Double Cycle"));
     }
 
     public Command getAuto() {

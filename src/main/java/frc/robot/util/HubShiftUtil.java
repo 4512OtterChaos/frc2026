@@ -43,9 +43,8 @@ public class HubShiftUtil {
   private static final double shiftEndFuelCountExtension = 3.0;
   private static final double minTimeOfFlight = Shotmap.getMinTof().in(Seconds);
   private static final double maxTimeOfFlight = Shotmap.getMaxTof().in(Seconds);
-  private static final double approachingActiveFudge = -1 * (minTimeOfFlight + minFuelCountDelay);
-  private static final double endingActiveFudge =
-      shiftEndFuelCountExtension + -1 * (maxTimeOfFlight + maxFuelCountDelay);
+  private static final double approachingActiveFudge = 0;//-1 * (minTimeOfFlight + minFuelCountDelay);
+  private static final double endingActiveFudge = 0;//shiftEndFuelCountExtension + -1 * (maxTimeOfFlight + maxFuelCountDelay);
 
   public static final double autoEndTime = 20.0;
   public static final double teleopDuration = 140.0;

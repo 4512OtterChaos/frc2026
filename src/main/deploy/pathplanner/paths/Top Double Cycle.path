@@ -1,0 +1,246 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.453095577746077,
+        "y": 7.573723252496434
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.453095577746077,
+        "y": 7.573723252496434
+      },
+      "isLocked": false,
+      "linkedName": "Top Trench"
+    },
+    {
+      "anchor": {
+        "x": 7.78,
+        "y": 7.379643366619116
+      },
+      "prevControl": {
+        "x": 7.610128388017117,
+        "y": 7.845435092724678
+      },
+      "nextControl": {
+        "x": 7.930788997568345,
+        "y": 6.966176592299203
+      },
+      "isLocked": false,
+      "linkedName": "Top Sweep Start"
+    },
+    {
+      "anchor": {
+        "x": 7.97241084165478,
+        "y": 4.6495863052781745
+      },
+      "prevControl": {
+        "x": 8.062981455064193,
+        "y": 5.451783166904422
+      },
+      "nextControl": {
+        "x": 7.914401549607158,
+        "y": 4.13578971857065
+      },
+      "isLocked": false,
+      "linkedName": "Top Sweep Middle"
+    },
+    {
+      "anchor": {
+        "x": 6.225691868758916,
+        "y": 4.533138373751783
+      },
+      "prevControl": {
+        "x": 6.38400131632323,
+        "y": 4.339649048950952
+      },
+      "nextControl": {
+        "x": 6.052855115574554,
+        "y": 4.744383294310451
+      },
+      "isLocked": false,
+      "linkedName": "Top Sweep Middle 2"
+    },
+    {
+      "anchor": {
+        "x": 6.070427960057061,
+        "y": 7.211440798858773
+      },
+      "prevControl": {
+        "x": 6.39111406898173,
+        "y": 6.890754689934105
+      },
+      "nextControl": {
+        "x": 5.708145506419401,
+        "y": 7.573723252496434
+      },
+      "isLocked": false,
+      "linkedName": "Top Sweep End"
+    },
+    {
+      "anchor": {
+        "x": 3.3403708987161194,
+        "y": 7.41845934379458
+      },
+      "prevControl": {
+        "x": 4.669622476700935,
+        "y": 7.551384501593062
+      },
+      "nextControl": {
+        "x": 2.9522111269614832,
+        "y": 7.379643366619116
+      },
+      "isLocked": false,
+      "linkedName": "Top Trench Shoot"
+    },
+    {
+      "anchor": {
+        "x": 4.608359486447931,
+        "y": 7.392582025677603
+      },
+      "prevControl": {
+        "x": 4.372504322386972,
+        "y": 7.309682438309642
+      },
+      "nextControl": {
+        "x": 4.84421465050889,
+        "y": 7.475481613045564
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.78,
+        "y": 7.379643366619116
+      },
+      "prevControl": {
+        "x": 7.610128388017117,
+        "y": 7.8583737517831675
+      },
+      "nextControl": {
+        "x": 8.11747353632756,
+        "y": 6.428579006053409
+      },
+      "isLocked": false,
+      "linkedName": "Top Sweep Start"
+    },
+    {
+      "anchor": {
+        "x": 7.97241084165478,
+        "y": 4.6495863052781745
+      },
+      "prevControl": {
+        "x": 7.8947788873038505,
+        "y": 5.063623395149786
+      },
+      "nextControl": {
+        "x": 8.02688905277068,
+        "y": 4.359035845993378
+      },
+      "isLocked": false,
+      "linkedName": "Top Sweep Middle"
+    },
+    {
+      "anchor": {
+        "x": 6.225691868758916,
+        "y": 4.533138373751783
+      },
+      "prevControl": {
+        "x": 6.3230008414482315,
+        "y": 4.262835671837018
+      },
+      "nextControl": {
+        "x": 6.109243937232525,
+        "y": 4.85660485021398
+      },
+      "isLocked": false,
+      "linkedName": "Top Sweep Middle 2"
+    },
+    {
+      "anchor": {
+        "x": 6.070427960057061,
+        "y": 7.211440798858773
+      },
+      "prevControl": {
+        "x": 6.096305278174036,
+        "y": 6.758587731811698
+      },
+      "nextControl": {
+        "x": 6.0327824228111275,
+        "y": 7.870237700662623
+      },
+      "isLocked": false,
+      "linkedName": "Top Sweep End"
+    },
+    {
+      "anchor": {
+        "x": 3.3403708987161194,
+        "y": 7.41845934379458
+      },
+      "prevControl": {
+        "x": 4.116690442225391,
+        "y": 7.5866619115549225
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Top Trench Shoot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.1387494294842486,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 2.043359196713831,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Lower Fourbar",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Shoot",
+      "waypointRelativePos": 5.35,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Shoot",
+      "waypointRelativePos": 11.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Top Double Cycle",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -181,16 +183,36 @@ public class Vision {
             results.sort((r1, r2) -> Double.compare(r1.getTimestampSeconds(), r2.getTimestampSeconds()));
         }
         for (var result : results) {
-            Rotation2d rotAtResult = headingBuffer.getSample(result.getTimestampSeconds()).get();
-            var opt = estimatePoseGivenRot(result, rotAtResult, robotToCam);
+            // Rotation2d rotAtResult = headingBuffer.getSample(result.getTimestampSeconds()).get();
+            // var opt = estimatePoseGivenRot(result, rotAtResult, robotToCam);
+            var opt = estimateMultitag(result, robotToCam);
             if (opt.isEmpty()) continue;
             EstimatedRobotPose estimate = opt.get();
             latestCamEstimate = Optional.of(estimate.estimatedPose);
-            var stdDevs = getEstimationStdDevs(result, rotSpeed, true);
+            var stdDevs = getEstimationStdDevs(result, rotSpeed, false);
             estimator.addVisionMeasurement(estimate.estimatedPose.toPose2d(), estimate.timestampSeconds, stdDevs);
         }
 
         return latestCamEstimate;
+    }
+
+    public Optional<EstimatedRobotPose> estimateMultitag(PhotonPipelineResult result, Transform3d robotToCam) {
+        var tags = result.getTargets();
+        if (tags.isEmpty() || result.getMultiTagResult().isEmpty() || result.getTimestampSeconds() < 0) return Optional.empty();
+
+
+        var best_tf = result.getMultiTagResult().get().estimatedPose.best;
+        var best =
+                Pose3d.kZero
+                        .plus(best_tf) // field-to-camera
+                        .relativeTo(kTagLayout.getOrigin())
+                        .plus(robotToCam.inverse()); // field-to-robot
+        return Optional.of(
+                new EstimatedRobotPose(
+                        best,
+                        result.getTimestampSeconds(),
+                        result.getTargets(),
+                        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR));
     }
 
     /**

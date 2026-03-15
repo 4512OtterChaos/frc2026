@@ -48,7 +48,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     private static double MaxAngularRate = RotationsPerSecond.of(2).in(RadiansPerSecond); // max angular velocity
 
     // Normal driving speed at 100% controller input
-    public static final double kDriveSpeedRatio = 0.5;
+    public static final double kDriveSpeedRatio = 0.85;
     public static final double kTurnSpeedRatio = 0.5;
 
     public static final TunableNumber driveSpeedRatio = new TunableNumber("Drivetrain/Drive Speed", kDriveSpeedRatio);
@@ -84,15 +84,13 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.RobotCentric driveautos = new SwerveRequest.RobotCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.FieldCentricFacingAngle face = new SwerveRequest.FieldCentricFacingAngle()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+            .withRotationalDeadband(MaxAngularRate * 0.02) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
-            .withHeadingPID(3, 0, 0); // TODO: tune PID
+            .withHeadingPID(6.5, 0, 0); // TODO: tune PID
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -199,8 +197,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         });
     }
 
-    public Trigger facingHubT() {
-        return new Trigger(() -> getGlobalPoseEstimate().getTranslation().minus(FieldUtil.kHubTrl).plus(RobotConstants.ShooterTranslation).getAngle()
+    public Trigger facingTargetT(Supplier<Translation2d> trl) {
+        return new Trigger(() -> getGlobalPoseEstimate().getTranslation().minus(trl.get()).plus(RobotConstants.ShooterTranslation).getAngle()
                 .getDegrees() == getGlobalPoseEstimate().getRotation().getDegrees())
                 .debounce(0.25);// TODO: Tune
     }
@@ -342,10 +340,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
                             getState().Pose.getTranslation(),
                             initialRot));
         });
-    }
-
-    public Command getAutonomousCommand(String pathName) {
-        return new PathPlannerAuto(pathName);
     }
 
     public Rotation2d getGyroYaw() {

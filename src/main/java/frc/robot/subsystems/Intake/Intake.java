@@ -102,8 +102,8 @@ public class Intake extends SubsystemBase{
     }
 
     public void log(){
-        SmartDashboard.putNumber("Intake/Roller/Angle Degrees", getAngle().in(Degrees));
-        SmartDashboard.putNumber("Intake/Roller/Wrapped Angle Degrees", wrapAngle());
+        // SmartDashboard.putNumber("Intake/Roller/Angle Degrees", getAngle().in(Degrees));
+        // SmartDashboard.putNumber("Intake/Roller/Wrapped Angle Degrees", wrapAngle());
         SmartDashboard.putNumber("Intake/Roller/RPM", getVelocity().in(RPM));
         SmartDashboard.putNumber("Intake/Roller/Voltage", getVoltage().in(Volts));
         SmartDashboard.putNumber("Intake/Roller/Current", getCurrent().in(Amps));

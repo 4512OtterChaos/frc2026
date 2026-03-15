@@ -37,7 +37,7 @@ public class IntakeConstants {
     public static final TunableNumber fourBarMaxDegrees = new TunableNumber("Intake/Four Bar/Max Degrees", kFourBarMaxAngle.in(Degrees));
     public static final TunableNumber degreeTolerance = new TunableNumber("Intake/Four Bar/Degrees Tolerance", kAngleTolerance.in(Degrees));
 
-    public static final double kIntakeVoltageIn = 4; //TODO: Tune
+    public static final double kIntakeVoltageIn = 8; //TODO: Tune
     public static final double kIntakeVoltageOut = -4; //TODO: Tune
 
     public static final double kFourBarVoltageIn = 2; //TODO: Tune
@@ -49,16 +49,16 @@ public class IntakeConstants {
     public static final TunableNumber fourBarVoltageOut = new TunableNumber("Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
 
     public static final Current kAmpsIn = Amps.of(10); //TODO: Tune
-    public static final Current kAmpsOut = Amps.of(-10); //TODO: Tune
+    public static final Current kAmpsOut = Amps.of(-7); //TODO: Tune
 
-    public static final Current kSmallAmpsIn = Amps.of(5); //TODO: Tune
-    public static final Current kSmallAmpsOut = Amps.of(-5); //TODO: Tune
+    // public static final Current kSmallAmpsIn = Amps.of(5); //TODO: Tune
+    // public static final Current kSmallAmpsOut = Amps.of(-5); //TODO: Tune
 
     public static final TunableNumber ampsIn = new TunableNumber("Intake/Four Bar/Amps In", kAmpsIn.in(Amps));
     public static final TunableNumber ampsOut = new TunableNumber("Intake/Four Bar/Amps Out", kAmpsOut.in(Amps));
 
-    public static final TunableNumber smallAmpsIn = new TunableNumber("Intake/Four Bar/Small Amps In", kSmallAmpsIn.in(Amps));
-    public static final TunableNumber smallAmpsOut = new TunableNumber("Intake/Four Bar/Small Amps Out", kSmallAmpsIn.in(Amps));
+    // public static final TunableNumber smallAmpsIn = new TunableNumber("Intake/Four Bar/Small Amps In", kSmallAmpsIn.in(Amps));
+    // public static final TunableNumber smallAmpsOut = new TunableNumber("Intake/Four Bar/Small Amps Out", kSmallAmpsIn.in(Amps));
 
     public static final MomentOfInertia kFourBarMomentOfInertia = PoundSquareInches.of(10);//TODO: tune
     public static final MomentOfInertia kIntakeMomentOfInertia = PoundSquareInches.of(10);//TODO: tune
@@ -80,7 +80,7 @@ public class IntakeConstants {
 
         CurrentLimitsConfigs current = kIntakeConfig.CurrentLimits;
         current.StatorCurrentLimitEnable = true;
-        current.StatorCurrentLimit = 40; 
+        current.StatorCurrentLimit = 55; 
 
         Slot0Configs control = kIntakeConfig.Slot0;// TODO: Tune PID
             control.kP = 9; 
