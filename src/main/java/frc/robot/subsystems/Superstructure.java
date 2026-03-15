@@ -49,13 +49,6 @@ public class Superstructure extends SubsystemBase{
         this.climber = climber;
     }
 
-    @Override
-    public void periodic() { // TODO: remove this method
-        SmartDashboard.putBoolean("Superstructure/In Trench Zone", drivetrain.inTrenchZone().getAsBoolean());
-        SmartDashboard.putBoolean("Superstructure/In Aliiance Zone", drivetrain.inAllianceZone().getAsBoolean());
-        SmartDashboard.putBoolean("Superstructure/In Neutral Zone", drivetrain.inNeutralZone().getAsBoolean());
-    }
-
     // public Command passiveSpindexC() {
     //     return either(
     //             run(()->spindexer.setVoltage(IndexerConstants.spindexSlowVoltage.get()), spindexer),

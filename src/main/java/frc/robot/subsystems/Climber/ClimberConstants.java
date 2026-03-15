@@ -26,19 +26,19 @@ public class ClimberConstants {
     public static final Angle kMinAngle = Rotations.of(0); //TODO: tune
     public static final Angle kAngleTolerance = Rotations.of(0.2); //TODO: tune
 
-    public static final TunableNumber maxAngleRot = new TunableNumber("Climber/Max Angle (Rot)", kMaxAngle.in(Rotations));
-    public static final TunableNumber minAngleRot = new TunableNumber("Climber/Min Angle (Rot)", kMinAngle.in(Rotations));
-    public static final TunableNumber angleToleranceRot = new TunableNumber("Climber/Angle Tolerance (Rot)", kAngleTolerance.in(Rotations));
+    public static final TunableNumber maxAngleRot = new TunableNumber("5) Climber/Max Angle (Rot)", kMaxAngle.in(Rotations));
+    public static final TunableNumber minAngleRot = new TunableNumber("5) Climber/Min Angle (Rot)", kMinAngle.in(Rotations));
+    public static final TunableNumber angleToleranceRot = new TunableNumber("5) Climber/Angle Tolerance (Rot)", kAngleTolerance.in(Rotations));
 
 
     public static final Distance kMinHeight = Inches.of(22); //TODO: tune
     public static final Distance kMaxHeight = Inches.of(30); //TODO: tune
 
-    public static final TunableNumber maxHeightInches = new TunableNumber("Climber/Max Height (Inches)", kMaxHeight.in(Inches));
-    public static final TunableNumber minHeightInches = new TunableNumber("Climber/Min Height (Inches)", kMinHeight.in(Inches));
+    public static final TunableNumber maxHeightInches = new TunableNumber("5) Climber/Max Height (Inches)", kMaxHeight.in(Inches));
+    public static final TunableNumber minHeightInches = new TunableNumber("5) Climber/Min Height (Inches)", kMinHeight.in(Inches));
 
     public static final double kDebounceTime = 0.25;
-    public static final TunableNumber debounceTime = new TunableNumber("Climber/Debounce Time", kDebounceTime);
+    public static final TunableNumber debounceTime = new TunableNumber("5) Climber/Debounce Time", kDebounceTime);
 
     //CLIMBER sim
     public static final double climberWeight = 1; //TODO: find weight

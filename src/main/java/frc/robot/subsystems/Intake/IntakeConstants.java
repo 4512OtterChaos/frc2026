@@ -33,9 +33,9 @@ public class IntakeConstants {
     public static final Angle kFourBarMaxAngle = Degrees.of(100.5); 
     public static final Angle kAngleTolerance = Degrees.of(2); //TODO: tune
 
-    public static final TunableNumber fourBarMinDegrees = new TunableNumber("Intake/Four Bar/Min Degrees", kFourBarMinAngle.in(Degrees));
-    public static final TunableNumber fourBarMaxDegrees = new TunableNumber("Intake/Four Bar/Max Degrees", kFourBarMaxAngle.in(Degrees));
-    public static final TunableNumber degreeTolerance = new TunableNumber("Intake/Four Bar/Degrees Tolerance", kAngleTolerance.in(Degrees));
+    public static final TunableNumber fourBarMinDegrees = new TunableNumber("2) Intake/Four Bar/Min Degrees", kFourBarMinAngle.in(Degrees));
+    public static final TunableNumber fourBarMaxDegrees = new TunableNumber("2) Intake/Four Bar/Max Degrees", kFourBarMaxAngle.in(Degrees));
+    public static final TunableNumber degreeTolerance = new TunableNumber("2) Intake/Four Bar/Degrees Tolerance", kAngleTolerance.in(Degrees));
 
     public static final double kIntakeVoltageIn = 8; //TODO: Tune
     public static final double kIntakeVoltageOut = -4; //TODO: Tune
@@ -43,10 +43,10 @@ public class IntakeConstants {
     public static final double kFourBarVoltageIn = 2; //TODO: Tune
     public static final double kFourBarVoltageOut = -2; //TODO: Tune
 
-    public static final TunableNumber intakeVoltageIn = new TunableNumber("Intake/Roller/Voltage In", kIntakeVoltageIn);
-    public static final TunableNumber intakeVoltageOut = new TunableNumber("Intake/Roller/Voltage Out", kIntakeVoltageOut);
-    public static final TunableNumber fourBarVoltageIn = new TunableNumber("Intake/Four Bar/Voltage In", kFourBarVoltageIn);
-    public static final TunableNumber fourBarVoltageOut = new TunableNumber("Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
+    public static final TunableNumber intakeVoltageIn = new TunableNumber("2) Intake/Roller/Voltage In", kIntakeVoltageIn);
+    public static final TunableNumber intakeVoltageOut = new TunableNumber("2) Intake/Roller/Voltage Out", kIntakeVoltageOut);
+    public static final TunableNumber fourBarVoltageIn = new TunableNumber("2) Intake/Four Bar/Voltage In", kFourBarVoltageIn);
+    public static final TunableNumber fourBarVoltageOut = new TunableNumber("2) Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
 
     public static final Current kAmpsIn = Amps.of(10); //TODO: Tune
     public static final Current kAmpsOut = Amps.of(-7); //TODO: Tune
@@ -54,8 +54,8 @@ public class IntakeConstants {
     // public static final Current kSmallAmpsIn = Amps.of(5); //TODO: Tune
     // public static final Current kSmallAmpsOut = Amps.of(-5); //TODO: Tune
 
-    public static final TunableNumber ampsIn = new TunableNumber("Intake/Four Bar/Amps In", kAmpsIn.in(Amps));
-    public static final TunableNumber ampsOut = new TunableNumber("Intake/Four Bar/Amps Out", kAmpsOut.in(Amps));
+    public static final TunableNumber ampsIn = new TunableNumber("2) Intake/Four Bar/Amps In", kAmpsIn.in(Amps));
+    public static final TunableNumber ampsOut = new TunableNumber("2) Intake/Four Bar/Amps Out", kAmpsOut.in(Amps));
 
     // public static final TunableNumber smallAmpsIn = new TunableNumber("Intake/Four Bar/Small Amps In", kSmallAmpsIn.in(Amps));
     // public static final TunableNumber smallAmpsOut = new TunableNumber("Intake/Four Bar/Small Amps Out", kSmallAmpsIn.in(Amps));

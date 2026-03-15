@@ -45,7 +45,7 @@ public class Feeder extends SubsystemBase{
 
         ParentDevice.optimizeBusUtilizationForAll(motor);
 
-        SmartDashboard.putData("Indexer/Feeder/Subsystem", this);
+        SmartDashboard.putData("3) Indexer/Feeder/Subsystem", this);
     }
 
     @Override
@@ -110,10 +110,10 @@ public class Feeder extends SubsystemBase{
     }
         
     public void log(){
-        // SmartDashboard.putNumber("Indexer/Feeder/Angle Degrees", getAngle().in(Degrees));
-        SmartDashboard.putNumber("Indexer/Feeder/RPM", getVelocity().in(RPM));
-        SmartDashboard.putNumber("Indexer/Feeder/Voltage", getVoltage().in(Volts));
-        SmartDashboard.putNumber("Indexer/Feeder/Current", getCurrent().in(Amps));
+        // SmartDashboard.putNumber("3) Indexer/Feeder/Angle Degrees", getAngle().in(Degrees));
+        SmartDashboard.putNumber("3) Indexer/Feeder/RPM", getVelocity().in(RPM));
+        SmartDashboard.putNumber("3) Indexer/Feeder/Voltage", getVoltage().in(Volts));
+        SmartDashboard.putNumber("3) Indexer/Feeder/Current", getCurrent().in(Amps));
     }
     
     // Simulation

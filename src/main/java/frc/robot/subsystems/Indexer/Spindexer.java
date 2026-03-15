@@ -40,7 +40,7 @@ public class Spindexer extends SubsystemBase {
 
         ParentDevice.optimizeBusUtilizationForAll(motor);
         
-        SmartDashboard.putData("Indexer/Spindexer/Subsystem", this);
+        SmartDashboard.putData("3) Indexer/Spindexer/Subsystem", this);
     }
 
     @Override
@@ -89,10 +89,10 @@ public class Spindexer extends SubsystemBase {
     }
 
     public void log(){
-        // SmartDashboard.putNumber("Indexer/Spindexer/Angle Degrees", getAngle().in(Degrees));
-        SmartDashboard.putNumber("Indexer/Spindexer/RPM", getVelocity().in(RPM));
-        SmartDashboard.putNumber("Indexer/Spindexer/Voltage", getVoltage().in(Volts));
-        SmartDashboard.putNumber("Indexer/Spindexer/Current", getCurrent().in(Amps));
+        // SmartDashboard.putNumber("3) Indexer/Spindexer/Angle Degrees", getAngle().in(Degrees));
+        SmartDashboard.putNumber("3) Indexer/Spindexer/RPM", getVelocity().in(RPM));
+        SmartDashboard.putNumber("3) Indexer/Spindexer/Voltage", getVoltage().in(Volts));
+        SmartDashboard.putNumber("3) Indexer/Spindexer/Current", getCurrent().in(Amps));
     }
 
     // Simulation

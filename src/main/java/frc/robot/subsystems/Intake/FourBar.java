@@ -58,7 +58,7 @@ public class FourBar extends SubsystemBase {
 
         ParentDevice.optimizeBusUtilizationForAll(motor);
 
-        SmartDashboard.putData("Intake/Four Bar/Subsystem", this);
+        SmartDashboard.putData("2) Intake/Four Bar/Subsystem", this);
 
         resetAngle(Degrees.of(fourBarMaxDegrees.get()));
         if (Utils.isSimulation()) {
@@ -203,14 +203,14 @@ public class FourBar extends SubsystemBase {
     }
 
     public void log() {
-        // SmartDashboard.putNumber("Intake/Four Bar/Angle Degrees", getAngle().in(Degrees));
-        // SmartDashboard.putNumber("Intake/Four Bar/Target Angle Degrees", targetAngle.in(Degrees));
-        // SmartDashboard.putNumber("Intake/Four Bar/RPM", getVelocity().in(RPM));
-        SmartDashboard.putNumber("Intake/Four Bar/Voltage", getVoltage().in(Volts));
-        // SmartDashboard.putNumber("Intake/Four Bar/Target Voltage", targetVoltage.in(Volts));
-        SmartDashboard.putNumber("Intake/Four Bar/Current", getCurrent().in(Amps));
-        // SmartDashboard.putNumber("Intake/Four Bar/Target Current", targetCurrent.in(Amps));
-        // SmartDashboard.putString("Intake/Four Bar/Control Mode", controlMode.toString());
+        // SmartDashboard.putNumber("2) Intake/Four Bar/Angle Degrees", getAngle().in(Degrees));
+        // SmartDashboard.putNumber("2) Intake/Four Bar/Target Angle Degrees", targetAngle.in(Degrees));
+        // SmartDashboard.putNumber("2) Intake/Four Bar/RPM", getVelocity().in(RPM));
+        SmartDashboard.putNumber("2) Intake/Four Bar/Voltage", getVoltage().in(Volts));
+        // SmartDashboard.putNumber("2) Intake/Four Bar/Target Voltage", targetVoltage.in(Volts));
+        SmartDashboard.putNumber("2) Intake/Four Bar/Current", getCurrent().in(Amps));
+        // SmartDashboard.putNumber("2) Intake/Four Bar/Target Current", targetCurrent.in(Amps));
+        // SmartDashboard.putString("2) Intake/Four Bar/Control Mode", controlMode.toString());
     }
 
     // Simulation

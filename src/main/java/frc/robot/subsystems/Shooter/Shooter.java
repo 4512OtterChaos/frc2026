@@ -79,7 +79,7 @@ public class Shooter extends SubsystemBase {
 
         ParentDevice.optimizeBusUtilizationForAll(fwLeftMotor, fwRightMotor, hMotor);
 
-        SmartDashboard.putData("Shooter/Subsystem", this);
+        SmartDashboard.putData("4) Shooter/Subsystem", this);
     }
 
     @Override 
@@ -253,40 +253,40 @@ public class Shooter extends SubsystemBase {
     }
 
     public void log() {        
-        SmartDashboard.putNumber("Shooter/Hood Angle", getHoodAngle().in(Degrees));
-        SmartDashboard.putNumber("Shooter/Target Hood Angle", targetAngle.in(Degrees));
-        SmartDashboard.putNumber("Shooter/Hood/Voltage", getHoodVoltage().in(Volts));
-        SmartDashboard.putNumber("Shooter/Hood/Current", getHoodCurrent().in(Amps));
-        SmartDashboard.putBoolean("Shooter/At Angle", atAngleT().getAsBoolean());
+        SmartDashboard.putNumber("4) Shooter/Hood Angle", getHoodAngle().in(Degrees));
+        SmartDashboard.putNumber("4) Shooter/Target Hood Angle", targetAngle.in(Degrees));
+        SmartDashboard.putNumber("4) Shooter/Hood/Voltage", getHoodVoltage().in(Volts));
+        SmartDashboard.putNumber("4) Shooter/Hood/Current", getHoodCurrent().in(Amps));
+        SmartDashboard.putBoolean("4) Shooter/At Angle", atAngleT().getAsBoolean());
 
-        SmartDashboard.putNumber("Shooter/Flywheel RPM", getFlywheelVelocity().in(RPM));
-        SmartDashboard.putNumber("Shooter/Target Flywheel RPM", targetVelocity.in(RPM));
-        SmartDashboard.putNumber("Shooter/Flywheel/Voltage", getFlywheelVoltage().in(Volts));
-        SmartDashboard.putNumber("Shooter/Flywheel/Current", getFlywheelCurrent().in(Amps));
-        SmartDashboard.putBoolean("Shooter/Up to speed", upToSpeedT().getAsBoolean());
+        SmartDashboard.putNumber("4) Shooter/Flywheel RPM", getFlywheelVelocity().in(RPM));
+        SmartDashboard.putNumber("4) Shooter/Target Flywheel RPM", targetVelocity.in(RPM));
+        SmartDashboard.putNumber("4) Shooter/Flywheel/Voltage", getFlywheelVoltage().in(Volts));
+        SmartDashboard.putNumber("4) Shooter/Flywheel/Current", getFlywheelCurrent().in(Amps));
+        SmartDashboard.putBoolean("4) Shooter/Up to speed", upToSpeedT().getAsBoolean());
     
 
         // ##### Component Logs
 
-        // SmartDashboard.putNumber("Shooter/Hood/Angle", getHoodAngle().in(Degrees));
-        // SmartDashboard.putNumber("Shooter/Hood/Target Angle", targetAngle.in(Degrees));
-        // SmartDashboard.putNumber("Shooter/Hood/RPM", getHoodVelocity().in(RPM));
-        // // SmartDashboard.putNumber("Shooter/Hood/Wheel Radians",getAngularVelocity().in(RadiansPerSecond));
-        // SmartDashboard.putNumber("Shooter/Hood/Voltage", getHoodVoltage().in(Volts));
-        // SmartDashboard.putNumber("Shooter/Hood/Current", getHoodCurrent().in(Amps));
-        // SmartDashboard.putBoolean("Shooter/Hood/At Angle", atAngleT().getAsBoolean());
-        // SmartDashboard.putNumber("Shooter/Hood/Angle Tolerance", degreesTolerance.get());
+        // SmartDashboard.putNumber("4) Shooter/Hood/Angle", getHoodAngle().in(Degrees));
+        // SmartDashboard.putNumber("4) Shooter/Hood/Target Angle", targetAngle.in(Degrees));
+        // SmartDashboard.putNumber("4) Shooter/Hood/RPM", getHoodVelocity().in(RPM));
+        // // SmartDashboard.putNumber("4) Shooter/Hood/Wheel Radians",getAngularVelocity().in(RadiansPerSecond));
+        // SmartDashboard.putNumber("4) Shooter/Hood/Voltage", getHoodVoltage().in(Volts));
+        // SmartDashboard.putNumber("4) Shooter/Hood/Current", getHoodCurrent().in(Amps));
+        // SmartDashboard.putBoolean("4) Shooter/Hood/At Angle", atAngleT().getAsBoolean());
+        // SmartDashboard.putNumber("4) Shooter/Hood/Angle Tolerance", degreesTolerance.get());
         
 
-        // // SmartDashboard.putNumber("Shooter/Hood/vel", suppliedSpeeds.get().vyMetersPerSecond);
+        // // SmartDashboard.putNumber("4) Shooter/Hood/vel", suppliedSpeeds.get().vyMetersPerSecond);
 
-        // SmartDashboard.putNumber("Shooter/Flywheel/RPM", getFlywheelVelocity().in(RPM));
-        // // SmartDashboard.putNumber("Shooter/Flywheel/Wheel Radians", getAngularVelocity().in(RadiansPerSecond));
-        // SmartDashboard.putNumber("Shooter/Flywheel/Voltage", getFlywheelVoltage().in(Volts));
-        // SmartDashboard.putNumber("Shooter/Flywheel/Target RPM", targetVelocity.in(RPM));
-        // SmartDashboard.putNumber("Shooter/Flywheel/Current", getFlywheelCurrent().in(Amps));
-        // SmartDashboard.putBoolean("Shooter/Flywheel/Up to speed", upToSpeedT().getAsBoolean());
-        // SmartDashboard.putNumber("Shooter/Flywheel/Velocity Tolerance", RPMTolerance.get());
+        // SmartDashboard.putNumber("4) Shooter/Flywheel/RPM", getFlywheelVelocity().in(RPM));
+        // // SmartDashboard.putNumber("4) Shooter/Flywheel/Wheel Radians", getAngularVelocity().in(RadiansPerSecond));
+        // SmartDashboard.putNumber("4) Shooter/Flywheel/Voltage", getFlywheelVoltage().in(Volts));
+        // SmartDashboard.putNumber("4) Shooter/Flywheel/Target RPM", targetVelocity.in(RPM));
+        // SmartDashboard.putNumber("4) Shooter/Flywheel/Current", getFlywheelCurrent().in(Amps));
+        // SmartDashboard.putBoolean("4) Shooter/Flywheel/Up to speed", upToSpeedT().getAsBoolean());
+        // SmartDashboard.putNumber("4) Shooter/Flywheel/Velocity Tolerance", RPMTolerance.get());
     }
 
 

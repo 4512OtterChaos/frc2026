@@ -23,11 +23,11 @@ public class IndexerConstants {
     public static final double kSpindexerGearRatio = 3.0;
     public static final double kFeederGearRatio = 32.0 / 12.0;
     
-    public static final double kSpindexerVoltage = 7;// TODO: Tune
-    public static final double kFeederVoltage = 8;// TODO: Tune
+    public static final double kSpindexerVoltage = 7;
+    public static final double kFeederVoltage = 8;
 
-    public static final TunableNumber spindexerVoltage = new TunableNumber("Indexer/Spindexer/Voltage", kSpindexerVoltage);
-    public static final TunableNumber feederVoltage = new TunableNumber("Indexer/Feeder/Voltage", kFeederVoltage);
+    public static final TunableNumber spindexerVoltage = new TunableNumber("3) Indexer/Spindexer/Voltage", kSpindexerVoltage);
+    public static final TunableNumber feederVoltage = new TunableNumber("3) Indexer/Feeder/Voltage", kFeederVoltage);
 
 //     public static final double kFeedSlowVoltage = 2;// TODO: Tune
 //     public static final double kSpindexSlowVoltage = 2;// TODO: Tune

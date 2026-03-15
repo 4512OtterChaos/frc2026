@@ -51,8 +51,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     public static final double kDriveSpeedRatio = 0.85;
     public static final double kTurnSpeedRatio = 0.5;
 
-    public static final TunableNumber driveSpeedRatio = new TunableNumber("Drivetrain/Drive Speed", kDriveSpeedRatio);
-    public static final TunableNumber turnSpeedRatio = new TunableNumber("Drivetrain/Turn Speed", kTurnSpeedRatio);
+    public static final TunableNumber driveSpeedRatio = new TunableNumber("1) Drivetrain/Drive Speed", kDriveSpeedRatio);
+    public static final TunableNumber turnSpeedRatio = new TunableNumber("1) Drivetrain/Turn Speed", kTurnSpeedRatio);
 
     // Normal driving acceleration limits
     public static final double kLinearAccel = FeetPerSecondPerSecond.of(30).in(MetersPerSecondPerSecond);
@@ -60,11 +60,11 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     public static final double kAngularAccel = RotationsPerSecondPerSecond.of(6).in(RadiansPerSecondPerSecond);
     public static final double kAngularDecel = RotationsPerSecondPerSecond.of(10).in(RadiansPerSecondPerSecond);
 
-    public static final TunableNumber linearAccel = new TunableNumber("Drivetrain/Linear Acceleration", kLinearAccel);
-    public static final TunableNumber linearDecel = new TunableNumber("Drivetrain/Linear Deceleration", kLinearDecel);
-    public static final TunableNumber angularAccel = new TunableNumber("Drivetrain/Angular Acceleration",
+    public static final TunableNumber linearAccel = new TunableNumber("1) Drivetrain/Linear Acceleration", kLinearAccel);
+    public static final TunableNumber linearDecel = new TunableNumber("1) Drivetrain/Linear Deceleration", kLinearDecel);
+    public static final TunableNumber angularAccel = new TunableNumber("1) Drivetrain/Angular Acceleration",
             kAngularAccel);
-    public static final TunableNumber angularDecel = new TunableNumber("Drivetrain/Angular Deceleration",
+    public static final TunableNumber angularDecel = new TunableNumber("1) Drivetrain/Angular Deceleration",
             kAngularDecel);
 
     public final SwerveDriveLimiter kStandardLimiter = new SwerveDriveLimiter(
@@ -407,16 +407,18 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     private void log() {
+        SmartDashboard.putBoolean("1) Drivetrain/In Trench Zone", inTrenchZone().getAsBoolean());
+        SmartDashboard.putBoolean("1) Drivetrain/In Aliiance Zone", inAllianceZone().getAsBoolean());
+        SmartDashboard.putBoolean("1) Drivetrain/In Neutral Zone", inNeutralZone().getAsBoolean());
         var state = getState();
         if (state != null && state.Pose != null) {
             Rotation2d targetAngle = Shotmap.newTargetAngle(getGlobalPoseEstimate(), lastTargetSpeeds, FieldUtil.kHubTrl);
             Rotation2d rawAngle = FieldUtil.kHubTrl.minus(getGlobalPoseEstimate().getTranslation()).getAngle();
 
-            SmartDashboard.putNumber("Shooter/DriveFacingHub/TargetAngleDeg", targetAngle.plus(Rotation2d.k180deg).getDegrees());
-            SmartDashboard.putNumber("Shooter/DriveFacingHub/RotationDeg", getGlobalPoseEstimate().getRotation().getDegrees());
-            SmartDashboard.putNumber("Shooter/DriveFacingHub/RawAngleDeg", rawAngle.plus(Rotation2d.k180deg).getDegrees());
-            SmartDashboard.putNumber("Drivetrain/Dist from hub", Shotmap.distanceToHub(getGlobalPoseEstimate()).in(Meters));
-            
+            SmartDashboard.putNumber("1) Drivetrain/DriveFacingHub/TargetAngleDeg", targetAngle.plus(Rotation2d.k180deg).getDegrees());
+            SmartDashboard.putNumber("1) Drivetrain/DriveFacingHub/RotationDeg", getGlobalPoseEstimate().getRotation().getDegrees());
+            SmartDashboard.putNumber("1) Drivetrain/DriveFacingHub/RawAngleDeg", rawAngle.plus(Rotation2d.k180deg).getDegrees());
+            SmartDashboard.putNumber("1) Drivetrain/Dist from hub", Shotmap.distanceToHub(getGlobalPoseEstimate()).in(Meters));
         }
     }
 }

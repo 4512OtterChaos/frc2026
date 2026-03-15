@@ -53,14 +53,14 @@ public class Vision {
     private final StructArrayPublisher<Pose3d> rightVisibleTagsPub = NetworkTableInstance.getDefault().getStructArrayTopic("Vision/Right Cam/Visible Tag Poses", Pose3d.struct).publish();
     private final StructPublisher<Pose3d> rightEstimatePosePub = NetworkTableInstance.getDefault().getStructTopic("Vision/Right Cam/Estimated Pose", Pose3d.struct).publish();
     
-    private final TunableNumber singletagBaseTrustTrlStdDevs = new TunableNumber("Vision/singletagBaseTrustTrlStdDevs", kSingletagBaseTrustTrlStdDevs);
-    private final TunableNumber singletagBaseTrustRotStdDevs = new TunableNumber("Vision/singletagBaseTrustRotStdDevs", kSingletagBaseTrustRotStdDevs);
+    private final TunableNumber singletagBaseTrustTrlStdDevs = new TunableNumber("6) Vision/singletagBaseTrustTrlStdDevs", kSingletagBaseTrustTrlStdDevs);
+    private final TunableNumber singletagBaseTrustRotStdDevs = new TunableNumber("6) Vision/singletagBaseTrustRotStdDevs", kSingletagBaseTrustRotStdDevs);
     private Matrix<N3, N1> singletagBaseTrustStdDevs = VecBuilder.fill(kSingletagBaseTrustTrlStdDevs, kSingletagBaseTrustTrlStdDevs, kSingletagBaseTrustRotStdDevs);
-    private final TunableNumber multitagBaseTrustTrlStdDevs = new TunableNumber("Vision/multitagBaseTrustTrlStdDevs", kMultitagBaseTrustTrlStdDevs);
-    private final TunableNumber multitagBaseTrustRotStdDevs = new TunableNumber("Vision/multitagBaseTrustRotStdDevs", kMultitagBaseTrustRotStdDevs);
+    private final TunableNumber multitagBaseTrustTrlStdDevs = new TunableNumber("6) Vision/multitagBaseTrustTrlStdDevs", kMultitagBaseTrustTrlStdDevs);
+    private final TunableNumber multitagBaseTrustRotStdDevs = new TunableNumber("6) Vision/multitagBaseTrustRotStdDevs", kMultitagBaseTrustRotStdDevs);
     private Matrix<N3, N1> multitagBaseTrustStdDevs = VecBuilder.fill(kMultitagBaseTrustTrlStdDevs, kMultitagBaseTrustTrlStdDevs, kMultitagBaseTrustRotStdDevs);
-    private final TunableNumber distanceTrustScale = new TunableNumber("Vision/distanceTrustScale", kDistanceTrustScale);
-    private final TunableNumber rotSpeedTrustScale = new TunableNumber("Vision/rotSpeedTrustScale", kRotSpeedTrustScale);
+    private final TunableNumber distanceTrustScale = new TunableNumber("6) Vision/distanceTrustScale", kDistanceTrustScale);
+    private final TunableNumber rotSpeedTrustScale = new TunableNumber("6) Vision/rotSpeedTrustScale", kRotSpeedTrustScale);
     //----- Simulation
     private PhotonCameraSim cameraSimLeft;
     private PhotonCameraSim cameraSimRight;

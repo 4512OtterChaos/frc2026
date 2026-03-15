@@ -49,7 +49,7 @@ public class Climber extends SubsystemBase {
 
         ParentDevice.optimizeBusUtilizationForAll(motor);
 
-        SmartDashboard.putData("Climber/Subsystem", this);
+        SmartDashboard.putData("5) Climber/Subsystem", this);
         resetHeight(Degrees.of(0));
     }
 
@@ -158,13 +158,13 @@ public class Climber extends SubsystemBase {
 
 
     public void log(){  
-        SmartDashboard.putNumber("Climber/Height", getHeight().in(Rotations));
-        SmartDashboard.putNumber("Climber/Target Height", getTargetRotations().in(Rotations));
-        SmartDashboard.putNumber("Climber/RPS", getVelocity().in(RotationsPerSecond));
-        SmartDashboard.putNumber("Climber/Voltage", getVoltage().in(Volts));
-        SmartDashboard.putNumber("Climber/Current", getCurrent().in(Amps));
-        SmartDashboard.putBoolean("Climber/At Height", atTargetHeightT().getAsBoolean());
-        SmartDashboard.putNumber("Climber/Height Tolerance", angleToleranceRot.get());
+        SmartDashboard.putNumber("5) Climber/Height", getHeight().in(Rotations));
+        SmartDashboard.putNumber("5) Climber/Target Height", getTargetRotations().in(Rotations));
+        SmartDashboard.putNumber("5) Climber/RPS", getVelocity().in(RotationsPerSecond));
+        SmartDashboard.putNumber("5) Climber/Voltage", getVoltage().in(Volts));
+        SmartDashboard.putNumber("5) Climber/Current", getCurrent().in(Amps));
+        SmartDashboard.putBoolean("5) Climber/At Height", atTargetHeightT().getAsBoolean());
+        SmartDashboard.putNumber("5) Climber/Height Tolerance", angleToleranceRot.get());
     }
 
     // Simulation
