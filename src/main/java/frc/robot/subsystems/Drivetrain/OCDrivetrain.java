@@ -203,6 +203,10 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
                 .debounce(0.25);// TODO: Tune
     }
 
+    public Command brakeC(){
+        return applyRequest(() -> brake);
+    }
+
     public Trigger inAllianceZone() {
         return new Trigger(() -> {
             Pose2d botTrl = getGlobalPoseEstimate();

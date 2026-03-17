@@ -98,6 +98,7 @@ public class RobotContainer {
     private void configureDriverBindings() {
         drivetrain.setDefaultCommand(drivetrain.driveC(driver));
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
+        driver.b().whileTrue(drivetrain.brakeC());
 
         driver.rightTrigger().whileTrue(superstructure.shootShotMapControllerC(() -> driver));
         driver.leftBumper().whileTrue(parallel(
@@ -120,11 +121,6 @@ public class RobotContainer {
                 feeder.feedC()
             )
             )
-        ));
-
-        driver.b().whileTrue(parallel(
-            spindexer.spindexC(),
-            feeder.feedC()
         ));
 
         driver.leftTrigger().whileTrue(intake.setVoltageInC());
