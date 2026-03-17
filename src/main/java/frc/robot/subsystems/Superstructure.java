@@ -118,4 +118,49 @@ public class Superstructure extends SubsystemBase{
             // fourBar.oscillateC()
         ).withName("ShootShotMap");
     }
+
+    // /**
+    //  * @param speeds Field relative chassis speeds
+    //  * @return
+    //  */
+    // public Command shootShotMapC(Supplier<ChassisSpeeds> speeds) {
+    //     return shootShotMapC(speeds, ()->{
+    //         if (drivetrain.inTrenchZone().getAsBoolean()){
+    //             return null;
+    //         }
+    //     });
+    // } // hi lol)
+
+    // /**
+    //  * @param speeds Field relative chassis speeds
+    //  * @param targetChooser true for hub, false for setpoint
+    //  * @return
+    //  */
+    // public Command shootShotMapC(Supplier<ChassisSpeeds> speeds, Supplier<Translation2d> target) {
+    //     return parallel(
+    //         Commands.run(
+    //             () -> {
+    //                 // Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
+    //                 Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target.get());
+    //                 Shooter.State state = Shotmap.getState(distance);
+
+    //                 shooter.setState(state);
+    //                 drivetrain.inTrenchZone().whileTrue(run(()-> shooter.setState(Shotmap.idleState))); // works surprisingly well in sim
+    //             },
+    //             shooter
+    //         ),
+    //         drivetrain.driveFacingTarget(speeds, target), // TODO: use drivefacingHubController() instead?
+    //         sequence(
+    //             // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
+    //             waitSeconds(0.7),
+    //             parallel(
+    //                 feeder.feedC(),
+    //                 spindexer.spindexC()
+    //             )
+    //         )//, 
+    //         // fourBar.oscillateC()
+    //     ).withName("ShootShotMap");
+    // }
+
+    
 }
