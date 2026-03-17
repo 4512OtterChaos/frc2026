@@ -165,7 +165,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     public void driveAutos(ChassisSpeeds chassisSpeeds) {
         setControl(
-            drive.withVelocityX(chassisSpeeds.vxMetersPerSecond)
+            driveautos.withVelocityX(chassisSpeeds.vxMetersPerSecond)
                 .withVelocityY(chassisSpeeds.vyMetersPerSecond)
                 .withRotationalRate(chassisSpeeds.omegaRadiansPerSecond)
         );

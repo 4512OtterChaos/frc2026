@@ -1,5 +1,6 @@
 package frc.robot.Auto;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.wpilibj2.command.Commands.none;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
@@ -73,34 +74,39 @@ public class AutoOptions {
         () -> false,
         drivetrain);
 
-        addAutoMethods();
+        addNamedCommands();
     }
 
-    private void addAutoMethods() {
+    private void addNamedCommands() {
         NamedCommands.registerCommand("Intake", intake.setVoltageInC());
         NamedCommands.registerCommand("Shoot", superstructure.shootShotMapC(()-> new ChassisSpeeds(), true).withTimeout(5));
         // NamedCommands.registerCommand("Climber Up", climber.setMaxHeightC());
         // NamedCommands.registerCommand("Climber Down", climber.setMinHeightC());
-        NamedCommands.registerCommand("Lower Fourbar", fourBar.setCurrentOutC());
+        NamedCommands.registerCommand("Lower Fourbar", fourBar.setCurrentOutC().finallyDo(()->fourBar.setCurrent(Amps.of(0))));
     }
 
     public void periodic() {
         if (!autosSetup && !DriverStation.getAlliance().isEmpty()) {
-            addClimbOptions();
+            addOptions();
             log();
             autosSetup = true;
         }
     }
 
-    public void addClimbOptions() {
+    public void addOptions() {
         autoChooser.addCmd("New and super cool", 
             ()->sequence(
                 runOnce(()->drivetrain.resetPose(new Pose2d(Meters.of(4.5), FieldUtil.kFieldWidth.div(2), Rotation2d.k180deg)), drivetrain),
-                drivetrain.driveC(new ChassisSpeeds(-1, 0, 0)).withTimeout(3.5),
-                drivetrain.driveC(new ChassisSpeeds(0, 0, 0)).withTimeout(3.5),
+                drivetrain.driveC(new ChassisSpeeds(-1, 0, 0)).withTimeout(2.25),
+                drivetrain.driveC(new ChassisSpeeds(0, 0, 0)).withTimeout(.5),
                 waitSeconds(5),
                 superstructure.shootShotMapC(()->new ChassisSpeeds())
         ));
+        autoChooser.addCmd("Bottom Double Cycle", ()->sequence(
+            fourBar.setCurrentOutC().withTimeout(1),
+            AutoBuilder.buildAuto("Bottom Double Cycle")
+        ));
+        
         autoChooser.addCmd("Top Shoot Climb", ()-> AutoBuilder.buildAuto("Top Shoot Climb"));
         autoChooser.addCmd("Bottom Shoot Climb", ()-> AutoBuilder.buildAuto("Bottom Shoot Climb"));
         autoChooser.addCmd("Top Depot Climb", ()-> AutoBuilder.buildAuto("Top Depot Climb"));
