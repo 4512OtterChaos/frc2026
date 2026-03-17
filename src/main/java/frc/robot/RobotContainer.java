@@ -160,12 +160,12 @@ public class RobotContainer {
         double phoenixTimeOffset = Timer.getFPGATimestamp() -
         Utils.getCurrentTimeSeconds();
         
-        // var swerveState = drivetrain.getState();
-        // vision.update( 
-        //     drivetrain.visionEstimator,
-        //     swerveState.Pose.getRotation(),
-        //     RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
-        //     swerveState.Timestamp + phoenixTimeOffset);
+        var swerveState = drivetrain.getState();
+        vision.update( 
+            drivetrain.visionEstimator,
+            swerveState.Pose.getRotation(),
+            RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
+            swerveState.Timestamp + phoenixTimeOffset);
     }
 
     public void simulationPeriodic() {
