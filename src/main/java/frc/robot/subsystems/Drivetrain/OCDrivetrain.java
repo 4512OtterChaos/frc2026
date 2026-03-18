@@ -221,9 +221,9 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     public Command driveFacingOptionalTarget(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
         return either(
-            runOnce(()-> drive(lastTargetSpeeds)), 
+            runOnce(()-> drive(speeds.get())), 
             runOnce(()-> driveFacingTarget(speeds, ()-> target.get().get())), 
-            ()-> target.get().equals(Optional.empty())
+            ()-> target.get().isEmpty()
         ).repeatedly();
     }
 

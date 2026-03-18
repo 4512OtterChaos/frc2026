@@ -1,22 +1,14 @@
 package frc.robot.subsystems;
 
-import java.lang.StackWalker.Option;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import static edu.wpi.first.wpilibj2.command.Commands.either;
-import static edu.wpi.first.wpilibj2.command.Commands.none;
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
-import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer;
@@ -39,7 +31,6 @@ public class Superstructure extends SubsystemBase{
     private Feeder feeder;
     private Shooter shooter;
     private Climber climber;
-    private RobotContainer robot;
 
     public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder,
              Shooter shooter, Climber climber) {
@@ -69,7 +60,7 @@ public class Superstructure extends SubsystemBase{
     
     /**
      * @param speeds Field relative chassis speeds
-     * @param targetChooser true for hub, false for setpoint
+     * @param target
      * @return
      */
     public Command shootShotMapControllerC(Supplier<OCXboxController> controller, Supplier<Optional<Translation2d>> target) {
@@ -92,7 +83,7 @@ public class Superstructure extends SubsystemBase{
 
     // /**
     //  * @param speeds Field relative chassis speeds
-    //  * @param targetChooser true for hub, false for setpoint
+    //  * @param target
     //  * @return
     //  */
     // public Command shootShotMapC(Supplier<ChassisSpeeds> speeds, boolean targetChooser) {
@@ -140,11 +131,11 @@ public class Superstructure extends SubsystemBase{
 
     /**
      * @param speeds Field relative chassis speeds
-     * @param targetChooser true for hub, false for setpoint
+     * @param target
      * @return
      */
     public Command shootShotMapC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
-        Trigger hasTarget = new Trigger(()-> target.get().equals(Optional.empty()));
+        Trigger hasTarget = new Trigger(()-> target.get().isEmpty()).negate();
         return parallel(
             Commands.run(
                 () -> {
