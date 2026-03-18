@@ -106,9 +106,9 @@ public class RobotContainer {
             sequence(
                 waitSeconds(0.6),
                 parallel(
-                spindexer.spindexC(),
-                feeder.feedC()
-            )
+                    spindexer.spindexC(),
+                    feeder.feedC()
+                )
             )
         ));
 
@@ -117,9 +117,9 @@ public class RobotContainer {
             sequence(
                 waitSeconds(0.6),
                 parallel(
-                spindexer.spindexC(),
-                feeder.feedC()
-            )
+                    spindexer.spindexC(),
+                    feeder.feedC()
+                )
             )
         ));
 

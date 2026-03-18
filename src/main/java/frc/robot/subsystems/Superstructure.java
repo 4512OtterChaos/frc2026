@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.lang.StackWalker.Option;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,6 +18,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
@@ -69,54 +72,8 @@ public class Superstructure extends SubsystemBase{
      * @param targetChooser true for hub, false for setpoint
      * @return
      */
-    public Command shootShotMapControllerC(Supplier<OCXboxController> controller, boolean targetChooser) {
-        return shootShotMapC(OCDrivetrain.controllerToChassisSpeeds(controller), targetChooser);
-    }
-
-    /**
-     * @param speeds Field relative chassis speeds
-     * @return
-     */
-    public Command shootShotMapC(Supplier<ChassisSpeeds> speeds) {
-        return either(
-            either(
-                shootShotMapC(speeds, true), 
-                shootShotMapC(speeds, false), 
-                drivetrain.inAllianceZone()), 
-            none(),
-            drivetrain.inTrenchZone().negate());
-    }
-
-    /**
-     * @param speeds Field relative chassis speeds
-     * @param targetChooser true for hub, false for setpoint
-     * @return
-     */
-    public Command shootShotMapC(Supplier<ChassisSpeeds> speeds, boolean targetChooser) {
-        Supplier<Translation2d> target = ()-> targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation();
-        return parallel(
-            Commands.run(
-                () -> {
-                    // Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
-                    Distance distance = Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate());
-                    Shooter.State state = Shotmap.getState(distance);
-
-                    shooter.setState(state);
-                    drivetrain.inTrenchZone().whileTrue(run(()-> shooter.setState(Shotmap.idleState))); // works surprisingly well in sim
-                },
-                shooter
-            ),
-            drivetrain.driveFacingTarget(speeds, target), // TODO: use drivefacingHubController() instead?
-            sequence(
-                // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
-                waitSeconds(0.7),
-                parallel(
-                    feeder.feedC(),
-                    spindexer.spindexC()
-                )
-            )//, 
-            // fourBar.oscillateC()
-        ).withName("ShootShotMap");
+    public Command shootShotMapControllerC(Supplier<OCXboxController> controller, Supplier<Optional<Translation2d>> target) {
+        return shootShotMapC(OCDrivetrain.controllerToChassisSpeeds(controller), target);
     }
 
     // /**
@@ -124,24 +81,27 @@ public class Superstructure extends SubsystemBase{
     //  * @return
     //  */
     // public Command shootShotMapC(Supplier<ChassisSpeeds> speeds) {
-    //     return shootShotMapC(speeds, ()->{
-    //         if (drivetrain.inTrenchZone().getAsBoolean()){
-    //             return null;
-    //         }
-    //     });
-    // } // hi lol)
+    //     return either(
+    //         either(
+    //             shootShotMapC(speeds, true), 
+    //             shootShotMapC(speeds, false), 
+    //             drivetrain.inAllianceZone()), 
+    //         none(),
+    //         drivetrain.inTrenchZone().negate());
+    // }
 
     // /**
     //  * @param speeds Field relative chassis speeds
     //  * @param targetChooser true for hub, false for setpoint
     //  * @return
     //  */
-    // public Command shootShotMapC(Supplier<ChassisSpeeds> speeds, Supplier<Translation2d> target) {
+    // public Command shootShotMapC(Supplier<ChassisSpeeds> speeds, boolean targetChooser) {
+    //     Supplier<Translation2d> target = ()-> targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation();
     //     return parallel(
     //         Commands.run(
     //             () -> {
     //                 // Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
-    //                 Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target.get());
+    //                 Distance distance = Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate());
     //                 Shooter.State state = Shotmap.getState(distance);
 
     //                 shooter.setState(state);
@@ -157,10 +117,61 @@ public class Superstructure extends SubsystemBase{
     //                 feeder.feedC(),
     //                 spindexer.spindexC()
     //             )
-    //         )//, 
+    //         ), 
     //         // fourBar.oscillateC()
     //     ).withName("ShootShotMap");
     // }
 
-    
+    /**
+     * @param speeds Field relative chassis speeds
+     * @return
+     */
+    public Command shootShotMapC(Supplier<ChassisSpeeds> speeds) {
+        return shootShotMapC(speeds, ()-> {
+            if (drivetrain.inTrenchZone().getAsBoolean()) {
+                return Optional.empty();
+            }
+            if (drivetrain.inAllianceZone().getAsBoolean()) {
+                return Optional.of(FieldUtil.kHubTrl);
+            }
+            return Optional.of(drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
+        });
+    } 
+
+    /**
+     * @param speeds Field relative chassis speeds
+     * @param targetChooser true for hub, false for setpoint
+     * @return
+     */
+    public Command shootShotMapC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
+        Trigger hasTarget = new Trigger(()-> target.get().equals(Optional.empty()));
+        return parallel(
+            Commands.run(
+                () -> {
+                    if (hasTarget.negate().getAsBoolean()) {
+                        shooter.idle();
+                    }
+                    else {
+                        // Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
+                        Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target.get().get());
+                        Shooter.State state = Shotmap.getState(distance);
+
+                        shooter.setState(state);
+                        drivetrain.inTrenchZone().whileTrue(run(()-> shooter.setState(Shotmap.idleState))); // works surprisingly well in sim
+                    }
+                },
+                shooter
+            ),
+            drivetrain.driveFacingOptionalTarget(speeds, target), // TODO: use drivefacingHubController() instead?
+            sequence(
+                // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
+                waitUntil(hasTarget.debounce(0.7)),
+                parallel(
+                    feeder.feedC(),
+                    spindexer.spindexC()
+                ).until(hasTarget.negate())
+            )//, 
+            // fourBar.oscillateC()
+        ).withName("ShootShotMap");
+    }
 }

@@ -83,6 +83,10 @@ public class Spindexer extends SubsystemBase {
         return run(()->setVoltage(spindexerVoltage.get())).withName("Spindex");
     }
 
+    public void spindex() {
+        setVoltage(spindexerVoltage.get());
+    }
+
     public void changeTunable(){
         spindexerVoltage.poll();
         // spindexSlowVoltage.poll();

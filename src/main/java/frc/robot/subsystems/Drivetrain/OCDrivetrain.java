@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.either;
 import static frc.robot.util.RobotConstants.ShooterTranslation;
 import static frc.robot.util.RobotConstants.kPigeonID;
 
@@ -92,7 +93,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
             .withHeadingPID(6.5, 0, 0); // TODO: tune PID
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+    // private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     public ChassisSpeeds lastTargetSpeeds = new ChassisSpeeds();
     private final Pigeon2 gyro = new Pigeon2(kPigeonID);
@@ -163,6 +164,17 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         });
     }
 
+    public void drive(ChassisSpeeds chassisSpeeds) {
+        ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(chassisSpeeds, lastTargetSpeeds, //why do we call it last target speeds
+                Robot.kDefaultPeriod);
+        lastTargetSpeeds = targetSpeeds;
+        setControl(
+            drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
+            .withVelocityY(targetSpeeds.vyMetersPerSecond)
+            .withRotationalRate(targetSpeeds.omegaRadiansPerSecond)
+        );
+    }
+
     public void driveAutos(ChassisSpeeds chassisSpeeds) {
         setControl(
             driveautos.withVelocityX(chassisSpeeds.vxMetersPerSecond)
@@ -180,14 +192,14 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
     
     public Command driveFacingHub(Supplier<ChassisSpeeds> speeds) {
-        return driveFacingTarget(speeds, () -> FieldUtil.kHubTrl);
+        return driveFacingTargetC(speeds, () -> FieldUtil.kHubTrl);
     }
 
     public Command driveFacingSetpoint(Supplier<ChassisSpeeds> speeds) {
-        return driveFacingTarget(speeds, () -> getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
+        return driveFacingTargetC(speeds, () -> getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
     }
 
-    public Command driveFacingTarget(Supplier<ChassisSpeeds> speeds, Supplier<Translation2d> target) {
+    public Command driveFacingTargetC(Supplier<ChassisSpeeds> speeds, Supplier<Translation2d> target) {
         return applyRequest(() -> {
             ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds.get(), lastTargetSpeeds, Robot.kDefaultPeriod);
             lastTargetSpeeds = targetSpeeds;
@@ -195,6 +207,24 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
                     .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate().plus(new Transform2d(RobotConstants.ShooterTranslation, Rotation2d.kZero)), targetSpeeds, target.get()).plus(Rotation2d.k180deg));
         });
+    }
+
+    public void driveFacingTarget(Supplier<ChassisSpeeds> speeds, Supplier<Translation2d> target) {
+        ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds.get(), lastTargetSpeeds, Robot.kDefaultPeriod);
+        lastTargetSpeeds = targetSpeeds;
+        setControl(
+            face.withVelocityX(targetSpeeds.vxMetersPerSecond)
+                    .withVelocityY(targetSpeeds.vyMetersPerSecond)
+                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate().plus(new Transform2d(RobotConstants.ShooterTranslation, Rotation2d.kZero)), targetSpeeds, target.get()).plus(Rotation2d.k180deg))
+        );
+    }
+
+    public Command driveFacingOptionalTarget(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
+        return either(
+            runOnce(()-> drive(lastTargetSpeeds)), 
+            runOnce(()-> driveFacingTarget(speeds, ()-> target.get().get())), 
+            ()-> target.get().equals(Optional.empty())
+        ).repeatedly();
     }
 
     public Trigger facingTargetT(Supplier<Translation2d> trl) {

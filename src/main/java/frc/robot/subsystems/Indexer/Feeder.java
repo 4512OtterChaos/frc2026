@@ -88,6 +88,10 @@ public class Feeder extends SubsystemBase{
         return run(()->setVoltage(feederVoltage.get())).withName("Feed");
     }
 
+    public void feed() {
+        setVoltage(feederVoltage.get());
+    }
+
     // public Command passiveIndexC(){
     //     return Commands.either(
     //         setVoltageC(feedSlowVoltage.get()),
