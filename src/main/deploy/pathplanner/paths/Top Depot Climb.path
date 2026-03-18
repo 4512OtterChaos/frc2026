@@ -20,7 +20,7 @@
         "y": 5.964
       },
       "prevControl": {
-        "x": 0.2613257834704654,
+        "x": 0.26132578347046537,
         "y": 5.955461897394371
       },
       "nextControl": {
@@ -126,28 +126,6 @@
         "type": "named",
         "data": {
           "name": "Shoot"
-        }
-      }
-    },
-    {
-      "name": "Climber Up",
-      "waypointRelativePos": 2.1,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Climber Up"
-        }
-      }
-    },
-    {
-      "name": "Climber Down",
-      "waypointRelativePos": 4.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Climber Down"
         }
       }
     }

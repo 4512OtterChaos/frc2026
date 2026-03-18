@@ -79,8 +79,9 @@ public class AutoOptions {
 
     private void addNamedCommands() {
         NamedCommands.registerCommand("Intake", intake.setVoltageInC());
-        NamedCommands.registerCommand("Shoot", superstructure.shootShotMapC(()-> new ChassisSpeeds()).withTimeout(5));
-        // NamedCommands.registerCommand("Climber Up", climber.setMaxHeightC());
+        NamedCommands.registerCommand("Shoot", superstructure.shootShotMapC(()-> new ChassisSpeeds()).withTimeout(4));
+        NamedCommands.registerCommand("Wait", Commands.waitSeconds(2));
+        // NamedCommands.registerCommand("Climber Up", climber.setMaxHeightC()); 
         // NamedCommands.registerCommand("Climber Down", climber.setMinHeightC());
         NamedCommands.registerCommand("Lower Fourbar", fourBar.setCurrentOutC().finallyDo(()->fourBar.setCurrent(Amps.of(0))));
     }
@@ -106,11 +107,20 @@ public class AutoOptions {
             fourBar.setCurrentOutC().withTimeout(1),
             AutoBuilder.buildAuto("Bottom Double Cycle")
         ));
-        
-        autoChooser.addCmd("Top Shoot Climb", ()-> AutoBuilder.buildAuto("Top Shoot Climb"));
-        autoChooser.addCmd("Bottom Shoot Climb", ()-> AutoBuilder.buildAuto("Bottom Shoot Climb"));
-        autoChooser.addCmd("Top Depot Climb", ()-> AutoBuilder.buildAuto("Top Depot Climb"));
-        autoChooser.addCmd("Top Double Cycle", ()-> AutoBuilder.buildAuto("Top Double Cycle"));
+
+        //Individual autos
+        autoChooser.addCmd("Right Shoot Climb", ()-> AutoBuilder.buildAuto("Top Shoot Climb"));
+        autoChooser.addCmd("Left Shoot Climb", ()-> AutoBuilder.buildAuto("Bottom Shoot Climb"));
+        autoChooser.addCmd("Right Depot Climb", ()-> AutoBuilder.buildAuto("Top Depot Climb"));
+        autoChooser.addCmd("Right Double Cycle", ()-> AutoBuilder.buildAuto("Top Double Cycle"));
+        autoChooser.addCmd("Left Outpost", ()-> AutoBuilder.buildAuto("Bottom Outpost"));
+        autoChooser.addCmd("Right Outpost", ()-> AutoBuilder.buildAuto("Top Outpost"));
+
+        //Combined autos
+        autoChooser.addCmd("Right Combo", ()-> AutoBuilder.buildAuto("Top Combo")); // TODO: climber is turned off btw
+        autoChooser.addCmd("Left Combo", ()-> AutoBuilder.buildAuto("Bottom Combo")); // TODO: climber is turned off btw
+
+
     }
 
     public Command getAuto() {

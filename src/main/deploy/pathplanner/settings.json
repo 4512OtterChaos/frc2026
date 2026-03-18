@@ -3,10 +3,14 @@
   "robotLength": 0.824,
   "holonomicMode": true,
   "pathFolders": [
-    "Bottom Shoot Climb",
-    "Top Double Cycle",
     "Top Depot Climb",
-    "Top Shoot Climb"
+    "Top Double Cycle",
+    "Top Outpost",
+    "Top Shoot Climb",
+    "Bottom Double Cycle",
+    "Bottom Outpost",
+    "Bottom Shoot Climb",
+    "Transitions"
   ],
   "autoFolders": [
     "New Folder"

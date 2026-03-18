@@ -1,0 +1,55 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Top Outpost 1-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wait"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Top Outpost 2-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Outpost to Depot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Top Depot Climb 1-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
