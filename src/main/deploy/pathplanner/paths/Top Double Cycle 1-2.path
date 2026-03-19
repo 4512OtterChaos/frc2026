@@ -1,0 +1,145 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.453095577746077,
+        "y": 7.41845934379458
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.397617689015691,
+        "y": 7.224379457917262
+      },
+      "isLocked": false,
+      "linkedName": "Top Trench"
+    },
+    {
+      "anchor": {
+        "x": 7.648944365192582,
+        "y": 7.159686162624822
+      },
+      "prevControl": {
+        "x": 7.583165013744552,
+        "y": 7.400877117934254
+      },
+      "nextControl": {
+        "x": 7.754380290460637,
+        "y": 6.773087769975303
+      },
+      "isLocked": false,
+      "linkedName": "Top Sweep Start"
+    },
+    {
+      "anchor": {
+        "x": 7.817146932952923,
+        "y": 4.701340941512126
+      },
+      "prevControl": {
+        "x": 7.843024251069899,
+        "y": 4.960114122681883
+      },
+      "nextControl": {
+        "x": 7.780687008339848,
+        "y": 4.336741695381384
+      },
+      "isLocked": false,
+      "linkedName": "Top Sweep Middle"
+    },
+    {
+      "anchor": {
+        "x": 6.199814550641939,
+        "y": 7.250256776034237
+      },
+      "prevControl": {
+        "x": 6.520500659566608,
+        "y": 6.9295706671095685
+      },
+      "nextControl": {
+        "x": 5.837532097004279,
+        "y": 7.6125392296718974
+      },
+      "isLocked": false,
+      "linkedName": "Top Sweep End"
+    },
+    {
+      "anchor": {
+        "x": 2.2923395149786017,
+        "y": 7.198502139800285
+      },
+      "prevControl": {
+        "x": 3.651133333333333,
+        "y": 7.445555555555555
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Top Trench Shoot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6978548607941508,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.1387494294842486,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 2.75,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 3.75,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 4.0,
+      "rotationDegrees": 127.62623363866975
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Lower Fourbar",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": 1.25,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Lower Fourbar"
+        }
+      }
+    },
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": 4.0,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 127.56859202882747
+  },
+  "reversed": false,
+  "folder": "Top Double Cycle",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

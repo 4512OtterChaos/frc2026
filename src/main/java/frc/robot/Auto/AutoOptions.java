@@ -79,11 +79,11 @@ public class AutoOptions {
 
     private void addNamedCommands() {
         NamedCommands.registerCommand("Intake", intake.setVoltageInC());
-        NamedCommands.registerCommand("Shoot", superstructure.shootShotMapC(()-> new ChassisSpeeds()).withTimeout(4));
-        NamedCommands.registerCommand("Wait", Commands.waitSeconds(2));
+        NamedCommands.registerCommand("Shoot", superstructure.shootShotMapC(()-> new ChassisSpeeds()).withTimeout(3));
+        NamedCommands.registerCommand("Wait", Commands.waitSeconds(1));
         // NamedCommands.registerCommand("Climber Up", climber.setMaxHeightC()); 
         // NamedCommands.registerCommand("Climber Down", climber.setMinHeightC());
-        NamedCommands.registerCommand("Lower Fourbar", fourBar.setCurrentOutC().finallyDo(()->fourBar.setCurrent(Amps.of(0))));
+        NamedCommands.registerCommand("Lower Fourbar", Commands.none() /*fourBar.setCurrentOutC().finallyDo(()->fourBar.setCurrent(Amps.of(0)))*/);
     }
 
     public void periodic() {
@@ -103,16 +103,20 @@ public class AutoOptions {
                 waitSeconds(5),
                 superstructure.shootShotMapC(()->new ChassisSpeeds())
         ));
-        autoChooser.addCmd("Bottom Double Cycle", ()->sequence(
+        autoChooser.addCmd("Right Double Cycle", ()->sequence(
             fourBar.setCurrentOutC().withTimeout(1),
             AutoBuilder.buildAuto("Bottom Double Cycle")
+        ));
+        autoChooser.addCmd("Left Double Cycle", ()->sequence(
+            fourBar.setCurrentOutC().withTimeout(1),
+            AutoBuilder.buildAuto("Top Double Cycle")
         ));
 
         //Individual autos
         autoChooser.addCmd("Right Shoot Climb", ()-> AutoBuilder.buildAuto("Top Shoot Climb"));
         autoChooser.addCmd("Left Shoot Climb", ()-> AutoBuilder.buildAuto("Bottom Shoot Climb"));
         autoChooser.addCmd("Right Depot Climb", ()-> AutoBuilder.buildAuto("Top Depot Climb"));
-        autoChooser.addCmd("Right Double Cycle", ()-> AutoBuilder.buildAuto("Top Double Cycle"));
+        // autoChooser.addCmd("Right Double Cycle", ()-> AutoBuilder.buildAuto("Top Double Cycle"));
         autoChooser.addCmd("Left Outpost", ()-> AutoBuilder.buildAuto("Bottom Outpost"));
         autoChooser.addCmd("Right Outpost", ()-> AutoBuilder.buildAuto("Top Outpost"));
 

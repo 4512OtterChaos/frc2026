@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.7607111111111107,
-        "y": 2.398
+        "x": 1.595,
+        "y": 5.878209586869304
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7607111111111107,
-        "y": 2.398
+        "x": 2.189466666666667,
+        "y": 4.502733333333332
+      },
+      "isLocked": false,
+      "linkedName": "Top Depot Climb Midpoint"
+    },
+    {
+      "anchor": {
+        "x": 2.169977777777778,
+        "y": 2.758477777777778
+      },
+      "prevControl": {
+        "x": 2.4407869996487515,
+        "y": 3.2854578852023755
+      },
+      "nextControl": {
+        "x": 1.8094333333333332,
+        "y": 2.056877777777777
       },
       "isLocked": false,
       "linkedName": "Bottom Outpost End"
     },
     {
       "anchor": {
-        "x": 3.6024111111111115,
-        "y": 6.091077777777778
+        "x": 0.5426555555555554,
+        "y": 0.702399999999999
       },
       "prevControl": {
-        "x": 2.6024111111111115,
-        "y": 6.091077777777778
+        "x": 1.3417,
+        "y": 1.7353111111111095
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Top Starting Point"
+      "linkedName": "Top Outpost Midpoint"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +58,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "Transitions",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -140.0
+    "rotation": 140.0
   },
   "useDefaultConstraints": true
 }

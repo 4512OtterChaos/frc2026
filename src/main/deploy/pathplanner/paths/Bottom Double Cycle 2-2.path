@@ -1,0 +1,139 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.732253922967189,
+        "y": 1.0267617689015696
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.027488888888889,
+        "y": 1.0142222222222221
+      },
+      "isLocked": false,
+      "linkedName": "Bottom Trench Shoot"
+    },
+    {
+      "anchor": {
+        "x": 6.09698888888889,
+        "y": 0.7121444444444445
+      },
+      "prevControl": {
+        "x": 4.059637932101271,
+        "y": 0.6393819102734599
+      },
+      "nextControl": {
+        "x": 6.369833333333333,
+        "y": 0.7218888888888886
+      },
+      "isLocked": false,
+      "linkedName": "Bottom Sweep End"
+    },
+    {
+      "anchor": {
+        "x": 7.773033333333334,
+        "y": 1.0921777777777766
+      },
+      "prevControl": {
+        "x": 7.540137470280552,
+        "y": 1.2021563797749244
+      },
+      "nextControl": {
+        "x": 8.005929196386116,
+        "y": 0.9821991757806288
+      },
+      "isLocked": false,
+      "linkedName": "Bottom Sweep Start"
+    },
+    {
+      "anchor": {
+        "x": 7.8120111111111115,
+        "y": 3.450333333333333
+      },
+      "prevControl": {
+        "x": 7.79943098711544,
+        "y": 3.123250109445894
+      },
+      "nextControl": {
+        "x": 7.821755555555557,
+        "y": 3.7036888888888884
+      },
+      "isLocked": false,
+      "linkedName": "Bottom Sweep Middle"
+    },
+    {
+      "anchor": {
+        "x": 6.09698888888889,
+        "y": 0.7121444444444445
+      },
+      "prevControl": {
+        "x": 6.213922222222224,
+        "y": 0.4685333333333336
+      },
+      "nextControl": {
+        "x": 5.988806121992696,
+        "y": 0.9375252088115142
+      },
+      "isLocked": false,
+      "linkedName": "Bottom Sweep End"
+    },
+    {
+      "anchor": {
+        "x": 2.732253922967189,
+        "y": 1.0267617689015696
+      },
+      "prevControl": {
+        "x": 4.284893009985734,
+        "y": 0.23750356633380876
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Bottom Trench Shoot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5801004107713315,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 3.0,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 4.0,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 4.835714285714269,
+      "rotationDegrees": 180.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -128.08877288097534
+  },
+  "reversed": false,
+  "folder": "Bottom Double Cycle",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -128.08877288097534
+  },
+  "useDefaultConstraints": true
+}

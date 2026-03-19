@@ -7,19 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Top Outpost 1-2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wait"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Top Outpost 2-2"
+            "pathName": "Top Depot Climb 1-2"
           }
         },
         {
@@ -35,9 +23,15 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Top Depot Climb 1-2"
+            "pathName": "Top Outpost 2-2"
           }
         },
         {

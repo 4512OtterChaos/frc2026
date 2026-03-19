@@ -9,19 +9,19 @@
       "prevControl": null,
       "nextControl": {
         "x": 1.1275999999999995,
-        "y": 1.0339444444444434
+        "y": 1.0339444444444432
       },
       "isLocked": false,
       "linkedName": "Bottom Outpost Midpoint"
     },
     {
       "anchor": {
-        "x": 1.7607111111111107,
-        "y": 2.398
+        "x": 2.169977777777778,
+        "y": 2.758477777777778
       },
       "prevControl": {
-        "x": 1.1468121021638447,
-        "y": 1.881543266402924
+        "x": 1.556078768830512,
+        "y": 2.2420210441807016
       },
       "nextControl": null,
       "isLocked": false,
