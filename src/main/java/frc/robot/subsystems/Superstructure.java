@@ -156,12 +156,13 @@ public class Superstructure extends SubsystemBase{
             drivetrain.driveFacingOptionalTarget(speeds, target), // TODO: use drivefacingHubController() instead?
             sequence(
                 // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
+                
                 waitUntil(hasTarget.debounce(0.7)),
                 parallel(
                     feeder.feedC(),
                     spindexer.spindexC()
                 ).until(hasTarget.negate())
-            )//, 
+            ).repeatedly()//, 
             // fourBar.oscillateC()
         ).withName("ShootShotMap");
     }

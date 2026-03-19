@@ -167,6 +167,10 @@ public class Shooter extends SubsystemBase {
         return fwStatorStatus.getValue();
     }
 
+    // public Command setFlywheelVoltage() {
+    //     return run(()-> fwLeftMotor.setVoltage(6));
+    // }
+
     public void setVelocity(AngularVelocity velocity) {
         targetVelocity = velocity;
         //.plus(RPM.of(suppliedSpeeds.get().vyMetersPerSecond))

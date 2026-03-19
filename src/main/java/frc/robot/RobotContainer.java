@@ -113,6 +113,7 @@ public class RobotContainer {
         ));
 
         driver.rightBumper().whileTrue(parallel(
+        // shooter.setFlywheelVoltage(
             run(()-> shooter.setState(Degrees.of(5), RPM.of(2200))), 
             sequence(
                 waitSeconds(0.6),
@@ -126,8 +127,8 @@ public class RobotContainer {
         driver.leftTrigger().whileTrue(intake.setVoltageInC());
         driver.x().whileTrue(intake.setVoltageOutC());
 
-        driver.y().whileTrue(fourBar.setCurrentInC().withTimeout(1.25)); //TODO: Re-enable
-        driver.a().whileTrue(fourBar.setCurrentOutC().withTimeout(1)); //TODO: Re-enable
+        // driver.y().whileTrue(fourBar.setCurrentInC().withTimeout(1.25)); //TODO: Re-enable
+        // driver.a().whileTrue(fourBar.setCurrentOutC().withTimeout(1)); //TODO: Re-enable
 
         
         driver.povUp().whileTrue(run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get())))); //TODO: Re-enable

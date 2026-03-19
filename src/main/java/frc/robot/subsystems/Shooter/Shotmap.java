@@ -32,9 +32,10 @@ public class Shotmap {
     private static Time maxTof = null;
 
     static {
-        addState(Meters.of(5.57), Degrees.of(13), RPM.of(2650), Seconds.of(2));
-        addState(Meters.of(3.5), Degrees.of(3), RPM.of(2250), Seconds.of(1.5));
-        addState(Meters.of(2.26), Degrees.of(0), RPM.of(1950), Seconds.of(1.5));
+        // 4.86 
+        addState(Meters.of(2.26), Degrees.of(0), RPM.of(2800), Seconds.of(1.5));
+        addState(Meters.of(3.5), Degrees.of(3), RPM.of(3350), Seconds.of(1.5));
+        addState(Meters.of(5.57), Degrees.of(13), RPM.of(3600), Seconds.of(2));
         // addState(backCorner, Degrees.of(10), RPM.of(2400), Seconds.of(1.5));// TODO: use real tof
         // addState(trench, Degrees.of(7), RPM.of(2200), Seconds.of(2));// TODO: use real tof
         // addState(nextToTower, Degrees.of(5), RPM.of(2200), Seconds.of(2.5));// TODO: use real tof

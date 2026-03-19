@@ -48,7 +48,7 @@ public class IntakeConstants {
     public static final TunableNumber fourBarVoltageIn = new TunableNumber("2) Intake/Four Bar/Voltage In", kFourBarVoltageIn);
     public static final TunableNumber fourBarVoltageOut = new TunableNumber("2) Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
 
-    public static final Current kAmpsIn = Amps.of(10); //TODO: Tune
+    public static final Current kAmpsIn = Amps.of(20); //TODO: Tune
     public static final Current kAmpsOut = Amps.of(-20);
 
     // public static final Current kSmallAmpsIn = Amps.of(5); //TODO: Tune
