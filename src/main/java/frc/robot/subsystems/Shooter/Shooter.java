@@ -1,5 +1,19 @@
 package frc.robot.subsystems.Shooter;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Meter;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.subsystems.Shooter.ShooterConstants.*;
+
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
@@ -12,14 +26,17 @@ import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.Interpolatable;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -29,7 +46,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import static frc.robot.subsystems.Shooter.ShooterConstants.*;
+import frc.robot.subsystems.Drivetrain.OCDrivetrain;
+import frc.robot.subsystems.Drivetrain.TunerConstants;
+import frc.robot.util.FieldUtil;
+import frc.robot.util.RobotConstants;
 
 public class Shooter extends SubsystemBase {
     private TalonFX fwLeftMotor = new TalonFX(kLeftMotorID);
@@ -409,4 +429,54 @@ public class Shooter extends SubsystemBase {
             }
         }
     }
+
+    // public class ShootOnTheMove {
+    //     // TODO: make calcRPM
+    //     // TODO: get approval from king elijah
+    //     private OCDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    //     Shooter shooter = new Shooter();
+    //     public void update(Pose2d robotPose, ChassisSpeeds speed){
+    //         double latency = 0.15; // Tuned constant
+            
+    //         Translation2d futurePos = robotPose.getTranslation().plus(
+    //             new Translation2d(speed.vxMetersPerSecond, speed.vyMetersPerSecond).times(latency)
+    //         );
+
+    //         Translation2d hubGoalLocation = FieldUtil.kHubTrl;
+            
+    //         Translation2d targetVec = hubGoalLocation.minus(futurePos);
+    //         Distance dist = Meters.of(targetVec.getNorm());
+
+    //         double idealHorizontalSpeed = MetersPerSecond.of(rpmToMps(Shotmap.getVelocity(dist).in(RPM))); // TODO: holy fix this
+
+    //         Translation2d robotVelVec = new Translation2d(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
+    //         Translation2d shotVec = targetVec.div(dist.in(Meters)).times(idealHorizontalSpeed).minus(robotVelVec);
+
+    //         Angle chassisAngle = Degrees.of(shotVec.getAngle().getDegrees());
+    //         AngularVelocity newHorizontalVelocity = RPM.of(shotVec.getNorm());
+
+    //         LinearVelocity totalExitVelocity = MetersPerSecond.of(15);
+
+    //         double ratio = Math.min(newHorizontalVelocity.in(RPM) / totalExitVelocity.in(MetersPerSecond), 1.0);
+    //         double newPitch = Math.acos(ratio);
+
+    //         drivetrain.faceAngle(chassisAngle);
+    //         shooter.setAngle(Degrees.of(Math.toDegrees(newPitch)));
+    //         shooter.setVelocity(RPM.of(calcRPM(totalExitVelocity.in(MetersPerSecond))));
+    //     }
+
+    //     private final double WHEEL_RADIUS_METERS = 3; //TODO: get the shooter flywheel radius
+    //     private final double SHOOTER_EFFICIENCY = 0.85; // TODO: tune
+
+    //     private double calcRPM(double totalExitVelocityMps) {
+    //         double wheelAngularVelocity =
+    //             totalExitVelocityMps / (WHEEL_RADIUS_METERS * SHOOTER_EFFICIENCY);
+
+    //         return wheelAngularVelocity * (60.0 / (2.0 * Math.PI));
+    //     }
+
+    //     private LinearVelocity rpmToMps(AngularVelocity rpm) {
+    //         return MetersPerSecond.of(67); // TODO: actually make this
+    //     }
+    // }   
 }
