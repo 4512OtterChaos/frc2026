@@ -131,11 +131,11 @@ public class FourBar extends SubsystemBase {
     }
 
     public Command setCurrentInC() {
-        return setCurrentC(Amps.of(ampsIn.get()));
+        return run(()->setCurrent(Amps.of(ampsIn.get())));
     }
 
     public Command setCurrentOutC() {
-        return setCurrentC(Amps.of(ampsOut.get()));
+        return run(()->setCurrent(Amps.of(ampsOut.get())));
     }
 
     public Command oscillateC() {

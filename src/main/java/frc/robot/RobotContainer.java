@@ -132,8 +132,8 @@ public class RobotContainer {
                 feeder.reverseC()
         ));
 
-        // driver.y().whileTrue(fourBar.setCurrentInC().withTimeout(1.25)); //TODO: Re-enable
-        // driver.a().whileTrue(fourBar.setCurrentOutC().withTimeout(1)); //TODO: Re-enable
+        driver.y().whileTrue(fourBar.setCurrentInC().withTimeout(1.25)); 
+        driver.a().whileTrue(fourBar.setCurrentOutC().withTimeout(1)); 
 
         
         driver.povUp().whileTrue(run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get())))); //TODO: Re-enable
