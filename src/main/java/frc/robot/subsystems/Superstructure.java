@@ -54,8 +54,8 @@ public class Superstructure extends SubsystemBase{
      * @param speeds Field relative chassis speeds
      * @return
      */
-    public Command shootShotMapControllerC(Supplier<OCXboxController> controller) {
-        return shootShotMapC(OCDrivetrain.controllerToChassisSpeeds(controller));
+    public Command otterShootControllerC(Supplier<OCXboxController> controller) {
+        return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller));
     }
     
     /**
@@ -63,62 +63,16 @@ public class Superstructure extends SubsystemBase{
      * @param target
      * @return
      */
-    public Command shootShotMapControllerC(Supplier<OCXboxController> controller, Supplier<Optional<Translation2d>> target) {
-        return shootShotMapC(OCDrivetrain.controllerToChassisSpeeds(controller), target);
+    public Command otterShootControllerC(Supplier<OCXboxController> controller, Supplier<Optional<Translation2d>> target) {
+        return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller), target);
     }
-
-    // /**
-    //  * @param speeds Field relative chassis speeds
-    //  * @return
-    //  */
-    // public Command shootShotMapC(Supplier<ChassisSpeeds> speeds) {
-    //     return either(
-    //         either(
-    //             shootShotMapC(speeds, true), 
-    //             shootShotMapC(speeds, false), 
-    //             drivetrain.inAllianceZone()), 
-    //         none(),
-    //         drivetrain.inTrenchZone().negate());
-    // }
-
-    // /**
-    //  * @param speeds Field relative chassis speeds
-    //  * @param target
-    //  * @return
-    //  */
-    // public Command shootShotMapC(Supplier<ChassisSpeeds> speeds, boolean targetChooser) {
-    //     Supplier<Translation2d> target = ()-> targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation();
-    //     return parallel(
-    //         Commands.run(
-    //             () -> {
-    //                 // Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
-    //                 Distance distance = Shotmap.distanceToHub(drivetrain.getGlobalPoseEstimate());
-    //                 Shooter.State state = Shotmap.getState(distance);
-
-    //                 shooter.setState(state);
-    //                 drivetrain.inTrenchZone().whileTrue(run(()-> shooter.setState(Shotmap.idleState))); // works surprisingly well in sim
-    //             },
-    //             shooter
-    //         ),
-    //         drivetrain.driveFacingTarget(speeds, target), // TODO: use drivefacingHubController() instead?
-    //         sequence(
-    //             // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
-    //             waitSeconds(0.7),
-    //             parallel(
-    //                 feeder.feedC(),
-    //                 spindexer.spindexC()
-    //             )
-    //         ), 
-    //         // fourBar.oscillateC()
-    //     ).withName("ShootShotMap");
-    // }
 
     /**
      * @param speeds Field relative chassis speeds
      * @return
      */
-    public Command shootShotMapC(Supplier<ChassisSpeeds> speeds) {
-        return shootShotMapC(speeds, ()-> {
+    public Command otterShootC(Supplier<ChassisSpeeds> speeds) {
+        return otterShootC(speeds, ()-> {
             if (drivetrain.inTrenchZone().getAsBoolean()) {
                 return Optional.empty();
             }
@@ -134,7 +88,7 @@ public class Superstructure extends SubsystemBase{
      * @param target
      * @return
      */
-    public Command shootShotMapC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
+    public Command otterShootC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
         Trigger hasTarget = new Trigger(()-> target.get().isEmpty()).negate();
         return parallel(
             Commands.run(
@@ -164,6 +118,6 @@ public class Superstructure extends SubsystemBase{
                 ).until(hasTarget.negate())
             ).repeatedly()//, 
             // fourBar.oscillateC()
-        ).withName("ShootShotMap");
+        ).withName("Otter Shoot");
     }
 }

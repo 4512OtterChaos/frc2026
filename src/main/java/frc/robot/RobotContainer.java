@@ -47,14 +47,14 @@ public class RobotContainer {
     private final OCDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final Telemetry logger = new Telemetry(MaxSpeed);
     private final Intake intake = new Intake();
-    private final FourBar fourBar = new FourBar(); //TODO: Re-enable
+    private final FourBar fourBar = new FourBar();
     private final Spindexer spindexer = new Spindexer();
     private final Feeder feeder = new Feeder();
     private final Shooter shooter = new Shooter();
     // private final Climber climber = new Climber(); //TODO: Re-enable
     private final Vision vision = new Vision();
 
-    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, shooter, null); // TODO: turn off climber/FB when testing
+    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, shooter, null); // TODO: turn off climber when testing
     private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, fourBar, spindexer, feeder, shooter, null);
 
     private final AutoOptions autos = new AutoOptions(drivetrain, intake, shooter, spindexer, fourBar, null, feeder, superstructure);
@@ -100,8 +100,8 @@ public class RobotContainer {
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.b().whileTrue(drivetrain.brakeC());
 
-        driver.rightTrigger().whileTrue(superstructure.shootShotMapControllerC(() -> driver));
         driver.leftBumper().whileTrue(parallel(
+        driver.rightTrigger().whileTrue(superstructure.otterShootControllerC(() -> driver));
             run(()-> shooter.setState(Shotmap.getState(Shotmap.trench))),
             sequence(
                 waitSeconds(0.6),

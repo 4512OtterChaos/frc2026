@@ -2,7 +2,7 @@ package frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.either;
-import static frc.robot.util.RobotConstants.ShooterTranslation;
+import static frc.robot.util.RobotConstants.kShooterTranslation;
 import static frc.robot.util.RobotConstants.kPigeonID;
 
 import java.util.Optional;
@@ -205,7 +205,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
             lastTargetSpeeds = targetSpeeds;
             return face.withVelocityX(targetSpeeds.vxMetersPerSecond)
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate().plus(new Transform2d(RobotConstants.ShooterTranslation, Rotation2d.kZero)), targetSpeeds, target.get()).plus(Rotation2d.k180deg));
+                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate().plus(new Transform2d(RobotConstants.kShooterTranslation, Rotation2d.kZero)), targetSpeeds, target.get()).plus(Rotation2d.k180deg));
         });
     }
 
@@ -215,7 +215,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         setControl(
             face.withVelocityX(targetSpeeds.vxMetersPerSecond)
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate().plus(new Transform2d(RobotConstants.ShooterTranslation, Rotation2d.kZero)), targetSpeeds, target.get()).plus(Rotation2d.k180deg))
+                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate().plus(new Transform2d(RobotConstants.kShooterTranslation, Rotation2d.kZero)), targetSpeeds, target.get()).plus(Rotation2d.k180deg))
         );
     }
 
@@ -228,7 +228,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public Trigger facingTargetT(Supplier<Translation2d> trl) {
-        return new Trigger(() -> getGlobalPoseEstimate().getTranslation().minus(trl.get()).plus(RobotConstants.ShooterTranslation).getAngle()
+        return new Trigger(() -> getGlobalPoseEstimate().getTranslation().minus(trl.get()).plus(RobotConstants.kShooterTranslation).getAngle()
                 .getDegrees() == getGlobalPoseEstimate().getRotation().getDegrees())
                 .debounce(0.25);// TODO: Tune
     }
