@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.Interpolator;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
@@ -18,6 +19,9 @@ import frc.robot.util.FieldUtil;
 public class Shotmap {
     private static InterpolatingTreeMap<Double, Shooter.State> map = 
         new InterpolatingTreeMap<Double, Shooter.State>(InverseInterpolator.forDouble(), (Shooter.State startValue, Shooter.State endValue, double t)-> startValue.interpolate(endValue, t));
+
+    private static InterpolatingTreeMap<Double, Double> map2 = 
+        new InterpolatingTreeMap<Double, Double>(InverseInterpolator.forDouble(), Interpolator.forDouble());
 
     private static Shooter.State presetState;
 
@@ -33,14 +37,9 @@ public class Shotmap {
 
     static {
         // 4.86 
-        addState(Meters.of(2.26), Degrees.of(0), RPM.of(2800), Seconds.of(1.5));
-        addState(Meters.of(3.5), Degrees.of(3), RPM.of(3350), Seconds.of(1.5));
-        addState(Meters.of(5.57), Degrees.of(13), RPM.of(3600), Seconds.of(2));
-        // addState(backCorner, Degrees.of(10), RPM.of(2400), Seconds.of(1.5));// TODO: use real tof
-        // addState(trench, Degrees.of(7), RPM.of(2200), Seconds.of(2));// TODO: use real tof
-        // addState(nextToTower, Degrees.of(5), RPM.of(2200), Seconds.of(2.5));// TODO: use real tof
-        // addState(frontOfTower, Degrees.of(3), RPM.of(2000), Seconds.of(2.5));// TODO: use real tof
-        // addState(nearHub, Degrees.of(0), RPM.of(1800), Seconds.of(2));// TODO: use real tof
+        addState(Meters.of(2.26), Degrees.of(0), RPM.of(2800), Seconds.of(1.02));
+        addState(Meters.of(3.5), Degrees.of(3), RPM.of(3200), Seconds.of(1.22));
+        addState(Meters.of(5.57), Degrees.of(13), RPM.of(3600), Seconds.of(1.31));//TODO: not measured for the correct pose, instead 4.86 meters
     }
 
     public static void periodic() {
@@ -49,12 +48,17 @@ public class Shotmap {
 
     private static void addState(Distance distance, Angle angle, AngularVelocity velocity, Time tof){
         map.put(distance.in(Meters), new Shooter.State(angle, velocity, tof));
+        map2.put(distance.in(Meters)/tof.in(Seconds), distance.in(Meters));
         if (minTof == null || tof.in(Seconds) < minTof.in(Seconds)){
             minTof = tof;
         }
         if (maxTof == null || tof.in(Seconds) > maxTof.in(Seconds)){
             maxTof = tof;
         }
+    }
+
+    public static double horizontalVelocityToEffectiveDistance(double velocity){
+        return map2.get(velocity);
     }
 
     public static Shooter.State getState(Distance distance){

@@ -14,10 +14,14 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Seconds;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.units.measure.Time;
+
 import static frc.robot.util.OCUnits.PoundSquareInches;
 import frc.robot.util.TunableNumber;
 
@@ -72,6 +76,9 @@ public final class ShooterConstants {
     public static final Distance kWheelRadius = Inches.of(1.5);
     public static final Distance kHoodPivotHeight = Inches.of(18.096682);
     public static final Distance kHoodLength = Inches.of(8.187500);
+
+    public static final Time kSOTMLatency = Seconds.of(0.1);
+    public static final TunableNumber SOTMLatency = new TunableNumber("4) Latency", kSOTMLatency.in(Seconds));
 
     public static final TalonFXConfiguration kFlywheelConfig = new TalonFXConfiguration();
     static {

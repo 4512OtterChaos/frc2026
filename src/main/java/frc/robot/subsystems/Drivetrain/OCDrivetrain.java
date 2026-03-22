@@ -217,6 +217,16 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
                     .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate().plus(new Transform2d(RobotConstants.kShooterTranslation, Rotation2d.kZero)), targetSpeeds, target.get()).plus(Rotation2d.k180deg))
         );
+    } 
+
+    public void driveFacingAngle(Supplier<ChassisSpeeds> speeds, Angle target) {
+        ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds.get(), lastTargetSpeeds, Robot.kDefaultPeriod);
+        lastTargetSpeeds = targetSpeeds;
+        setControl(
+            face.withVelocityX(targetSpeeds.vxMetersPerSecond)
+                    .withVelocityY(targetSpeeds.vyMetersPerSecond)
+                    .withTargetDirection(Rotation2d.fromDegrees(target.in(Degrees))//.plus(Rotation2d.k180deg)
+        ));
     }
 
     public Command driveFacingOptionalTarget(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {

@@ -100,8 +100,8 @@ public class RobotContainer {
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.b().whileTrue(drivetrain.brakeC());
 
-        driver.leftBumper().whileTrue(parallel(
         driver.rightTrigger().whileTrue(superstructure.otterShootControllerC(() -> driver));
+        driver.leftBumper().whileTrue(superstructure.otterShootOnTheSwimControllerC(()-> driver));/*parallel(
             run(()-> shooter.setState(Shotmap.getState(Shotmap.trench))),
             sequence(
                 waitSeconds(0.6),
@@ -110,8 +110,7 @@ public class RobotContainer {
                     feeder.feedC()
                 )
             )
-        ));
-
+        ));*/
         driver.rightBumper().whileTrue(parallel(
         // shooter.setFlywheelVoltage(
             run(()-> shooter.setState(Degrees.of(5), RPM.of(2200))), 
@@ -136,7 +135,7 @@ public class RobotContainer {
         driver.a().whileTrue(fourBar.setCurrentOutC().withTimeout(1)); 
 
         
-        driver.povUp().whileTrue(run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get())))); //TODO: Re-enable
+        // driver.povUp().whileTrue(run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get())))); //Testing command
 
         // driver.povUp().whileTrue(climber.setMaxHeightC()); //TODO: Re-enable
         // driver.povDown().whileTrue(climber.setMinHeightC()); //TODO: Re-enable
@@ -203,8 +202,7 @@ public class RobotContainer {
 }
 /*
  * TODO:
- * Shoot command intake agitation
- * Four Bar torque control
- * Shooter torque control
- * Fix Autonomous Routine to not crash
+ * test shooter kV
+ * tune shooter kp
+ * check far shotmap value
  */
