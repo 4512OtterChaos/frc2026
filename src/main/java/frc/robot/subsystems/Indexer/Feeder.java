@@ -84,6 +84,10 @@ public class Feeder extends SubsystemBase{
         return run(()-> setVoltage(voltage)).withName("Set Voltage: " + voltage);    
     }
 
+    public Command reverseC(){
+        return run(()->setVoltage(feederReverseVoltage.get())).withName("Reverse");
+    }
+
     public Command feedC(){
         return run(()->setVoltage(feederVoltage.get())).withName("Feed");
     }

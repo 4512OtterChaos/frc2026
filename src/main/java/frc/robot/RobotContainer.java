@@ -126,6 +126,11 @@ public class RobotContainer {
 
         driver.leftTrigger().whileTrue(intake.setVoltageInC());
         driver.x().whileTrue(intake.setVoltageOutC());
+        driver.povLeft().whileTrue(
+            parallel(
+                spindexer.reverseC(),
+                feeder.reverseC()
+        ));
 
         // driver.y().whileTrue(fourBar.setCurrentInC().withTimeout(1.25)); //TODO: Re-enable
         // driver.a().whileTrue(fourBar.setCurrentOutC().withTimeout(1)); //TODO: Re-enable

@@ -28,6 +28,12 @@ public class IndexerConstants {
 
     public static final TunableNumber spindexerVoltage = new TunableNumber("3) Indexer/Spindexer/Voltage", kSpindexerVoltage);
     public static final TunableNumber feederVoltage = new TunableNumber("3) Indexer/Feeder/Voltage", kFeederVoltage);
+    
+    public static final double kSpindexerReverseVoltage = -3;
+    public static final double kFeederReverseVoltage = -4;
+
+    public static final TunableNumber spindexerReverseVoltage = new TunableNumber("3) Indexer/Spindexer/Reverse Voltage", kSpindexerReverseVoltage);
+    public static final TunableNumber feederReverseVoltage = new TunableNumber("3) Indexer/Feeder/Reverse Voltage", kFeederReverseVoltage);
 
 //     public static final double kFeedSlowVoltage = 2;// TODO: Tune
 //     public static final double kSpindexSlowVoltage = 2;// TODO: Tune

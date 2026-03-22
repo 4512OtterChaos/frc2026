@@ -75,16 +75,20 @@ public class Spindexer extends SubsystemBase {
         motor.setVoltage(voltage);
     }
 
+    public void spindex() {
+        setVoltage(spindexerVoltage.get());
+    }
+
     public Command setVoltageC(double voltage){
         return run(()-> setVoltage(voltage)).withName("Set Voltage: " + voltage);    
     }
 
-    public Command spindexC(){
-        return run(()->setVoltage(spindexerVoltage.get())).withName("Spindex");
+    public Command reverseC(){
+        return run(()->setVoltage(spindexerReverseVoltage.get())).withName("Reverse");
     }
 
-    public void spindex() {
-        setVoltage(spindexerVoltage.get());
+    public Command spindexC(){
+        return run(()->spindex()).withName("Spindex");
     }
 
     public void changeTunable(){
