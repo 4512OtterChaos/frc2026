@@ -28,7 +28,6 @@ public class RobotConstants {
     public static final Translation2d FR = new Translation2d(TunerConstants.FrontRight.LocationX, TunerConstants.FrontRight.LocationY);
     public static final Translation2d BL = new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY);
     public static final Translation2d BR = new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY);
-    public static int kPigeonID = 11;
 
     public static final Translation2d kShooterTranslation = new Translation2d(Inches.of(-6.486584), Inches.of(-5.500000));
 

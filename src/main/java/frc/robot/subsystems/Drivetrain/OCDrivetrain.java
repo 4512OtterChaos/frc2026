@@ -2,19 +2,15 @@ package frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.either;
-import static frc.robot.util.RobotConstants.kShooterTranslation;
-import static frc.robot.util.RobotConstants.kPigeonID;
 
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -29,7 +25,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -96,7 +91,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     // private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     public ChassisSpeeds lastTargetSpeeds = new ChassisSpeeds();
-    private final Pigeon2 gyro = new Pigeon2(kPigeonID);
 
     public final SwerveDrivePoseEstimator visionEstimator = new SwerveDrivePoseEstimator(
             getKinematics(),
@@ -334,7 +328,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public void resetOdometry(Pose2d pose) {
-        visionEstimator.resetPosition(getGyroYaw(), getState().ModulePositions, pose);
+        visionEstimator.resetPosition(getState().RawHeading, getState().ModulePositions, pose);
     }
 
     public SwerveRequest.FieldCentric getDriveRequest() {
@@ -384,18 +378,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
                             getState().Pose.getTranslation(),
                             initialRot));
         });
-    }
-
-    public Rotation2d getGyroYaw() {
-        return gyro.getRotation2d();
-    }
-
-    public Rotation2d getGyroPitch() {
-        return Rotation2d.fromDegrees(gyro.getRoll().getValueAsDouble());
-    }
-
-    public Rotation2d getGyroRoll() {
-        return Rotation2d.fromDegrees(gyro.getPitch().getValueAsDouble());
     }
 
     public boolean driveMirror() {
