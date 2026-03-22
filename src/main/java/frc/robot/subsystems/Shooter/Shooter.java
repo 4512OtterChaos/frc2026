@@ -214,6 +214,14 @@ public class Shooter extends SubsystemBase {
         setVelocity(velocity);
     }
     
+    public void setIdle(){
+        setState(Degrees.of(0), RPM.of(flywheelIdleRPM.get()));
+    }
+    
+    public Command setIdleC(){
+        return setStateC(Degrees.of(0), RPM.of(flywheelIdleRPM.get()));
+    }
+
     public Command setStateC(State state) {
         return run(() -> setStateC(state.getAngle(), state.getVelocity()));
     }    

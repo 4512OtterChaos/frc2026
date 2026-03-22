@@ -14,8 +14,9 @@
     "Transitions"
   ],
   "autoFolders": [
-    "New Folder",
-    "New New Folder"
+    "Combos",
+    "Double Cycles",
+    "Climb Autos"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

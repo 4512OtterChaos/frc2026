@@ -94,7 +94,7 @@ public class Superstructure extends SubsystemBase{
             Commands.run(
                 () -> {
                     if (hasTarget.negate().getAsBoolean()) {
-                        shooter.idle();
+                        shooter.setIdleC();
                     }
                     else {
                         Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target.get().get());

@@ -79,7 +79,7 @@ public class AutoOptions {
 
     private void addNamedCommands() {
         NamedCommands.registerCommand("Intake", intake.setVoltageInC());
-        NamedCommands.registerCommand("Shoot", superstructure.otterShootC(()-> new ChassisSpeeds()).withTimeout(3));
+        NamedCommands.registerCommand("Shoot", superstructure.otterShootC(()-> new ChassisSpeeds()).withTimeout(3).finallyDo(()->{shooter.setIdle();feeder.setVoltage(0);spindexer.setVoltage(0);}));
         NamedCommands.registerCommand("Wait", Commands.waitSeconds(1));
         // NamedCommands.registerCommand("Climber Up", climber.setMaxHeightC()); 
         // NamedCommands.registerCommand("Climber Down", climber.setMinHeightC());
