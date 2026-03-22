@@ -17,6 +17,8 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -104,29 +106,24 @@ public class Spindexer extends SubsystemBase {
     }
 
     // Simulation
-    FlywheelSim spindexerSim = new FlywheelSim(
-        LinearSystemId.createFlywheelSystem(
-            DCMotor.getKrakenX60(1),
-            kSpindexerMomentOfInertia.in(KilogramSquareMeters),
-            kSpindexerGearRatio
-        ),
-        DCMotor.getKrakenX60(1),
-        kSpindexerGearRatio
-        );
+    DCMotorSim model = new DCMotorSim(
+        LinearSystemId.createDCMotorSystem(
+                1.0 / kSpindexerMotor.withReduction(kSpindexerGearRatio).KvRadPerSecPerVolt,
+                0.001),
+        kSpindexerMotor
+    );
 
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motorSimState = motor.getSimState();
         motorSimState.Orientation =  ChassisReference.Clockwise_Positive;//TODO: Fix, idk what it means
+        motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-        double voltage = motorSimState.getMotorVoltage();
-        spindexerSim.setInputVoltage(voltage);
-		spindexerSim.update(0.02);
-
-        double wheelRadPerSec = spindexerSim.getAngularVelocityRadPerSec();
-        double wheelRps = wheelRadPerSec / (2.0 * Math.PI);
+        model.setInputVoltage(motorSimState.getMotorVoltage());
+		model.update(0.02);
        
-        motorSimState.setRotorVelocity(wheelRps);
-        motorSimState.addRotorPosition(wheelRps * 0.02);
+        motorSimState.setRawRotorPosition(model.getAngularPosition().times(kSpindexerGearRatio));
+        motorSimState.setRotorVelocity(model.getAngularVelocity().times(kSpindexerGearRatio));
+        motorSimState.setRotorAcceleration(model.getAngularAcceleration().times(kSpindexerGearRatio));
     }   
 }

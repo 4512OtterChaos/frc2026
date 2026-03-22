@@ -94,6 +94,11 @@ public class Robot extends TimedRobot {
     }
 
     @Override
+    public void simulationInit() {
+        robotContainer.simulationInit();
+    }
+
+    @Override
     public void simulationPeriodic() {
         robotContainer.simulationPeriodic();
     }

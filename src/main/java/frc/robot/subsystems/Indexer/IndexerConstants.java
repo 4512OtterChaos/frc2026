@@ -19,6 +19,7 @@ public class IndexerConstants {
     public static final int kFeederID = 32;
 
     public static DCMotor kFeederMotor = DCMotor.getKrakenX60(1);
+    public static DCMotor kSpindexerMotor = DCMotor.getKrakenX60(1);
 
     public static final double kSpindexerGearRatio = 3.0;
     public static final double kFeederGearRatio = 32.0 / 12.0;

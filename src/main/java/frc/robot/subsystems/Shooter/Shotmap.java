@@ -6,6 +6,7 @@ import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.Interpolator;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
@@ -13,7 +14,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Velocity;
 import frc.robot.util.FieldUtil;
 
 public class Shotmap {
@@ -37,9 +40,9 @@ public class Shotmap {
 
     static {
         // 4.86 
-        addState(Meters.of(2.26), Degrees.of(0), RPM.of(2800), Seconds.of(1.02));
-        addState(Meters.of(3.5), Degrees.of(3), RPM.of(3200), Seconds.of(1.22));
-        addState(Meters.of(5.57), Degrees.of(13), RPM.of(3600), Seconds.of(1.31));//TODO: not measured for the correct pose, instead 4.86 meters
+        addState(Meters.of(2.26), Degrees.of(21), RPM.of(2800), Seconds.of(1.02));
+        addState(Meters.of(3.5), Degrees.of(24), RPM.of(3200), Seconds.of(1.22));
+        addState(Meters.of(5.57), Degrees.of(34), RPM.of(3600), Seconds.of(1.31));//TODO: not measured for the correct pose, instead 4.86 meters
     }
 
     public static void periodic() {
@@ -59,6 +62,22 @@ public class Shotmap {
 
     public static double horizontalVelocityToEffectiveDistance(double velocity){
         return map2.get(velocity);
+    }
+
+    /** Get the shooter-relative fuel velocities (x and z) for the state at given distance */
+    public static Translation3d getRelativeFuelVels(Angle hoodAngle, AngularVelocity flywheelVel) {
+        var refDist = Meters.of(3.5);
+        var refState = getState(refDist);
+        double refHoodAngleRads = refState.getAngle().in(Radians);
+        double refHorizVelMeters = refDist.div(refState.getTof()).in(MetersPerSecond);
+        double refLinearVelMeters = refHorizVelMeters / Math.sin(refHoodAngleRads);
+
+        double linearVelMeters = flywheelVel.div(refState.getVelocity()).magnitude() * refLinearVelMeters;
+        double hoodAngleRads = hoodAngle.in(Radians);
+        return new Translation3d(
+            linearVelMeters * Math.sin(hoodAngleRads),
+            0,
+            linearVelMeters * Math.cos(hoodAngleRads));
     }
 
     public static Shooter.State getState(Distance distance){

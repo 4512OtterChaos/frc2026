@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Centimeter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Meter;
@@ -8,6 +9,8 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
@@ -26,8 +29,14 @@ import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -215,11 +224,11 @@ public class Shooter extends SubsystemBase {
     }
     
     public void setIdle(){
-        setState(Degrees.of(0), RPM.of(flywheelIdleRPM.get()));
+        setState(kHoodMinAngle, RPM.of(flywheelIdleRPM.get()));
     }
     
     public Command setIdleC(){
-        return setStateC(Degrees.of(0), RPM.of(flywheelIdleRPM.get()));
+        return setStateC(kHoodMinAngle, RPM.of(flywheelIdleRPM.get()));
     }
 
     public Command setStateC(State state) {
@@ -229,6 +238,23 @@ public class Shooter extends SubsystemBase {
     public Command setStateC(Angle angle, AngularVelocity velocity) {
         return run(() -> setState(angle, velocity));
     }  
+
+    /** positive angular velocity = backspin */
+    public Pair<LinearVelocity, AngularVelocity> getFuelExitVelSpin() {
+        double flywheelRPS = getFlywheelVelocity().in(RotationsPerSecond);
+        double tangentialBottom = flywheelRPS * ShooterConstants.kWheelDiameter.in(Meters) * Math.PI;
+        double tangentialTop = flywheelRPS * ShooterConstants.kBackRollerRatio * ShooterConstants.kBackRollerDiameter.in(Meters) * Math.PI;
+        return Pair.of(
+            MetersPerSecond.of((tangentialBottom + tangentialTop) / 2),
+            RadiansPerSecond.of((tangentialBottom - tangentialTop) / Centimeter.of(15).in(Meters)));
+    }
+
+    public Pose3d getFuelExitPose(Pose2d robotPose) {
+        return new Pose3d(robotPose)
+            .plus(kRobotToFlywheelTrf)
+            .plus(new Transform3d(Translation3d.kZero, new Rotation3d(Degrees.of(0), getHoodAngle(), Degrees.of(0))))
+            .plus(kFlywheelToExitTrf);
+    }
 
     public void changeTunable() {
         hoodMinAngle.poll();

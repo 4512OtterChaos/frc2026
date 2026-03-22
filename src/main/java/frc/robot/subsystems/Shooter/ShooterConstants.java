@@ -9,7 +9,11 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.system.plant.DCMotor;
+
+import static edu.wpi.first.units.Units.Centimeter;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RPM;
@@ -35,14 +39,36 @@ public final class ShooterConstants {
 
     public static final double kFlywheelGearRatio = 20.0 / 22.0;
     public static final double kHoodGearRatio = (60.0 / 18.0) * (32.0 / 20.0) * (24.0 / 20.0) * (208.0 / 18.0);
+    public static final double kBackRollerRatio = 22.0 / 36.0; // back roller upduction
+
+    public static final MomentOfInertia kHoodMomentOfInertia = PoundSquareInches.of(168.737616);
+    public static final MomentOfInertia kFlywheelMomentOfInertia = PoundSquareInches.of(8); // TODO: Get Real
+
+    public static final Distance kWheelDiameter = Inches.of(3);
+    public static final Distance kBackRollerDiameter = Inches.of(1);
+    public static final Distance kHoodPivotHeight = Inches.of(18.096682);
+    public static final Distance kHoodLength = Inches.of(8.187500);
+
+    // Transform from robot center to main flywheel shaft center
+    public static final Transform3d kRobotToFlywheelTrf = new Transform3d(
+        Inches.of(-10.5),
+        Inches.of(5.5),
+        Inches.of(18.1),
+        new Rotation3d(0, 0, Math.PI)); // face backwards
+    // Transform from flywheel to center of fuel as it exits. Pose should be pitched down based on hood beforehand (e.g. +20 - +45 degrees)
+    public static final Transform3d kFlywheelToExitTrf = new Transform3d(
+        Inches.of(-3.0/2).minus(Centimeter.of(15.0/2)),
+        Inches.of(0),
+        Inches.of(0),
+        new Rotation3d(0, -Math.PI/2, 0));
 
     public static final AngularVelocity kFlywheelIdleVelocity = RPM.of(500); // TODO: Tune
 
     public static final TunableNumber flywheelIdleRPM = new TunableNumber("4) Shooter/Flywheel/Idle RPM",
             kFlywheelIdleVelocity.in(RPM));
 
-    public static final Angle kHoodMinAngle = Degrees.of(0);
-    public static final Angle kHoodMaxAngle = Degrees.of(24);
+    public static final Angle kHoodMinAngle = Degrees.of(21);
+    public static final Angle kHoodMaxAngle = Degrees.of(45);
 
     public static final TunableNumber hoodMinAngle = new TunableNumber("4) Shooter/Hood/Min Angle",
             kHoodMinAngle.in(Degrees));
@@ -68,14 +94,6 @@ public final class ShooterConstants {
     
     public static final TunableNumber RPMTolerance = new TunableNumber("4) Shooter/Flywheel/RPM Tolerance", kVelocityTolerance.in(RPM));
     public static final TunableNumber degreesTolerance = new TunableNumber("4) Shooter/Hood/Degrees Tolerance", kAngleTolerance.in(Degrees));
-    
-
-    public static final MomentOfInertia kHoodMomentOfInertia = PoundSquareInches.of(168.737616);
-    public static final MomentOfInertia kFlywheelMomentOfInertia = PoundSquareInches.of(8); // TODO: Get Real
-
-    public static final Distance kWheelRadius = Inches.of(1.5);
-    public static final Distance kHoodPivotHeight = Inches.of(18.096682);
-    public static final Distance kHoodLength = Inches.of(8.187500);
 
     public static final Time kSOTMLatency = Seconds.of(0.1);
     public static final TunableNumber SOTMLatency = new TunableNumber("4) Latency", kSOTMLatency.in(Seconds));

@@ -11,6 +11,10 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.datalog.DataLogRecord;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -34,6 +38,7 @@ import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SuperstructureViz;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.util.FuelPhysicsSim;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.OCXboxController;
 import frc.robot.util.TunableNumber;
@@ -167,11 +172,7 @@ public class RobotContainer {
             swerveState.Pose.getRotation(),
             RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
             swerveState.Timestamp + phoenixTimeOffset);
-    }
-
-    public void simulationPeriodic() {
-        vision.simulationPeriodic(drivetrain.getState().Pose); 
-    }
+    }    
 
     public void AutonomousInit() {
         // CommandScheduler.getInstance().schedule(autoOptions.getAuto());
@@ -198,6 +199,43 @@ public class RobotContainer {
         feederVoltage.poll();
         hoodAngle.poll();
         flywheelVelocity.poll();
+    }
+
+    //----- Simulation
+    FuelPhysicsSim ballSim = new FuelPhysicsSim("Sim/Fuel");
+    Translation3d launcherPos = new Translation3d();
+    final double launchGapTimeSec = 1.0 / 5; // 5 bps
+    double lastLaunchTime = Timer.getFPGATimestamp();
+
+    public void simulationInit() {
+        ballSim.enable();
+        // ballSim.placeFieldBalls();  // spawns all the game pieces
+
+        // tell it about your robot
+        ballSim.configureRobot(Units.inchesToMeters(36.5), Units.inchesToMeters(32), Units.inchesToMeters(6.25),
+            () -> drivetrain.getState().Pose, () -> drivetrain.getState().Speeds);
+    }
+
+    public void simulationPeriodic() {
+        vision.simulationPeriodic(drivetrain.getState().Pose);
+
+        // rudimentary shooting simulation: spawn fuel when everything is spinning
+        double now = Timer.getFPGATimestamp();
+        double flywheelRPM = shooter.getFlywheelVelocity().in(RPM);
+        if (spindexer.getVelocity().gt(RPM.of(1000)) &&
+                feeder.getVelocity().gt(RPM.of(1000)) &&
+                flywheelRPM > 1000 &&
+                now > lastLaunchTime + launchGapTimeSec) {
+            // fuel exit velocity and spin based on current flywheel velocity
+            var exitVelSpin = shooter.getFuelExitVelSpin();
+            // (we actually ignore this exit vel as we estimate it another way using the shot map)
+            ballSim.launchBall(
+                shooter.getFuelExitPose(drivetrain.getState().Pose).getTranslation(),
+                Shotmap.getRelativeFuelVels(shooter.getHoodAngle(), shooter.getFlywheelVelocity()).rotateBy(new Rotation3d(drivetrain.getState().Pose.getRotation().plus(Rotation2d.k180deg))),
+                exitVelSpin.getSecond().in(RPM));
+            lastLaunchTime = now;
+        }
+        ballSim.tick();  // runs physics, publishes ball positions to NT
     }
 }
 /*
