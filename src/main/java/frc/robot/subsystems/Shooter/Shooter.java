@@ -62,6 +62,9 @@ public class Shooter extends SubsystemBase {
     private AngularVelocity targetVelocity = RPM.of(0); // flywheel
     private Angle targetAngle = Degrees.of(hoodMinAngle.get()); //hood
 
+    private Trigger upToSpeed = new Trigger(() -> upToSpeed()).debounce(flywheelDebounceTime.get());
+    private Trigger atAngle = new Trigger(() -> atAngle()).debounce(hoodDebounceTime.get());
+
     private final StatusSignal<Angle> fwPositionStatus = fwLeftMotor.getPosition();
     private final StatusSignal<AngularVelocity> fwVelocityStatus = fwLeftMotor.getVelocity();
     private final StatusSignal<Voltage> fwVoltageStatus = fwLeftMotor.getMotorVoltage();
@@ -122,7 +125,7 @@ public class Shooter extends SubsystemBase {
         fwLeftMotor.setControl(velocityrequest.withVelocity(targetVelocity));
 
         changeTunable();
-        log();    
+        log();
     }
 
     // HOOD
@@ -163,7 +166,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public Trigger atAngleT() {
-        return new Trigger(() -> atAngle()).debounce(hoodDebounceTime.get());
+        return new Trigger(atAngle);
     }
 
     // FLYWHEEL
@@ -197,11 +200,11 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean upToSpeed() {
-        return Math.abs(targetVelocity.in(RPM) - getFlywheelVelocity().in(RPM)) < RPMTolerance.get();
+        return Math.abs(targetVelocity.in(RPM) - getFlywheelVelocity().in(RPM)) < RPMTolerance.get(); 
     }
 
     public Trigger upToSpeedT() {
-        return new Trigger(() -> upToSpeed()).debounce(flywheelDebounceTime.get());
+        return new Trigger(upToSpeed);
     }
     
     //OVERALL
@@ -248,6 +251,14 @@ public class Shooter extends SubsystemBase {
         flywheelkA.poll();
 
         int hash = hashCode();
+
+        if (flywheelDebounceTime.hasChanged(hash)){
+            upToSpeed = new Trigger(() -> upToSpeed()).debounce(flywheelDebounceTime.get());
+        }
+
+        if(hoodDebounceTime.hasChanged(hash)){
+            atAngle = new Trigger(() -> atAngle()).debounce(hoodDebounceTime.get());
+        }
 
         if (hoodkP.hasChanged(hash) || hoodkI.hasChanged(hash) || hoodkD.hasChanged(hash) || hoodkG.hasChanged(hash) || hoodkS.hasChanged(hash) || hoodkV.hasChanged(hash) || hoodkA.hasChanged(hash) || flywheelkP.hasChanged(hash) || flywheelkI.hasChanged(hash) || flywheelkD.hasChanged(hash) || flywheelkS.hasChanged(hash) || flywheelkV.hasChanged(hash) || flywheelkA.hasChanged(hash)) {
             kHoodConfig.Slot0.kP = hoodkP.get();

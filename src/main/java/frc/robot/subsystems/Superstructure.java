@@ -97,21 +97,21 @@ public class Superstructure extends SubsystemBase{
                         shooter.idle();
                     }
                     else {
-                        // Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), targetChooser ? FieldUtil.kHubTrl : drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
                         Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target.get().get());
                         Shooter.State state = Shotmap.getState(distance);
 
                         shooter.setState(state);
-                        drivetrain.inTrenchZone().whileTrue(run(()-> shooter.setState(Shotmap.idleState))); // works surprisingly well in sim
                     }
                 },
                 shooter
             ),
-            drivetrain.driveFacingOptionalTarget(speeds, target), // TODO: use drivefacingHubController() instead?
+            drivetrain.driveFacingOptionalTarget(speeds, target),
             sequence(
                 // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
-                
-                waitUntil(hasTarget.debounce(0.7)),
+                parallel(
+                    waitUntil(hasTarget.debounce(0.7)),
+                    waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean())
+                ),
                 parallel(
                     feeder.feedC(),
                     spindexer.spindexC()
