@@ -101,17 +101,9 @@ public class Shotmap {
         //shoot on da fly 
     public static Rotation2d newTargetAngle(Pose2d robotPose, ChassisSpeeds speed, Translation2d target) { // TODO: check
         Translation2d robotPosition = robotPose.getTranslation();
-        Translation2d fakeTarget = target.minus(robotPosition);
+        Translation2d trlToTarget = target.minus(robotPosition);
 
-        double distanceMeters = fakeTarget.getNorm();
-
-        Shooter.State state = Shotmap.getState(Meters.of(distanceMeters));
-        
-        double tof = state.getTof().in(Seconds);
-        Translation2d velocityOffset = new Translation2d(speed.vxMetersPerSecond * tof * targetMultiplier.get(), speed.vyMetersPerSecond * targetMultiplier.get());
-        Translation2d newTargetAngle = fakeTarget.minus(velocityOffset);
-
-        return newTargetAngle.getAngle();
+        return trlToTarget.getAngle();
     }
 
 

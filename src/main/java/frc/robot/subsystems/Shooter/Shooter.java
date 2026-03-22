@@ -56,8 +56,6 @@ public class Shooter extends SubsystemBase {
     private TalonFX fwRightMotor = new TalonFX(kRightMotorID);
 
     private TalonFX hMotor = new TalonFX(kHoodMotorID);
-    // private ChassisSpeeds speeds = new ChassisSpeeds();
-    // private Supplier<ChassisSpeeds> suppliedSpeeds = ()-> speeds;
 
     private AngularVelocity targetVelocity = RPM.of(0); // flywheel
     private Angle targetAngle = Degrees.of(hoodMinAngle.get()); //hood
@@ -196,7 +194,6 @@ public class Shooter extends SubsystemBase {
 
     public void setVelocity(AngularVelocity velocity) {
         targetVelocity = velocity;
-        //.plus(RPM.of(suppliedSpeeds.get().vyMetersPerSecond))
     }
 
     public boolean upToSpeed() {
@@ -313,8 +310,6 @@ public class Shooter extends SubsystemBase {
         // SmartDashboard.putNumber("4) Shooter/Hood/Angle Tolerance", degreesTolerance.get());
         
 
-        // // SmartDashboard.putNumber("4) Shooter/Hood/vel", suppliedSpeeds.get().vyMetersPerSecond);
-
         // SmartDashboard.putNumber("4) Shooter/Flywheel/RPM", getFlywheelVelocity().in(RPM));
         // // SmartDashboard.putNumber("4) Shooter/Flywheel/Wheel Radians", getAngularVelocity().in(RadiansPerSecond));
         // SmartDashboard.putNumber("4) Shooter/Flywheel/Voltage", getFlywheelVoltage().in(Volts));
@@ -410,11 +405,9 @@ public class Shooter extends SubsystemBase {
             this.velocity = velocity;
             this.tof = tof;
         }
-    
-        // ChassisSpeeds speeds = new ChassisSpeeds();
 
         public Angle getAngle(){
-            return angle;//.plus(Degrees.of(speeds.vyMetersPerSecond)); 
+            return angle;
         }
 
         public AngularVelocity getVelocity(){
