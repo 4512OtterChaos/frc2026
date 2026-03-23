@@ -121,15 +121,53 @@ public class Shotmap {
         return presetState;
     } 
 
-        //shoot on da fly 
-    public static Rotation2d newTargetAngle(Pose2d robotPose, ChassisSpeeds speed, Translation2d target) { // TODO: check
-        Translation2d robotPosition = robotPose.getTranslation();
-        Translation2d trlToTarget = target.minus(robotPosition);
+    /**
+     * Find the field-relative angle of the robot for the shooter to align with the target.
+     * @param robotPose
+     * @param target
+     * @return
+     */
+    public static Rotation2d getFieldRelTargetFacingAngle(Pose2d robotPose, Translation2d target) { // TODO: check
+        // find the angle needed to point the chassis at the target
+        Rotation2d robotFaceTarget = target.minus(robotPose.getTranslation()).getAngle();
 
-        return trlToTarget.getAngle();
+        // using that angle, adjust the target by the offset from the robot to the shooter exit
+        Translation2d adjTarget = target.plus(
+            kRobotToFuelExitTrf2d.getTranslation().rotateBy(robotFaceTarget)
+        );
+
+        // the adjusted target is the point the robot needs to face to point the shooter at the target
+        // (plus a 180 deg rotation)
+        return adjTarget.minus(robotPose.getTranslation()).getAngle().plus(Rotation2d.k180deg);
     }
 
+    /**
+     * Get the angular velocity needed to keep the shooter facing the target, given the robot's current linear velocity.
+     * @param robotPose
+     * @param target
+     * @param fieldSpeeds Field-relative chassis speeds of the robot
+     * @return
+     */
+    public static Rotation2d targetFacingOmega(Pose2d robotPose, Translation2d target, ChassisSpeeds fieldSpeeds) {
+        Translation2d shooterTrl = robotPose.plus(kRobotToFuelExitTrf2d).getTranslation();
+        Translation2d relTarget = target.minus(shooterTrl);
+        // mathematically, the target-facing angle is arctan(relTargetY / relTargetX)
+        // we want to find its derivative with respect to time, which is the target-facing omega
+        // using the quotient rule, we get:
+        // omega = (relTargetX * relTargetY' - relTargetY * relTargetX') / (relTargetX^2 + relTargetY^2)
+        
+        double x = relTarget.getX();
+        double y = relTarget.getY();
 
+        double distSq = x*x + y*y;
+        if (distSq < 1e-6) {
+            return Rotation2d.kZero;
+        }
+
+        double vX = fieldSpeeds.vxMetersPerSecond;
+        double vY = fieldSpeeds.vyMetersPerSecond;
+        return Rotation2d.fromRadians((x * vY - y * vX) / distSq);
+    }
 
     public static void changeTunable() {
         targetMultiplier.poll();

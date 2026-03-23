@@ -141,6 +141,36 @@ public class Superstructure extends SubsystemBase{
     }
     
 
+    // /**
+    //  * @param speeds Field relative chassis speeds
+    //  * @param target
+    //  * @return
+    //  */
+    // public Command otterShootOnTheSwimC(Supplier<ChassisSpeeds> speeds) {
+    //     return parallel(
+    //         Commands.run(
+    //             () -> {
+    //                 Pair<Shooter.State, Angle> targets = ShootOnTheMove.getTargets(drivetrain.getGlobalPoseEstimate(), drivetrain.getState().Speeds);
+
+    //                 shooter.setState(targets.getFirst());
+    //                 drivetrain.driveFacingAngle(speeds, targets.getSecond());
+    //             },
+    //             drivetrain, shooter
+    //         ),
+    //         sequence(
+    //             // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
+    //             parallel(
+    //                 waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean())
+    //             ),
+    //             parallel(
+    //                 feeder.feedC(),
+    //                 spindexer.spindexC()
+    //             )
+    //         ).repeatedly()//, 
+    //         // fourBar.oscillateC()
+    //     ).withName("Otter Shoot");
+    // }
+
     /**
      * @param speeds Field relative chassis speeds
      * @param target
@@ -150,10 +180,22 @@ public class Superstructure extends SubsystemBase{
         return parallel(
             Commands.run(
                 () -> {
-                    Pair<Shooter.State, Angle> targets = ShootOnTheMove.getTargets(drivetrain.getGlobalPoseEstimate(), drivetrain.getState().Speeds);
+                    var currSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getState().Pose.getRotation());
+                    var vel = new Translation2d(currSpeeds.vxMetersPerSecond, currSpeeds.vyMetersPerSecond);
+                    Translation2d hub = FieldUtil.kHubTrl;
+                    Translation2d target = hub;
+                    Shooter.State state = null;
 
-                    shooter.setState(targets.getFirst());
-                    drivetrain.driveFacingAngle(speeds, targets.getSecond());
+                    // perform TOF recursion for several iterations to account for the change in target position as the robot moves during the shot
+                    for (int i = 0; i < 5; i++) {
+                        Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target);
+                        state = Shotmap.getState(distance);
+                        // TODO: magic 0.25 coefficient, is this just simulation?
+                        target = hub.minus(vel.times(state.getTof().times(0.25).in(Seconds)));
+                    }
+
+                    shooter.setState(state);
+                    drivetrain.driveFacingTarget(speeds.get(), target);
                 },
                 drivetrain, shooter
             ),

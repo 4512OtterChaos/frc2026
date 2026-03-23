@@ -9,7 +9,9 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 
@@ -50,11 +52,14 @@ public final class ShooterConstants {
     public static final Distance kHoodLength = Inches.of(8.187500);
 
     // Transform from robot center to fuel exit
-    public static final Transform3d kRobotToFuelExitTrf = new Transform3d(
+    public static final Transform3d kRobotToFuelExitTrf3d = new Transform3d(
         Inches.of(-6.5),
         Inches.of(5.5),
         Inches.of(19),
         new Rotation3d(0, 0, Math.PI)); // face backwards
+    public static final Transform2d kRobotToFuelExitTrf2d = new Transform2d(
+        kRobotToFuelExitTrf3d.getTranslation().toTranslation2d(),
+        kRobotToFuelExitTrf3d.getRotation().toRotation2d()); // face backwards
 
     public static final AngularVelocity kFlywheelIdleVelocity = RPM.of(500); // TODO: Tune
 

@@ -251,7 +251,7 @@ public class Shooter extends SubsystemBase {
 
     public Pose3d getFuelExitPose(Pose2d robotPose) {
         return new Pose3d(robotPose)
-            .plus(kRobotToFuelExitTrf)
+            .plus(kRobotToFuelExitTrf3d)
             .plus(new Transform3d(Translation3d.kZero, new Rotation3d(Degrees.of(0), Degrees.of(-90).plus(getHoodAngle()), Degrees.of(0))));
     }
 

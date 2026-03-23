@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
+import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
@@ -194,27 +195,21 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public Command driveFacingTargetC(Supplier<ChassisSpeeds> speeds, Supplier<Translation2d> target) {
-        return applyRequest(() -> {
-            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds.get(), lastTargetSpeeds, Robot.kDefaultPeriod);
-            lastTargetSpeeds = targetSpeeds;
-            return face.withVelocityX(targetSpeeds.vxMetersPerSecond)
-                    .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate().plus(new Transform2d(RobotConstants.kShooterTranslation, Rotation2d.kZero)), targetSpeeds, target.get()).plus(Rotation2d.k180deg));
-        });
+        return run(() -> driveFacingTarget(speeds.get(), target.get()));
     }
 
-    public void driveFacingTarget(Supplier<ChassisSpeeds> speeds, Supplier<Translation2d> target) {
-        ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds.get(), lastTargetSpeeds, Robot.kDefaultPeriod);
+    public void driveFacingTarget(ChassisSpeeds speeds, Translation2d target) {
+        ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds, lastTargetSpeeds, Robot.kDefaultPeriod);
         lastTargetSpeeds = targetSpeeds;
         setControl(
             face.withVelocityX(targetSpeeds.vxMetersPerSecond)
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(Shotmap.newTargetAngle(getGlobalPoseEstimate().plus(new Transform2d(RobotConstants.kShooterTranslation, Rotation2d.kZero)), targetSpeeds, target.get()).plus(Rotation2d.k180deg))
+                    .withTargetDirection(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target))
         );
     } 
 
-    public void driveFacingAngle(Supplier<ChassisSpeeds> speeds, Angle target) {
-        ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds.get(), lastTargetSpeeds, Robot.kDefaultPeriod);
+    public void driveFacingAngle(ChassisSpeeds speeds, Angle target) {
+        ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds, lastTargetSpeeds, Robot.kDefaultPeriod);
         lastTargetSpeeds = targetSpeeds;
         setControl(
             face.withVelocityX(targetSpeeds.vxMetersPerSecond)
@@ -226,7 +221,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     public Command driveFacingOptionalTarget(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
         return either(
             runOnce(()-> drive(speeds.get())), 
-            runOnce(()-> driveFacingTarget(speeds, ()-> target.get().get())), 
+            runOnce(()-> driveFacingTarget(speeds.get(), target.get().get())), 
             ()-> target.get().isEmpty()
         ).repeatedly();
     }
@@ -438,7 +433,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         SmartDashboard.putBoolean("1) Drivetrain/In Neutral Zone", inNeutralZone().getAsBoolean());
         var state = getState();
         if (state != null && state.Pose != null) {
-            Rotation2d targetAngle = Shotmap.newTargetAngle(getGlobalPoseEstimate(), lastTargetSpeeds, FieldUtil.kHubTrl);
+            Rotation2d targetAngle = Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), FieldUtil.kHubTrl);
             Rotation2d rawAngle = FieldUtil.kHubTrl.minus(getGlobalPoseEstimate().getTranslation()).getAngle();
 
             SmartDashboard.putNumber("1) Drivetrain/DriveFacingHub/TargetAngleDeg", targetAngle.plus(Rotation2d.k180deg).getDegrees());
