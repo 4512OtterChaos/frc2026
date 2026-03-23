@@ -49,18 +49,12 @@ public final class ShooterConstants {
     public static final Distance kHoodPivotHeight = Inches.of(18.096682);
     public static final Distance kHoodLength = Inches.of(8.187500);
 
-    // Transform from robot center to main flywheel shaft center
-    public static final Transform3d kRobotToFlywheelTrf = new Transform3d(
-        Inches.of(-10.5),
+    // Transform from robot center to fuel exit
+    public static final Transform3d kRobotToFuelExitTrf = new Transform3d(
+        Inches.of(-6.5),
         Inches.of(5.5),
-        Inches.of(18.1),
+        Inches.of(19),
         new Rotation3d(0, 0, Math.PI)); // face backwards
-    // Transform from flywheel to center of fuel as it exits. Pose should be pitched down based on hood beforehand (e.g. +20 - +45 degrees)
-    public static final Transform3d kFlywheelToExitTrf = new Transform3d(
-        Inches.of(-3.0/2).minus(Centimeter.of(15.0/2)),
-        Inches.of(0),
-        Inches.of(0),
-        new Rotation3d(0, -Math.PI/2, 0));
 
     public static final AngularVelocity kFlywheelIdleVelocity = RPM.of(500); // TODO: Tune
 

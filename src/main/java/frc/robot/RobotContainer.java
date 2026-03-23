@@ -41,6 +41,7 @@ import frc.robot.subsystems.Vision.Vision;
 import frc.robot.util.FuelPhysicsSim;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.OCXboxController;
+import frc.robot.util.RobotConstants;
 import frc.robot.util.TunableNumber;
 
 public class RobotContainer {
@@ -212,7 +213,7 @@ public class RobotContainer {
         // ballSim.placeFieldBalls();  // spawns all the game pieces
 
         // tell it about your robot
-        ballSim.configureRobot(Units.inchesToMeters(36.5), Units.inchesToMeters(32), Units.inchesToMeters(6.25),
+        ballSim.configureRobot(RobotConstants.kRobotWidth.in(Meters), RobotConstants.kRobotLength.in(Meters), Units.inchesToMeters(6.25),
             () -> drivetrain.getState().Pose, () -> drivetrain.getState().Speeds);
     }
 

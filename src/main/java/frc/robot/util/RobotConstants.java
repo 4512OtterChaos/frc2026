@@ -16,6 +16,8 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
 
 public class RobotConstants {
+    public static  final Distance kRobotLength = Inches.of(32); // including bumpers
+    public static final Distance kRobotWidth = Inches.of(36.5);
     public static final Mass kRobotWeight = Kilograms.of(100);
     public static final MomentOfInertia kMOI = KilogramSquareMeters.of(8.874);
     public static final Distance kWheelRad = Meters.of(TunerConstants.BackLeft.WheelRadius);
