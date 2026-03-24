@@ -2,6 +2,7 @@ package frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.either;
+import static frc.robot.subsystems.Drivetrain.DrivetrainConstants.*;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -32,52 +33,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
-import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
-import frc.robot.util.RobotConstants;
-import frc.robot.util.TunableNumber;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain {
 
-    private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // desired top speed
-    private static double MaxAngularRate = RotationsPerSecond.of(2).in(RadiansPerSecond); // max angular velocity
-
-    // Normal driving speed at 100% controller input
-    public static final double kDriveSpeedRatio = 0.9;
-    public static final double kTurnSpeedRatio = 0.5;
-
-    public static final TunableNumber driveSpeedRatio = new TunableNumber("1) Drivetrain/Drive Speed", kDriveSpeedRatio);
-    public static final TunableNumber turnSpeedRatio = new TunableNumber("1) Drivetrain/Turn Speed", kTurnSpeedRatio);
-
-    // Normal driving acceleration limits
-    public static final double kLinearAccel = FeetPerSecondPerSecond.of(35).in(MetersPerSecondPerSecond);
-    public static final double kLinearDecel = FeetPerSecondPerSecond.of(50).in(MetersPerSecondPerSecond);
-    public static final double kAngularAccel = RotationsPerSecondPerSecond.of(6).in(RadiansPerSecondPerSecond);
-    public static final double kAngularDecel = RotationsPerSecondPerSecond.of(10).in(RadiansPerSecondPerSecond);
-
-    public static final TunableNumber linearAccel = new TunableNumber("1) Drivetrain/Linear Acceleration", kLinearAccel);
-    public static final TunableNumber linearDecel = new TunableNumber("1) Drivetrain/Linear Deceleration", kLinearDecel);
-    public static final TunableNumber angularAccel = new TunableNumber("1) Drivetrain/Angular Acceleration",
-            kAngularAccel);
-    public static final TunableNumber angularDecel = new TunableNumber("1) Drivetrain/Angular Deceleration",
-            kAngularDecel);
-
     public final SwerveDriveLimiter kStandardLimiter = new SwerveDriveLimiter(
             MetersPerSecond.of(getDriveSpeed()),
-            MetersPerSecondPerSecond.of(linearAccel.get()),
+            MetersPerSecondPerSecond.of(DrivetrainConstants.linearAccel.get()),
             MetersPerSecondPerSecond.of(linearDecel.get()),
             RadiansPerSecond.of(getTurnSpeed()),
             RadiansPerSecondPerSecond.of(angularAccel.get()),
             RadiansPerSecondPerSecond.of(angularAccel.get()));
-
-    // private final SwerveModule[] swerveMods = {
-    // new SwerveModule(SwerveConstants.Module.FL),
-    // new SwerveModule(SwerveConstants.Module.FR),
-    // new SwerveModule(SwerveConstants.Module.BL),
-    // new SwerveModule(SwerveConstants.Module.BR)
-    // };
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -91,8 +59,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     // private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    public ChassisSpeeds lastTargetSpeeds = new ChassisSpeeds();
-
     public final SwerveDrivePoseEstimator visionEstimator = new SwerveDrivePoseEstimator(
             getKinematics(),
             getState().Pose.getRotation(),
@@ -101,6 +67,12 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     private final StructPublisher<Pose2d> estimatedPosePub = NetworkTableInstance.getDefault()
             .getStructTopic("Swerve/Estimated Pose", Pose2d.struct).publish();
+
+    public ChassisSpeeds lastTargetSpeeds = new ChassisSpeeds();
+    public Angle targetRotation = Degrees.of(0);
+
+    private Trigger facingTarget = new Trigger(() -> facingTarget())
+                .debounce(RotationDebounceSeconds.get());
 
 
     public OCDrivetrain(
@@ -138,25 +110,11 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public Command driveC(OCXboxController controller) {
-        return applyRequest(() -> {
-            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(controller.getSpeeds(MaxSpeed, MaxAngularRate),
-                    lastTargetSpeeds, Robot.kDefaultPeriod);
-            lastTargetSpeeds = targetSpeeds;
-            return drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
-                .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                .withRotationalRate(targetSpeeds.omegaRadiansPerSecond);
-        });
+        return driveC(controllerToChassisSpeeds(controller));
     }
 
-    public Command driveC(ChassisSpeeds chassisSpeeds) {
-        return applyRequest(() -> {
-            ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(chassisSpeeds, lastTargetSpeeds, //why do we call it last target speeds
-                    Robot.kDefaultPeriod);
-            lastTargetSpeeds = targetSpeeds;
-            return drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
-                .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                .withRotationalRate(targetSpeeds.omegaRadiansPerSecond);
-        });
+    public Command driveC(Supplier<ChassisSpeeds> chassisSpeeds) {
+        return run(()-> drive(chassisSpeeds.get()));
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
@@ -182,7 +140,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         return applyRequest(() -> face.withTargetDirection(Rotation2d.fromDegrees(angle.in(Degrees))));
     }
 
-    public Command driveFacingHubController(Supplier<OCXboxController> controller) {
+    public Command driveFacingHubController(OCXboxController controller) {
         return driveFacingHub(controllerToChassisSpeeds(controller));
     }
     
@@ -199,13 +157,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public void driveFacingTarget(ChassisSpeeds speeds, Translation2d target) {
-        ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds, lastTargetSpeeds, Robot.kDefaultPeriod);
-        lastTargetSpeeds = targetSpeeds;
-        setControl(
-            face.withVelocityX(targetSpeeds.vxMetersPerSecond)
-                    .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target))
-        );
+        targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
+        driveFacingAngle(speeds, targetRotation);
     } 
 
     public void driveFacingAngle(ChassisSpeeds speeds, Angle target) {
@@ -226,10 +179,12 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         ).repeatedly();
     }
 
-    public Trigger facingTargetT(Supplier<Translation2d> trl) {
-        return new Trigger(() -> getGlobalPoseEstimate().getTranslation().minus(trl.get()).plus(RobotConstants.kShooterTranslation).getAngle()
-                .getDegrees() == getGlobalPoseEstimate().getRotation().getDegrees())
-                .debounce(0.25);// TODO: Tune
+    public boolean facingTarget() {
+        return Degrees.of(getGlobalPoseEstimate().getRotation().getDegrees()).isNear(targetRotation, Degrees.of(rotationToleranceDegrees.get()));
+    }
+
+    public Trigger facingTargetT() {
+        return new Trigger(facingTarget);
     }
 
     public Command brakeC(){
@@ -274,8 +229,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         );
     }
 
-    public static Supplier<ChassisSpeeds> controllerToChassisSpeeds(Supplier<OCXboxController> controller) {
-        return ()->controller.get().getSpeeds(MaxSpeed, MaxAngularRate);
+    public static Supplier<ChassisSpeeds> controllerToChassisSpeeds(OCXboxController controller) {
+        return ()->controller.getSpeeds(MaxSpeed, MaxAngularRate);
     }
 
     public void disturbSimPose() {

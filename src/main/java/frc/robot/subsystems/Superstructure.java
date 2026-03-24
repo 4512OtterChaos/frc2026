@@ -15,12 +15,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.subsystems.Shooter.ShooterConstants.SOTMLatency;
-import static frc.robot.subsystems.Shooter.ShooterConstants.degreesTolerance;
-import static frc.robot.subsystems.Shooter.ShooterConstants.kSOTMLatency;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Indexer.Feeder;
@@ -42,8 +39,7 @@ public class Superstructure extends SubsystemBase{
     private Shooter shooter;
     private Climber climber;
 
-    public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder,
-             Shooter shooter, Climber climber) {
+    public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter, Climber climber) {
         this.drivetrain = drivetrain;
         this.intake = intake;
         this.fourBar = fourBar;
@@ -64,7 +60,7 @@ public class Superstructure extends SubsystemBase{
      * @param speeds Field relative chassis speeds
      * @return
      */
-    public Command otterShootControllerC(Supplier<OCXboxController> controller) {
+    public Command otterShootControllerC(OCXboxController controller) {
         return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller));
     }
     
@@ -73,7 +69,7 @@ public class Superstructure extends SubsystemBase{
      * @param target
      * @return
      */
-    public Command otterShootControllerC(Supplier<OCXboxController> controller, Supplier<Optional<Translation2d>> target) {
+    public Command otterShootControllerC(OCXboxController controller, Supplier<Optional<Translation2d>> target) {
         return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller), target);
     }
 
@@ -120,7 +116,7 @@ public class Superstructure extends SubsystemBase{
                 // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
                 parallel(
                     waitUntil(hasTarget.debounce(0.7)),
-                    waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean())
+                    waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean())
                 ),
                 parallel(
                     feeder.feedC(),
@@ -136,7 +132,7 @@ public class Superstructure extends SubsystemBase{
      * @param target
      * @return
      */
-    public Command otterShootOnTheSwimControllerC(Supplier<OCXboxController> controller) {
+    public Command otterShootOnTheSwimControllerC(OCXboxController controller) {
         return otterShootOnTheSwimC(OCDrivetrain.controllerToChassisSpeeds(controller));
     }
     
@@ -235,37 +231,13 @@ public class Superstructure extends SubsystemBase{
             Translation2d robotVelVec = new Translation2d(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
             Translation2d shotVelocity = targetVelocity.minus(robotVelVec).times(-1);
 
-            // double idealHorizontalSpeed = MetersPerSecond.of(rpmToMps(Shotmap.getVelocity(dist).in(RPM))); // TODO: holy fix this
-
-            // Translation2d robotVelVec = new Translation2d(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
-            // Translation2d shotVec = targetVec.div(dist.in(Meters)).times(idealHorizontalSpeed).minus(robotVelVec);
-
             Angle chassisAngle = Degrees.of(shotVelocity.getAngle().getDegrees());
             double requiredVelocity = shotVelocity.getNorm();
-
-            // LinearVelocity totalExitVelocity = MetersPerSecond.of(15);
-
-            // double ratio = Math.min(requiredVelocity.in(RPM) / totalExitVelocity.in(MetersPerSecond), 1.0);
-            // double newPitch = Math.acos(ratio);
 
             double effectiveDistance = Shotmap.horizontalVelocityToEffectiveDistance(requiredVelocity);
             Shooter.State effectiveState = Shotmap.getState(Meters.of(effectiveDistance));
 
             return new Pair<Shooter.State,Angle>(effectiveState, chassisAngle);
         }
-
-        // private final double WHEEL_RADIUS_METERS =0.03; //TODO: get the shooter flywheel radius
-        // private final double SHOOTER_EFFICIENCY = 0.85; // TODO: tune
-
-        // private double calcRPM(double totalExitVelocityMps) {
-        //     double wheelAngularVelocity =
-        //         totalExitVelocityMps / (WHEEL_RADIUS_METERS * SHOOTER_EFFICIENCY);
-
-        //     return wheelAngularVelocity * (60.0 / (2.0 * Math.PI));
-        // }
-
-        // private LinearVelocity rpmToMps(AngularVelocity rpm) {
-        //     return MetersPerSecond.of(67); // TODO: actually make this
-        // }
     }   
 }

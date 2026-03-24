@@ -106,8 +106,8 @@ public class RobotContainer {
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.b().whileTrue(drivetrain.brakeC());
 
-        driver.rightTrigger().whileTrue(superstructure.otterShootControllerC(() -> driver));
-        driver.leftBumper().whileTrue(superstructure.otterShootOnTheSwimControllerC(()-> driver));/*parallel(
+        driver.rightTrigger().whileTrue(superstructure.otterShootControllerC(driver));
+        driver.leftBumper().whileTrue(superstructure.otterShootOnTheSwimControllerC(driver));/*parallel(
             run(()-> shooter.setState(Shotmap.getState(Shotmap.trench))),
             sequence(
                 waitSeconds(0.6),
@@ -241,7 +241,10 @@ public class RobotContainer {
 }
 /*
  * TODO:
- * test shooter kV
- * tune shooter kp
- * check far shotmap value
+ * auto x lock
+ * drivetrain current limits
+ * speeds limiter shoot on the move
+ * tune autos (do they do everything right?)
+ * add index composition command
+ * shooter turn off delay
  */
