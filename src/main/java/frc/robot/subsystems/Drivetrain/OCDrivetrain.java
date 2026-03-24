@@ -10,11 +10,13 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -72,7 +74,9 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     public Angle targetRotation = Degrees.of(0);
 
     private Trigger facingTarget = new Trigger(() -> facingTarget())
-                .debounce(RotationDebounceSeconds.get());
+                .debounce(rotationDebounceSeconds.get(), DebounceType.kBoth);
+    // private Trigger driving = new Trigger(()-> driving())
+    //             .debounce(brakeDebounceSeconds.get());
 
 
     public OCDrivetrain(
@@ -156,6 +160,15 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         return run(() -> driveFacingTarget(speeds.get(), target.get()));
     }
 
+    public void driveFacingTargetBrake(ChassisSpeeds speeds, Translation2d target) {
+        targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
+        if (speeds.equals(new ChassisSpeeds()) && facingTargetT().getAsBoolean()) {
+            brake();
+            return;
+        }
+        driveFacingAngle(speeds, targetRotation);
+    } 
+
     public void driveFacingTarget(ChassisSpeeds speeds, Translation2d target) {
         targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
         driveFacingAngle(speeds, targetRotation);
@@ -188,8 +201,20 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public Command brakeC(){
-        return applyRequest(() -> brake);
+        return run(()->brake());
     }
+
+    public void brake() {
+        setControl(brake);
+    }
+
+    // public boolean driving() {
+    //     return lastTargetSpeeds.equals(new ChassisSpeeds());
+    // }
+
+    // public Trigger drivingT() {
+    //     return new Trigger(driving);
+    // }
 
     public Trigger inAllianceZone() {
         return new Trigger(() -> {
@@ -281,42 +306,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         visionEstimator.resetPosition(getState().RawHeading, getState().ModulePositions, pose);
     }
 
-    public SwerveRequest.FieldCentric getDriveRequest() {
-        return drive;
-    }
-
-    // public SwerveModulePosition getPosition() {
-    // return new SwerveModulePosition(
-    // Utils.positionToMeters(driveMotor.position(), kDriveGearRatio,
-    // kWheelCircumference),
-    // getAbsoluteHeading()
-    // );
-    // }
-
-    // public SwerveModulePosition[] getModulePositions() {
-    // return new SwerveModulePosition[] {
-    // new SwerveModulePosition(
-    // FrontLeft.getPosition(), // meters
-    // Rotation2d.fromRadians(FrontLeft.getPosition())
-    // ),
-
-    // new SwerveModulePosition(
-    // FrontRight.getPosition(),
-    // Rotation2d.fromRadians(FrontRight.getPosition())
-    // ),
-
-    // new SwerveModulePosition(
-    // BackLeft.getPosition(),
-    // Rotation2d.fromRadians(BackLeft.getPosition())
-    // ),
-
-    // new SwerveModulePosition(
-    // BackLeft.getPosition,
-    // Rotation2d.fromRadians(BackRight.getPosition())
-    // )
-    // };
-    // }
-
     public Command resetInitialOdomC() {
         return runOnce(() -> {
             Rotation2d initialRot = new Rotation2d();
@@ -367,6 +356,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         linearDecel.poll();
         angularAccel.poll();
         angularDecel.poll();
+        rotationDebounceSeconds.poll();
+        // brakeDebounceSeconds.poll();
 
         int hash = hashCode();
 
@@ -379,6 +370,10 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
             kStandardLimiter.linearDeceleration = MetersPerSecondPerSecond.of(linearDecel.get());
             kStandardLimiter.angularAcceleration = RadiansPerSecondPerSecond.of(angularAccel.get());
             kStandardLimiter.angularDeceleration = RadiansPerSecondPerSecond.of(angularDecel.get());
+        }
+
+        if (rotationDebounceSeconds.hasChanged(hash)) {
+            facingTarget = new Trigger(facingTarget).debounce(rotationDebounceSeconds.get());
         }
     }
 

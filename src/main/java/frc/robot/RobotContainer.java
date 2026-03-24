@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Auto.AutoOptions;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
@@ -241,10 +242,10 @@ public class RobotContainer {
 }
 /*
  * TODO:
- * auto x lock
  * drivetrain current limits
  * speeds limiter shoot on the move
  * tune autos (do they do everything right?)
  * add index composition command
  * shooter turn off delay
+ * consider fourbar raising a lil while not intaking
  */

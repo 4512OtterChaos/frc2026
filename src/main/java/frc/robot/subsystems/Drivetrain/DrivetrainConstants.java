@@ -32,5 +32,10 @@ public class DrivetrainConstants {
     public static final TunableNumber rotationToleranceDegrees = new TunableNumber("1) Drivetrain/Rotation Tolerance", kRotationToleranceDegrees.in(Degrees));
 
     public static final Time kRotationDebounceTime = Seconds.of(0.2);
-    public static final TunableNumber RotationDebounceSeconds = new TunableNumber("1) Drivetrain/Rotation Debounce", kRotationDebounceTime.in(Seconds));
+    public static final TunableNumber rotationDebounceSeconds = new TunableNumber("1) Drivetrain/Rotation Debounce", kRotationDebounceTime.in(Seconds));
+   
+    // public static final Time kBrakeDebounceTime = Seconds.of(0.2);
+    // public static final TunableNumber brakeDebounceSeconds = new TunableNumber("1) Drivetrain/Brake Debounce", kBrakeDebounceTime.in(Seconds));
+
+
 }
