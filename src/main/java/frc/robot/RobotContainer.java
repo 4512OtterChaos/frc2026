@@ -37,6 +37,7 @@ import frc.robot.subsystems.Vision.Vision;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.OCXboxController;
 import frc.robot.util.TunableNumber;
+import frc.robot.util.TunableUnitBase;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -62,6 +63,8 @@ public class RobotContainer {
     TunableNumber feederVoltage = new TunableNumber("test/feederVoltage", 4);
     TunableNumber flywheelVelocity = new TunableNumber("test/flywheelVelocity", 1000);
     TunableNumber hoodAngle = new TunableNumber("test/hoodAngle", 15);
+    TunableUnitBase<Distance, DistanceUnit> test = new TunableUnitBase<Distance,DistanceUnit>("dwefae", Inches.of(1), Centimeter, (num, dist)->dist=Centimeter.of(num));
+    
 
     public RobotContainer() {
         configureDefaultCommands();
