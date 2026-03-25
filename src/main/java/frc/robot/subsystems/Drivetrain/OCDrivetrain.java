@@ -51,8 +51,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     public final SwerveDriveLimiter kSOTMLimiter = new SwerveDriveLimiter(
             MetersPerSecond.of(getSOTMDriveSpeed()),
-            MetersPerSecondPerSecond.of(sotmLinearAccel.get()),
-            MetersPerSecondPerSecond.of(sotmLinearDecel.get()),
+            sotmLinearAccel.get(),
+            sotmLinearDecel.get(),
             getTurnSpeed(),
             angularAccel.get(),
             angularAccel.get());
@@ -82,7 +82,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     public Angle targetRotation = Degrees.of(0);
 
     private Trigger facingTarget = new Trigger(() -> facingTarget())
-                .debounce(rotationDebounceSeconds.get(), DebounceType.kBoth);
+                .debounce(rotationDebounceTime.in(Seconds), DebounceType.kBoth);
     // private Trigger driving = new Trigger(()-> driving())
     //             .debounce(brakeDebounceSeconds.get());
 
@@ -219,7 +219,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public boolean facingTarget() {
-        return Degrees.of(getGlobalPoseEstimate().getRotation().getDegrees()).isNear(targetRotation, Degrees.of(rotationToleranceDegrees.get()));
+        return Degrees.of(getGlobalPoseEstimate().getRotation().getDegrees()).isNear(targetRotation, rotationTolerance.get());
     }
 
     public Trigger facingTargetT() {
@@ -386,7 +386,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
         sotmLinearAccel.poll();
         sotmLinearDecel.poll();
-        rotationDebounceSeconds.poll();
+        rotationDebounceTime.poll();
         // brakeDebounceSeconds.poll();
 
         int hash = hashCode();
@@ -407,14 +407,14 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
                 || sotmLinearDecel.hasChanged(hash) || angularAccel.hasChanged(hash) || angularDecel.hasChanged(hash)) {
             kSOTMLimiter.linearTopSpeed = MetersPerSecond.of(getSOTMDriveSpeed());
             kSOTMLimiter.angularTopSpeed = getTurnSpeed();
-            kSOTMLimiter.linearAcceleration = MetersPerSecondPerSecond.of(sotmLinearAccel.get());
-            kSOTMLimiter.linearDeceleration = MetersPerSecondPerSecond.of(sotmLinearDecel.get());
+            kSOTMLimiter.linearAcceleration = sotmLinearAccel.get();
+            kSOTMLimiter.linearDeceleration = sotmLinearDecel.get();
             kSOTMLimiter.angularAcceleration = angularAccel.get();
             kSOTMLimiter.angularDeceleration = angularDecel.get();
         }
 
-        if (rotationDebounceSeconds.hasChanged(hash)) {
-            facingTarget = new Trigger(facingTarget).debounce(rotationDebounceSeconds.get());
+        if (rotationDebounceTime.hasChanged(hash)) {
+            facingTarget = new Trigger(facingTarget).debounce(rotationDebounceTime.in(Seconds));
         }
     }
 

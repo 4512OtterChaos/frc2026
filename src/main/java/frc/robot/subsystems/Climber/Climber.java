@@ -103,12 +103,12 @@ public class Climber extends SubsystemBase {
     }
     
     public void setHeight(Angle angle){
-        angle = Rotations.of(MathUtil.clamp(angle.in(Rotations), minAngleRot.get(), maxAngleRot.get())); //TODO: fix climber safety before testing
+        angle = Rotations.of(MathUtil.clamp(angle.in(Rotations), minAngle.in(Rotations), maxAngle.in(Rotations))); //TODO: fix climber safety before testing
         targetAngle = angle;
     }
 
     public boolean atTargetHeight(){
-        return targetAngle.in(Degrees) - getHeight().in(Degrees) <= angleToleranceRot.get();
+        return targetAngle.in(Degrees) - getHeight().in(Degrees) <= angleTolerance.in(Rotations);
     }
 
     public Command setVoltageC(double voltage){
@@ -120,11 +120,11 @@ public class Climber extends SubsystemBase {
     }
 
     public Command setMinHeightC(){
-        return setHeightC(Rotations.of(minAngleRot.get()));
+        return setHeightC(minAngle.get());
     }
 
     public Command setMaxHeightC(){
-        return setHeightC(Rotations.of(maxAngleRot.get()));
+        return setHeightC(maxAngle.get());
     }
 
     public Trigger atTargetHeightT(){
@@ -132,9 +132,9 @@ public class Climber extends SubsystemBase {
     }
 
     public void changeTunable(){
-        maxAngleRot.poll();
-        minAngleRot.poll();
-        angleToleranceRot.poll();
+        maxAngle.poll();
+        minAngle.poll();
+        angleTolerance.poll();
         debounceTime.poll();
         kP.poll();
         kI.poll();
@@ -164,7 +164,7 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("5) Climber/Voltage", getVoltage().in(Volts));
         SmartDashboard.putNumber("5) Climber/Current", getCurrent().in(Amps));
         SmartDashboard.putBoolean("5) Climber/At Height", atTargetHeightT().getAsBoolean());
-        SmartDashboard.putNumber("5) Climber/Height Tolerance", angleToleranceRot.get());
+        SmartDashboard.putNumber("5) Climber/Height Tolerance", angleTolerance.in(Rotations));
     }
 
     // Simulation
@@ -176,10 +176,10 @@ public class Climber extends SubsystemBase {
             kGearRatio
         ),
         DCMotor.getKrakenX60(1),
-        angleToHeight(Rotations.of(minAngleRot.get())).in(Meters),
-        angleToHeight(Rotations.of(maxAngleRot.get())).in(Meters),
+        angleToHeight(minAngle.get()).in(Meters),
+        angleToHeight(maxAngle.get()).in(Meters),
         true,
-        angleToHeight(Rotations.of(minAngleRot.get())).in(Meters)
+        angleToHeight(minAngle.get()).in(Meters)
     );
 
 

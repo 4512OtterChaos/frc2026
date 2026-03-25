@@ -7,8 +7,10 @@ import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.util.TunableNumber;
+import frc.robot.util.TunableUnits.TunableAngle;
 import frc.robot.util.TunableUnits.TunableAngularAcceleration;
 import frc.robot.util.TunableUnits.TunableLinearAcceleration;
+import frc.robot.util.TunableUnits.TunableTime;
 
 public class DrivetrainConstants {
     public static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // desired top speed
@@ -36,20 +38,20 @@ public class DrivetrainConstants {
 
     public static final TunableNumber sotmDriveSpeedRatio = new TunableNumber("1) Drivetrain/SOTM/Drive Speed", kSOTMDriveSpeedRatio);
 
-    public static final double kSOTMLinearAccel = FeetPerSecondPerSecond.of(25).in(MetersPerSecondPerSecond);
-    public static final double kSOTMLinearDecel = FeetPerSecondPerSecond.of(35).in(MetersPerSecondPerSecond);
+    public static final LinearAcceleration kSOTMLinearAccel = FeetPerSecondPerSecond.of(25);
+    public static final LinearAcceleration kSOTMLinearDecel = FeetPerSecondPerSecond.of(35);
 
-    public static final TunableNumber sotmLinearAccel = new TunableNumber("1) Drivetrain/SOTM/Linear Acceleration", kSOTMLinearAccel);
-    public static final TunableNumber sotmLinearDecel = new TunableNumber("1) Drivetrain/SOTM/Linear Deceleration", kSOTMLinearDecel);
+    public static final TunableLinearAcceleration sotmLinearAccel = new TunableLinearAcceleration("1) Drivetrain/SOTM/Linear Acceleration", kSOTMLinearAccel);
+    public static final TunableLinearAcceleration sotmLinearDecel = new TunableLinearAcceleration("1) Drivetrain/SOTM/Linear Deceleration", kSOTMLinearDecel);
     
-    public static final Angle kRotationToleranceDegrees = Degrees.of(2);
-    public static final TunableNumber rotationToleranceDegrees = new TunableNumber("1) Drivetrain/Rotation Tolerance", kRotationToleranceDegrees.in(Degrees));
+    public static final Angle kRotationTolerance = Degrees.of(2);
+    public static final TunableAngle rotationTolerance = new TunableAngle("1) Drivetrain/Rotation Tolerance", kRotationTolerance);
 
     public static final Time kRotationDebounceTime = Seconds.of(0.2);
-    public static final TunableNumber rotationDebounceSeconds = new TunableNumber("1) Drivetrain/Rotation Debounce", kRotationDebounceTime.in(Seconds));
+    public static final TunableTime rotationDebounceTime = new TunableTime("1) Drivetrain/Rotation Debounce", kRotationDebounceTime);
    
     // public static final Time kBrakeDebounceTime = Seconds.of(0.2);
-    // public static final TunableNumber brakeDebounceSeconds = new TunableNumber("1) Drivetrain/Brake Debounce", kBrakeDebounceTime.in(Seconds));
+    // public static final TunableTime brakeDebounceSeconds = new TunableTime("1) Drivetrain/Brake Debounce", kBrakeDebounceTime);
 
 
 }

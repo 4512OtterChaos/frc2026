@@ -1,6 +1,5 @@
 package frc.robot.Auto;
 
-import static edu.wpi.first.units.Units.*;
 import static frc.robot.util.RobotConstants.*;
 
 import com.pathplanner.lib.config.PIDConstants;
@@ -9,15 +8,9 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 // import com.pathplanner.lib.PathConstraints;
 
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.Drivetrain.OCDrivetrain;
-import frc.robot.subsystems.Drivetrain.TunerConstants;
 
 public class AutoConstants {
-
-    private OCDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    
     // our maximum speeds/accelerations during auto -- NOTE: actually only defined in PathPlanner now
     public static final double kMaxLinearSpeed = Units.feetToMeters(15);
     // public static final double kMaxLinearAcceleration = Units.feetToMeters(18);
