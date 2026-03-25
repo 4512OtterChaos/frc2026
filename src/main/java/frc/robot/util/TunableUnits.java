@@ -21,6 +21,11 @@ public class TunableUnits {
         public TunableDistance(String key, Distance defaultValue){
             super(key, defaultValue);
         }
+        @Override
+        public Distance get() {
+            return preferedUnit.of(value);
+        }
+
     }
     public static class TunableTime extends TunableUnitBase<Time, TimeUnit>{
         public TunableTime(String key, Time defaultValue, TimeUnit preferedUnit){
@@ -28,6 +33,10 @@ public class TunableUnits {
         }
         public TunableTime(String key, Time defaultValue){
             super(key, defaultValue);
+        }
+        @Override
+        public Time get() {
+            return preferedUnit.of(value);
         }
     }
     public static class TunableAngle extends TunableUnitBase<Angle, AngleUnit>{
@@ -37,6 +46,10 @@ public class TunableUnits {
         public TunableAngle(String key, Angle defaultValue){
             super(key, defaultValue);
         }
+        @Override
+        public Angle get() {
+            return preferedUnit.of(value);
+        }
     }
     public static class TunableLinearVelocity extends TunableUnitBase<LinearVelocity, LinearVelocityUnit>{
         public TunableLinearVelocity(String key, LinearVelocity defaultValue, LinearVelocityUnit preferedUnit){
@@ -44,6 +57,10 @@ public class TunableUnits {
         }
         public TunableLinearVelocity(String key, LinearVelocity defaultValue){
             super(key, defaultValue);
+        }
+        @Override
+        public LinearVelocity get() {
+            return preferedUnit.of(value);
         }
     }
     public static class TunableAngularVelocity extends TunableUnitBase<AngularVelocity, AngularVelocityUnit>{
@@ -53,6 +70,10 @@ public class TunableUnits {
         public TunableAngularVelocity(String key, AngularVelocity defaultValue){
             super(key, defaultValue);
         }
+        @Override
+        public AngularVelocity get() {
+            return preferedUnit.of(value);
+        }
     }
     public static class TunableLinearAcceleration extends TunableUnitBase<LinearAcceleration, LinearAccelerationUnit>{
         public TunableLinearAcceleration(String key, LinearAcceleration defaultValue, LinearAccelerationUnit preferedUnit){
@@ -60,6 +81,10 @@ public class TunableUnits {
         }
         public TunableLinearAcceleration(String key, LinearAcceleration defaultValue){
             super(key, defaultValue);
+        }
+        @Override
+        public LinearAcceleration get() {
+            return preferedUnit.of(value);
         }
     }
     public static class TunableAngularAcceleration extends TunableUnitBase<AngularAcceleration, AngularAccelerationUnit>{
@@ -69,6 +94,10 @@ public class TunableUnits {
         public TunableAngularAcceleration(String key, AngularAcceleration defaultValue){
             super(key, defaultValue);
         }
+        @Override
+        public AngularAcceleration get() {
+            return preferedUnit.of(value);
+        }
     }
     public static class TunableMass extends TunableUnitBase<Mass, MassUnit>{
         public TunableMass(String key, Mass defaultValue, MassUnit preferedUnit){
@@ -76,6 +105,10 @@ public class TunableUnits {
         }
         public TunableMass(String key, Mass defaultValue){
             super(key, defaultValue);
+        }
+        @Override
+        public Mass get() {
+            return preferedUnit.of(value);
         }
     }
     public static class TunableVoltage extends TunableUnitBase<Voltage, VoltageUnit>{
@@ -85,6 +118,10 @@ public class TunableUnits {
         public TunableVoltage(String key, Voltage defaultValue){
             super(key, defaultValue);
         }
+        @Override
+        public Voltage get() {
+            return preferedUnit.of(value);
+        }
     }
     public static class TunableCurrent extends TunableUnitBase<Current, CurrentUnit>{
         public TunableCurrent(String key, Current defaultValue, CurrentUnit preferedUnit){
@@ -93,6 +130,10 @@ public class TunableUnits {
         public TunableCurrent(String key, Current defaultValue){
             super(key, defaultValue);
         }
+        @Override
+        public Current get() {
+            return preferedUnit.of(value);
+        }
     }
     public static class TunableMomentOfInertia extends TunableUnitBase<MomentOfInertia, MomentOfInertiaUnit>{
         public TunableMomentOfInertia(String key, MomentOfInertia defaultValue, MomentOfInertiaUnit preferedUnit){
@@ -100,6 +141,10 @@ public class TunableUnits {
         }
         public TunableMomentOfInertia(String key, MomentOfInertia defaultValue){
             super(key, defaultValue);
+        }
+        @Override
+        public MomentOfInertia get() {
+            return preferedUnit.of(value);
         }
     }
 }

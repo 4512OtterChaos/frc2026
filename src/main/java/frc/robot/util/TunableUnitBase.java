@@ -29,8 +29,8 @@ public class TunableUnitBase<M extends Measure<U>, U extends Unit> implements Do
     private final String key;
     private final DoubleEntry entry;
     private double defaultValue;
-    private double value;
-    private U preferedUnit;
+    protected double value;
+    protected U preferedUnit;
     private Map<Integer, Double> lastHasChangedValues = new HashMap<>();
 
     /**
