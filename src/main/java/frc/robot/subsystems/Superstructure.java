@@ -9,15 +9,19 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.subsystems.Shooter.ShooterConstants.SOTMLatency;
+import static frc.robot.util.RobotConstants.BR;
+import static frc.robot.util.RobotConstants.kShooterTurnOffDelay;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Indexer.Feeder;
@@ -55,6 +59,16 @@ public class Superstructure extends SubsystemBase{
     //             spindexer.setVoltageC(0),
     //             feeder.topSensorT().negate()).withName("Index");
     // }
+
+    public Command indexC() {
+        return parallel(
+            feeder.feedC(),
+            sequence(
+                waitSeconds(0.2),
+                spindexer.spindexC()
+            )
+        );
+    }
     
     /**
      * @param speeds Field relative chassis speeds
@@ -118,11 +132,8 @@ public class Superstructure extends SubsystemBase{
                     waitUntil(hasTarget.debounce(0.7)),
                     waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean())
                 ),
-                parallel(
-                    feeder.feedC(),
-                    spindexer.spindexC()
-                ).until(hasTarget.negate())
-            ).repeatedly()//, 
+                indexC().until(hasTarget.negate()))//.andThen(feeder.feedC()).withTimeout(kShooterTurnOffDelay) TODO: fix
+            .repeatedly()//, 
             // fourBar.oscillateC()
         ).withName("Otter Shoot");
     }
@@ -158,10 +169,7 @@ public class Superstructure extends SubsystemBase{
     //             parallel(
     //                 waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean())
     //             ),
-    //             parallel(
-    //                 feeder.feedC(),
-    //                 spindexer.spindexC()
-    //             )
+    //             indexC()
     //         ).repeatedly()//, 
     //         // fourBar.oscillateC()
     //     ).withName("Otter Shoot");
@@ -191,19 +199,16 @@ public class Superstructure extends SubsystemBase{
                     }
 
                     shooter.setState(state);
-                    drivetrain.driveFacingTarget(speeds.get(), target);
+                    drivetrain.driveFacingTargetBrake(speeds.get(), target);
                 },
                 drivetrain, shooter
             ),
             sequence(
                 // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
                 parallel(
-                    waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean())
+                    waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean())
                 ),
-                parallel(
-                    feeder.feedC(),
-                    spindexer.spindexC()
-                )
+                indexC() //.andThen(feeder.feedC()).withTimeout(kShooterTurnOffDelay) TODO: fix
             ).repeatedly()//, 
             // fourBar.oscillateC()
         ).withName("Otter Shoot");

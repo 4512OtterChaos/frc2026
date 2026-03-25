@@ -9,10 +9,13 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Seconds;
+
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.units.measure.Time;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
 
 public class RobotConstants {
@@ -32,5 +35,5 @@ public class RobotConstants {
     public static final Translation2d BR = new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY);
 
     public static final Translation2d kShooterTranslation = new Translation2d(Inches.of(-6.486584), Inches.of(-5.500000));
-
+    public static final Time kShooterTurnOffDelay = Seconds.of(0.25);
 }

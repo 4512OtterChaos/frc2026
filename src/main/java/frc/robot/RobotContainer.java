@@ -245,7 +245,6 @@ public class RobotContainer {
  * drivetrain current limits
  * speeds limiter shoot on the move
  * tune autos (do they do everything right?)
- * add index composition command
  * shooter turn off delay
  * consider fourbar raising a lil while not intaking
  */
