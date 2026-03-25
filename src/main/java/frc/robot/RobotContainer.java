@@ -13,7 +13,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.util.datalog.DataLogRecord;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -40,7 +39,7 @@ import frc.robot.util.HubShiftUtil;
 import frc.robot.util.OCXboxController;
 import frc.robot.util.TunableNumber;
 import frc.robot.util.TunableUnitBase;
-import frc.robot.util.TunableUnitBase;
+import frc.robot.util.TunableUnits.TunableDistance;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -66,8 +65,9 @@ public class RobotContainer {
     TunableNumber feederVoltage = new TunableNumber("test/feederVoltage", 4);
     TunableNumber flywheelVelocity = new TunableNumber("test/flywheelVelocity", 1000);
     TunableNumber hoodAngle = new TunableNumber("test/hoodAngle", 15);
-    TunableUnitBase<Distance, DistanceUnit> test = TunableUnitBase.of("dwefae", Feet.of(1), Feet);
+    // TunableUnitBase<Distance, DistanceUnit> test = TunableUnitBase.ofBase("dwefae", Feet.of(1), Feet);
     Distance test2 = Feet.of(1);
+    TunableDistance test3 = new TunableDistance("null", Feet.of(1));
 
     public RobotContainer() {
         configureDefaultCommands();
@@ -76,9 +76,9 @@ public class RobotContainer {
         configureOperatorBindings();
 
         DataLogManager.start();
-        System.out.println(test.in(Feet));
-        System.out.println(test.in(Inches));
-        System.out.println(test.in(Meters));
+        System.out.println(test3.in(Feet));
+        System.out.println(test3.in(Inches));
+        System.out.println(test3.in(Meters));
         System.out.println(test2.in(Feet));
         System.out.println(test2.in(Inches));
         System.out.println(test2.in(Meters));
