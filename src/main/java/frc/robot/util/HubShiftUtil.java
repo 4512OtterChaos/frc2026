@@ -9,13 +9,7 @@ package frc.robot.util;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.subsystems.Shooter.Shotmap;
 import edu.wpi.first.wpilibj.Timer;
-
-import static edu.wpi.first.units.Units.Seconds;
-
-import java.util.Optional;
-import java.util.function.Supplier;
 
 public class HubShiftUtil {
   public enum ShiftEnum {
@@ -38,11 +32,11 @@ public class HubShiftUtil {
   private static final double[] shiftStartTimes = {0.0, 10.0, 35.0, 60.0, 85.0, 110.0};
   private static final double[] shiftEndTimes = {10.0, 35.0, 60.0, 85.0, 110.0, 140.0};
 
-  private static final double minFuelCountDelay = 1.0;
-  private static final double maxFuelCountDelay = 2.0;
-  private static final double shiftEndFuelCountExtension = 3.0;
-  private static final double minTimeOfFlight = Shotmap.getMinTof().in(Seconds);
-  private static final double maxTimeOfFlight = Shotmap.getMaxTof().in(Seconds);
+  // private static final double minFuelCountDelay = 1.0;
+  // private static final double maxFuelCountDelay = 2.0;
+  // private static final double shiftEndFuelCountExtension = 3.0;
+  // private static final double minTimeOfFlight = Shotmap.getMinTof().in(Seconds);
+  // private static final double maxTimeOfFlight = Shotmap.getMaxTof().in(Seconds);
   private static final double approachingActiveFudge = 0;//-1 * (minTimeOfFlight + minFuelCountDelay);
   private static final double endingActiveFudge = 0;//shiftEndFuelCountExtension + -1 * (maxTimeOfFlight + maxFuelCountDelay);
 

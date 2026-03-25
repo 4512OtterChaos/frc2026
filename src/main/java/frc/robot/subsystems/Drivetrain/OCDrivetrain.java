@@ -2,7 +2,6 @@ package frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.either;
-import static frc.robot.util.RobotConstants.kShooterTranslation;
 import static frc.robot.util.RobotConstants.kPigeonID;
 
 import java.util.Optional;
@@ -14,7 +13,6 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -29,6 +27,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -42,6 +43,8 @@ import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
 import frc.robot.util.RobotConstants;
 import frc.robot.util.TunableNumber;
+import frc.robot.util.TunableUnits.TunableAngularAcceleration;
+import frc.robot.util.TunableUnits.TunableLinearAcceleration;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain {
 
@@ -56,25 +59,23 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     public static final TunableNumber turnSpeedRatio = new TunableNumber("1) Drivetrain/Turn Speed", kTurnSpeedRatio);
 
     // Normal driving acceleration limits
-    public static final double kLinearAccel = FeetPerSecondPerSecond.of(35).in(MetersPerSecondPerSecond);
-    public static final double kLinearDecel = FeetPerSecondPerSecond.of(50).in(MetersPerSecondPerSecond);
-    public static final double kAngularAccel = RotationsPerSecondPerSecond.of(6).in(RadiansPerSecondPerSecond);
-    public static final double kAngularDecel = RotationsPerSecondPerSecond.of(10).in(RadiansPerSecondPerSecond);
+    public static final LinearAcceleration kLinearAccel = FeetPerSecondPerSecond.of(35);
+    public static final LinearAcceleration kLinearDecel = FeetPerSecondPerSecond.of(50);
+    public static final AngularAcceleration kAngularAccel = RotationsPerSecondPerSecond.of(6);
+    public static final AngularAcceleration kAngularDecel = RotationsPerSecondPerSecond.of(10);
 
-    public static final TunableNumber linearAccel = new TunableNumber("1) Drivetrain/Linear Acceleration", kLinearAccel);
-    public static final TunableNumber linearDecel = new TunableNumber("1) Drivetrain/Linear Deceleration", kLinearDecel);
-    public static final TunableNumber angularAccel = new TunableNumber("1) Drivetrain/Angular Acceleration",
-            kAngularAccel);
-    public static final TunableNumber angularDecel = new TunableNumber("1) Drivetrain/Angular Deceleration",
-            kAngularDecel);
+    public static final TunableLinearAcceleration linearAccel = new TunableLinearAcceleration("1) Drivetrain/Linear Acceleration", kLinearAccel);
+    public static final TunableLinearAcceleration linearDecel = new TunableLinearAcceleration("1) Drivetrain/Linear Deceleration", kLinearDecel);
+    public static final TunableAngularAcceleration angularAccel = new TunableAngularAcceleration("1) Drivetrain/Angular Acceleration", kAngularAccel);
+    public static final TunableAngularAcceleration angularDecel = new TunableAngularAcceleration("1) Drivetrain/Angular Deceleration", kAngularDecel);
 
     public final SwerveDriveLimiter kStandardLimiter = new SwerveDriveLimiter(
-            MetersPerSecond.of(getDriveSpeed()),
-            MetersPerSecondPerSecond.of(linearAccel.get()),
-            MetersPerSecondPerSecond.of(linearDecel.get()),
-            RadiansPerSecond.of(getTurnSpeed()),
-            RadiansPerSecondPerSecond.of(angularAccel.get()),
-            RadiansPerSecondPerSecond.of(angularAccel.get()));
+            getDriveSpeed(),
+            linearAccel.get(),
+            linearDecel.get(),
+            getTurnSpeed(),
+            angularAccel.get(),
+            angularAccel.get());
 
     // private final SwerveModule[] swerveMods = {
     // new SwerveModule(SwerveConstants.Module.FL),
@@ -126,12 +127,12 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     }
 
-    public double getDriveSpeed() {
-        return driveSpeedRatio.get() * MaxSpeed;
+    public LinearVelocity getDriveSpeed() {
+        return MetersPerSecond.of(driveSpeedRatio.get() * MaxSpeed);
     }
 
-    public double getTurnSpeed() {
-        return turnSpeedRatio.get() * MaxAngularRate;
+    public AngularVelocity getTurnSpeed() {
+        return RadiansPerSecond.of(turnSpeedRatio.get() * MaxAngularRate);
     }
 
     public Pose2d getGlobalPoseEstimate() {
@@ -441,12 +442,12 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         // Standard limiter
         if (driveSpeedRatio.hasChanged(hash) || turnSpeedRatio.hasChanged(hash) || linearAccel.hasChanged(hash)
                 || linearDecel.hasChanged(hash) || angularAccel.hasChanged(hash) || angularDecel.hasChanged(hash)) {
-            kStandardLimiter.linearTopSpeed = MetersPerSecond.of(getDriveSpeed());
-            kStandardLimiter.angularTopSpeed = RadiansPerSecond.of(getTurnSpeed());
-            kStandardLimiter.linearAcceleration = MetersPerSecondPerSecond.of(linearAccel.get());
-            kStandardLimiter.linearDeceleration = MetersPerSecondPerSecond.of(linearDecel.get());
-            kStandardLimiter.angularAcceleration = RadiansPerSecondPerSecond.of(angularAccel.get());
-            kStandardLimiter.angularDeceleration = RadiansPerSecondPerSecond.of(angularDecel.get());
+            kStandardLimiter.linearTopSpeed = getDriveSpeed();
+            kStandardLimiter.angularTopSpeed = getTurnSpeed();
+            kStandardLimiter.linearAcceleration = linearAccel.get();
+            kStandardLimiter.linearDeceleration = linearDecel.get();
+            kStandardLimiter.angularAcceleration = angularAccel.get();
+            kStandardLimiter.angularDeceleration = angularDecel.get();
         }
     }
 

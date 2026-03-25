@@ -24,6 +24,9 @@ import edu.wpi.first.units.measure.Time;
 
 import static frc.robot.util.OCUnits.PoundSquareInches;
 import frc.robot.util.TunableNumber;
+import frc.robot.util.TunableUnits.TunableAngle;
+import frc.robot.util.TunableUnits.TunableAngularVelocity;
+import frc.robot.util.TunableUnits.TunableTime;
 
 public final class ShooterConstants {
     
@@ -36,18 +39,15 @@ public final class ShooterConstants {
     public static final double kFlywheelGearRatio = 20.0 / 22.0;
     public static final double kHoodGearRatio = (60.0 / 18.0) * (32.0 / 20.0) * (24.0 / 20.0) * (208.0 / 18.0);
 
-    public static final AngularVelocity kFlywheelIdleVelocity = RPM.of(500); // TODO: Tune
+    public static final AngularVelocity kFlywheelIdleVelocity = RPM.of(500);
 
-    public static final TunableNumber flywheelIdleRPM = new TunableNumber("4) Shooter/Flywheel/Idle RPM",
-            kFlywheelIdleVelocity.in(RPM));
+    public static final TunableAngularVelocity flywheelIdleVelocity = new TunableAngularVelocity("4) Shooter/Flywheel/Idle RPM", kFlywheelIdleVelocity);
 
     public static final Angle kHoodMinAngle = Degrees.of(0);
     public static final Angle kHoodMaxAngle = Degrees.of(24);
 
-    public static final TunableNumber hoodMinAngle = new TunableNumber("4) Shooter/Hood/Min Angle",
-            kHoodMinAngle.in(Degrees));
-    public static final TunableNumber hoodMaxAngle = new TunableNumber("4) Shooter/Hood/Max Angle",
-            kHoodMaxAngle.in(Degrees));
+    public static final TunableAngle hoodMinAngle = new TunableAngle("4) Shooter/Hood/Min Angle", kHoodMinAngle);
+    public static final TunableAngle hoodMaxAngle = new TunableAngle("4) Shooter/Hood/Max Angle", kHoodMaxAngle);
 
     public static final double kFlywheelDebounceTime = 0.25;
     public static final double kHoodDebounceTime = 0.25;
@@ -59,15 +59,9 @@ public final class ShooterConstants {
 
     public static final AngularVelocity kVelocityTolerance = RPM.of(100); // TODO: tune tolerance
     public static final Angle kAngleTolerance = Degrees.of(0.5); // TODO: tune tolerance
-
-    public static final double kTargetMultiplier = 0; //TODO: tune for sotf if it works
-    public static final TunableNumber targetMultiplier = new TunableNumber("4) Shooter/DriveFacingHub/Target Tuning", kTargetMultiplier);
     
-    public static final double kVelocityTuner = 0;
-    public static final TunableNumber velocityTuner = new TunableNumber("4) Shooter/DriveFacingHub/Velocity Tuning", kVelocityTuner);
-    
-    public static final TunableNumber RPMTolerance = new TunableNumber("4) Shooter/Flywheel/RPM Tolerance", kVelocityTolerance.in(RPM));
-    public static final TunableNumber degreesTolerance = new TunableNumber("4) Shooter/Hood/Degrees Tolerance", kAngleTolerance.in(Degrees));
+    public static final TunableAngularVelocity velocityTolerance = new TunableAngularVelocity("4) Shooter/Flywheel/RPM Tolerance", kVelocityTolerance);
+    public static final TunableAngle angleTolerance = new TunableAngle("4) Shooter/Hood/Degrees Tolerance", kAngleTolerance);
     
 
     public static final MomentOfInertia kHoodMomentOfInertia = PoundSquareInches.of(168.737616);
@@ -78,7 +72,7 @@ public final class ShooterConstants {
     public static final Distance kHoodLength = Inches.of(8.187500);
 
     public static final Time kSOTMLatency = Seconds.of(0.1);
-    public static final TunableNumber SOTMLatency = new TunableNumber("4) Latency", kSOTMLatency.in(Seconds));
+    public static final TunableTime SOTMLatency = new TunableTime("4) Latency", kSOTMLatency);
 
     public static final TalonFXConfiguration kFlywheelConfig = new TalonFXConfiguration();
     static {
@@ -143,7 +137,7 @@ public final class ShooterConstants {
         control.kA = 0;
 
         MotionMagicConfigs mm = kHoodConfig.MotionMagic;
-        mm.MotionMagicCruiseVelocity = Rotations.of(3).in(Rotations); // inches per second TODO: Tunable nums
+        mm.MotionMagicCruiseVelocity = Rotations.of(3).in(Rotations); // inches per second
         mm.MotionMagicAcceleration = Rotations.of(5).in(Rotations);
     }
 

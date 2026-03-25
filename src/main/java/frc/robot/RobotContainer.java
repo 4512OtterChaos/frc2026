@@ -11,8 +11,6 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.DistanceUnit;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -21,7 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Auto.AutoOptions;
-import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
@@ -31,15 +28,12 @@ import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
-import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SuperstructureViz;
 import frc.robot.subsystems.Vision.Vision;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.OCXboxController;
 import frc.robot.util.TunableNumber;
-import frc.robot.util.TunableUnitBase;
-import frc.robot.util.TunableUnits.TunableDistance;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -65,9 +59,6 @@ public class RobotContainer {
     TunableNumber feederVoltage = new TunableNumber("test/feederVoltage", 4);
     TunableNumber flywheelVelocity = new TunableNumber("test/flywheelVelocity", 1000);
     TunableNumber hoodAngle = new TunableNumber("test/hoodAngle", 15);
-    // TunableUnitBase<Distance, DistanceUnit> test = TunableUnitBase.ofBase("dwefae", Feet.of(1), Feet);
-    Distance test2 = Feet.of(1);
-    TunableDistance test3 = new TunableDistance("null", Feet.of(1));
 
     public RobotContainer() {
         configureDefaultCommands();
@@ -76,12 +67,6 @@ public class RobotContainer {
         configureOperatorBindings();
 
         DataLogManager.start();
-        System.out.println(test3.in(Feet));
-        System.out.println(test3.in(Inches));
-        System.out.println(test3.in(Meters));
-        System.out.println(test2.in(Feet));
-        System.out.println(test2.in(Inches));
-        System.out.println(test2.in(Meters));
     }
 
     public void configureDefaultCommands() {
@@ -89,7 +74,7 @@ public class RobotContainer {
         fourBar.setDefaultCommand(fourBar.setCurrentC(Amps.of(0)));
         spindexer.setDefaultCommand(spindexer.setVoltageC(0));
         feeder.setDefaultCommand(feeder.setVoltageC(0));
-        shooter.setDefaultCommand(shooter.setStateC(ShooterConstants.kHoodMinAngle, RPM.of(ShooterConstants.flywheelIdleRPM.get())));
+        shooter.setDefaultCommand(shooter.setStateC(ShooterConstants.kHoodMinAngle, ShooterConstants.flywheelIdleVelocity.get()));
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -163,7 +148,6 @@ public class RobotContainer {
     }
 
     public void periodic() {
-        Shotmap.periodic();
         vision.periodic();
         autos.periodic();
         // shooter.in
