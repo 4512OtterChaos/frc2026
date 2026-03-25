@@ -10,7 +10,6 @@ package frc.robot.util;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 
@@ -29,26 +28,39 @@ public class TunableUnitBase<M extends Measure<U>, U extends Unit> implements Do
 
     private final String key;
     private final DoubleEntry entry;
-    private M defaultValue;
-    private M valueUnit;
-    private double valueDouble;
-    private BiConsumer<Double, M> doubleToUnit;
+    private double defaultValue;
+    private double value;
     private U preferedUnit;
     private Map<Integer, Double> lastHasChangedValues = new HashMap<>();
 
     /**
-     * Create a new TunableNumber with the default value
+     * Create a new TunableUnit with the default value that will display its value in the units it was created in. 
      *
+     * @param <M>          The type of Measure to store
+     * @param <U>          The type of units the Measure uses
      * @param key          Key on dashboard
      * @param defaultValue Default value
+     * @return             The new TunableUnit
+     */   
+    protected TunableUnitBase(String key, M defaultValue){
+        this(key, defaultValue, defaultValue.unit());
+    }
+
+    /**
+     * Create a new TunableUnit with the default value that will display its value in the given units
+     *
+     * @param <M>          The type of Measure to store
+     * @param <U>          The type of units the Measure uses
+     * @param key          Key on dashboard
+     * @param defaultValue Default value
+     * @param preferedUnit Units displayed in on dashboard
+     * @return             The new TunableUnit
      */
-    public TunableUnitBase(String key, M defaultValue, U preferedUnit, BiConsumer<Double, M> doubleToUnit) {
+    protected TunableUnitBase(String key, M defaultValue, U preferedUnit){
         this.key = tableKey + "/" + key;
-        this.defaultValue = defaultValue;
-        this.valueUnit = defaultValue;
-        this.valueDouble = defaultValue.in(preferedUnit);
+        this.defaultValue = defaultValue.in(preferedUnit);
+        this.value = defaultValue.in(preferedUnit);
         this.preferedUnit = preferedUnit;
-        this.doubleToUnit = doubleToUnit;
         this.entry = NetworkTableInstance.getDefault().getDoubleTopic(this.key).getEntry(0.0);
         entry.set(entry.get(defaultValue.in(preferedUnit)));
     }
@@ -58,25 +70,19 @@ public class TunableUnitBase<M extends Measure<U>, U extends Unit> implements Do
      *
      * @return The current value
      */
-    public M get() {
-        return valueUnit;
+    public Measure get() {
+        return preferedUnit.of(value);
     }
 
-    /**
-     * Get the current value, from dashboard if available and in tuning mode.
-     *
-     * @return The current value
-     */
     public double in(U unit) {
-        return valueUnit.in(unit);
+        return unit.fromBaseUnits(preferedUnit.of(value).baseUnitMagnitude());
     }
 
     /**
      * Updates value. Must be called periodically.
      */
     public void poll() {
-        valueDouble = entry.get(defaultValue.in(preferedUnit));
-        doubleToUnit.accept(valueDouble, valueUnit);
+        value = entry.get(defaultValue);
     }
 
     /**
@@ -90,7 +96,7 @@ public class TunableUnitBase<M extends Measure<U>, U extends Unit> implements Do
      *         otherwise.
      */
     public boolean hasChanged(int id) {
-        double currentValue = in(preferedUnit);
+        double currentValue = getAsDouble();
         Double lastValue = lastHasChangedValues.get(id);
         if (lastValue == null || currentValue != lastValue) {
             lastHasChangedValues.put(id, currentValue);
@@ -126,6 +132,6 @@ public class TunableUnitBase<M extends Measure<U>, U extends Unit> implements Do
 
     @Override
     public double getAsDouble() {
-        return in(preferedUnit);
+        return value;
     }
 }
