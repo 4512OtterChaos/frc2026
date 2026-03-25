@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -28,9 +27,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -42,34 +39,8 @@ import frc.robot.Robot;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.OCXboxController;
-import frc.robot.util.RobotConstants;
-import frc.robot.util.TunableNumber;
-import frc.robot.util.TunableUnits.TunableAngularAcceleration;
-import frc.robot.util.TunableUnits.TunableLinearAcceleration;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain {
-
-    private static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // desired top speed
-    private static double MaxAngularRate = RotationsPerSecond.of(2).in(RadiansPerSecond); // max angular velocity
-
-    // Normal driving speed at 100% controller input
-    public static final double kDriveSpeedRatio = 0.9;
-    public static final double kTurnSpeedRatio = 0.5;
-
-    public static final TunableNumber driveSpeedRatio = new TunableNumber("1) Drivetrain/Drive Speed", kDriveSpeedRatio);
-    public static final TunableNumber turnSpeedRatio = new TunableNumber("1) Drivetrain/Turn Speed", kTurnSpeedRatio);
-
-    // Normal driving acceleration limits
-    public static final LinearAcceleration kLinearAccel = FeetPerSecondPerSecond.of(35);
-    public static final LinearAcceleration kLinearDecel = FeetPerSecondPerSecond.of(50);
-    public static final AngularAcceleration kAngularAccel = RotationsPerSecondPerSecond.of(6);
-    public static final AngularAcceleration kAngularDecel = RotationsPerSecondPerSecond.of(10);
-
-    public static final TunableLinearAcceleration linearAccel = new TunableLinearAcceleration("1) Drivetrain/Linear Acceleration", kLinearAccel);
-    public static final TunableLinearAcceleration linearDecel = new TunableLinearAcceleration("1) Drivetrain/Linear Deceleration", kLinearDecel);
-    public static final TunableAngularAcceleration angularAccel = new TunableAngularAcceleration("1) Drivetrain/Angular Acceleration", kAngularAccel);
-    public static final TunableAngularAcceleration angularDecel = new TunableAngularAcceleration("1) Drivetrain/Angular Deceleration", kAngularDecel);
-
     public final SwerveDriveLimiter kStandardLimiter = new SwerveDriveLimiter(
             getDriveSpeed(),
             linearAccel.get(),

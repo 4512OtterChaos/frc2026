@@ -3,8 +3,12 @@ package frc.robot.subsystems.Drivetrain;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.util.TunableNumber;
+import frc.robot.util.TunableUnits.TunableAngularAcceleration;
+import frc.robot.util.TunableUnits.TunableLinearAcceleration;
 
 public class DrivetrainConstants {
     public static double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // desired top speed
@@ -17,18 +21,16 @@ public class DrivetrainConstants {
     public static final TunableNumber driveSpeedRatio = new TunableNumber("1) Drivetrain/Standard/Drive Speed", kDriveSpeedRatio);
     public static final TunableNumber turnSpeedRatio = new TunableNumber("1) Drivetrain/Standard/Turn Speed", kTurnSpeedRatio);
 
-
-
     // Normal driving acceleration limits
-    public static final double kLinearAccel = FeetPerSecondPerSecond.of(35).in(MetersPerSecondPerSecond);
-    public static final double kLinearDecel = FeetPerSecondPerSecond.of(50).in(MetersPerSecondPerSecond);
-    public static final double kAngularAccel = RotationsPerSecondPerSecond.of(6).in(RadiansPerSecondPerSecond);
-    public static final double kAngularDecel = RotationsPerSecondPerSecond.of(10).in(RadiansPerSecondPerSecond);
+    public static final LinearAcceleration kLinearAccel = FeetPerSecondPerSecond.of(35);
+    public static final LinearAcceleration kLinearDecel = FeetPerSecondPerSecond.of(50);
+    public static final AngularAcceleration kAngularAccel = RotationsPerSecondPerSecond.of(6);
+    public static final AngularAcceleration kAngularDecel = RotationsPerSecondPerSecond.of(10);
 
-    public static final TunableNumber linearAccel = new TunableNumber("1) Drivetrain/Standard/Linear Acceleration", kLinearAccel);
-    public static final TunableNumber linearDecel = new TunableNumber("1) Drivetrain/Standard/Linear Deceleration", kLinearDecel);
-    public static final TunableNumber angularAccel = new TunableNumber("1) Drivetrain/Standard/Angular Acceleration", kAngularAccel);
-    public static final TunableNumber angularDecel = new TunableNumber("1) Drivetrain/Standard/Angular Deceleration", kAngularDecel);
+    public static final TunableLinearAcceleration linearAccel = new TunableLinearAcceleration("1) Drivetrain/Linear Acceleration", kLinearAccel);
+    public static final TunableLinearAcceleration linearDecel = new TunableLinearAcceleration("1) Drivetrain/Linear Deceleration", kLinearDecel);
+    public static final TunableAngularAcceleration angularAccel = new TunableAngularAcceleration("1) Drivetrain/Angular Acceleration", kAngularAccel);
+    public static final TunableAngularAcceleration angularDecel = new TunableAngularAcceleration("1) Drivetrain/Angular Deceleration", kAngularDecel);
 
     public static final double kSOTMDriveSpeedRatio = 0.56;
 

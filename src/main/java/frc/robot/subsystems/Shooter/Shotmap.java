@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.subsystems.Shooter.ShooterConstants.kRobotToFuelExitTrf2d;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,9 +14,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.units.measure.Velocity;
 import frc.robot.util.FieldUtil;
 
 public class Shotmap {

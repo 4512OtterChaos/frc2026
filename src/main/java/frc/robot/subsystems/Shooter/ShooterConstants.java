@@ -9,18 +9,12 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 
-import static edu.wpi.first.units.Units.Centimeter;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -65,25 +59,6 @@ public final class ShooterConstants {
         kRobotToFuelExitTrf3d.getRotation().toRotation2d()); // face backwards
 
     public static final AngularVelocity kFlywheelIdleVelocity = RPM.of(500);
-    public static final double kBackRollerRatio = 22.0 / 36.0; // back roller upduction
-
-    public static final MomentOfInertia kHoodMomentOfInertia = PoundSquareInches.of(168.737616);
-    public static final MomentOfInertia kFlywheelMomentOfInertia = PoundSquareInches.of(8); // TODO: Get Real
-
-    public static final Distance kWheelDiameter = Inches.of(3);
-    public static final Distance kBackRollerDiameter = Inches.of(1);
-    public static final Distance kHoodPivotHeight = Inches.of(18.096682);
-    public static final Distance kHoodLength = Inches.of(8.187500);
-
-    // Transform from robot center to fuel exit
-    public static final Transform3d kRobotToFuelExitTrf3d = new Transform3d(
-        Inches.of(-6.5),
-        Inches.of(5.5),
-        Inches.of(19),
-        new Rotation3d(0, 0, Math.PI)); // face backwards
-    public static final Transform2d kRobotToFuelExitTrf2d = new Transform2d(
-        kRobotToFuelExitTrf3d.getTranslation().toTranslation2d(),
-        kRobotToFuelExitTrf3d.getRotation().toRotation2d()); // face backwards
 
     public static final TunableAngularVelocity flywheelIdleVelocity = new TunableAngularVelocity("4) Shooter/Flywheel/Idle RPM", kFlywheelIdleVelocity);
 
