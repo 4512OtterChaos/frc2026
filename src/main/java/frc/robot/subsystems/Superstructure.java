@@ -21,7 +21,6 @@ import static frc.robot.util.RobotConstants.kShooterTurnOffDelay;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Indexer.Feeder;
@@ -216,7 +215,7 @@ public class Superstructure extends SubsystemBase{
 
     public static class ShootOnTheMove {
         public static Pair<Shooter.State, Angle> getTargets(Pose2d robotPose, ChassisSpeeds speed){
-            double latency = SOTMLatency.get(); // Tuned constant
+            double latency = SOTMLatency.in(Seconds);
             
             Translation2d futurePos = robotPose.getTranslation().plus(
                 new Translation2d(speed.vxMetersPerSecond, speed.vyMetersPerSecond).times(latency)

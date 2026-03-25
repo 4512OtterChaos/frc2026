@@ -45,7 +45,7 @@ public class Shooter extends SubsystemBase {
     private TalonFX hMotor = new TalonFX(kHoodMotorID);
 
     private AngularVelocity targetVelocity = RPM.of(0); // flywheel
-    private Angle targetAngle = Degrees.of(hoodMinAngle.get()); //hood
+    private Angle targetAngle = hoodMinAngle.get(); //hood
 
     private Trigger upToSpeed = new Trigger(() -> upToSpeed()).debounce(flywheelDebounceTime.get());
     private Trigger atAngle = new Trigger(() -> atAngle()).debounce(hoodDebounceTime.get());
@@ -78,7 +78,7 @@ public class Shooter extends SubsystemBase {
 
         // HOOD
         hMotor.getConfigurator().apply(kHoodConfig);
-        resetAngle(Degrees.of(hoodMinAngle.get()));
+        resetAngle(hoodMinAngle.get());
         
         hPositionStatus.setUpdateFrequency(100);
         hVelocityStatus.setUpdateFrequency(100);
@@ -142,12 +142,12 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setAngle(Angle angle) {
-        angle = Degrees.of(MathUtil.clamp(angle.in(Degrees), hoodMinAngle.get(), hoodMaxAngle.get()));
+        angle = Degrees.of(MathUtil.clamp(angle.in(Degrees), hoodMinAngle.in(Degrees), hoodMaxAngle.in(Degrees)));
         targetAngle = angle;
     }
 
     public boolean atAngle() {
-        return Math.abs(targetAngle.in(Degrees) - getHoodAngle().in(Degrees)) < degreesTolerance.get();
+        return Math.abs(targetAngle.in(Degrees) - getHoodAngle().in(Degrees)) < angleTolerance.in(Degrees);
     }
 
     public Trigger atAngleT() {
@@ -184,7 +184,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean upToSpeed() {
-        return Math.abs(targetVelocity.in(RPM) - getFlywheelVelocity().in(RPM)) < RPMTolerance.get(); 
+        return Math.abs(targetVelocity.in(RPM) - getFlywheelVelocity().in(RPM)) < velocityTolerance.in(RPM); 
     }
 
     public Trigger upToSpeedT() {
@@ -202,11 +202,11 @@ public class Shooter extends SubsystemBase {
     }
     
     public void setIdle(){
-        setState(kHoodMinAngle, RPM.of(flywheelIdleRPM.get()));
+        setState(kHoodMinAngle, flywheelIdleVelocity.get());
     }
     
     public Command setIdleC(){
-        return setStateC(kHoodMinAngle, RPM.of(flywheelIdleRPM.get()));
+        return setStateC(kHoodMinAngle, flywheelIdleVelocity.get());
     }
 
     public Command setStateC(State state) {
@@ -237,7 +237,7 @@ public class Shooter extends SubsystemBase {
         hoodMinAngle.poll();
         hoodMaxAngle.poll();
         hoodDebounceTime.poll();
-        degreesTolerance.poll();
+        angleTolerance.poll();
         hoodkP.poll();
         hoodkI.poll();
         hoodkD.poll();
@@ -248,9 +248,9 @@ public class Shooter extends SubsystemBase {
         hoodCruiseVelocity.poll();
         hoodAcceleration.poll();
 
-        flywheelIdleRPM.poll();
+        flywheelIdleVelocity.poll();
         flywheelDebounceTime.poll();
-        RPMTolerance.poll();
+        velocityTolerance.poll();
         flywheelkP.poll();
         flywheelkI.poll();
         flywheelkD.poll();
@@ -317,7 +317,7 @@ public class Shooter extends SubsystemBase {
         // SmartDashboard.putNumber("4) Shooter/Hood/Voltage", getHoodVoltage().in(Volts));
         // SmartDashboard.putNumber("4) Shooter/Hood/Current", getHoodCurrent().in(Amps));
         // SmartDashboard.putBoolean("4) Shooter/Hood/At Angle", atAngleT().getAsBoolean());
-        // SmartDashboard.putNumber("4) Shooter/Hood/Angle Tolerance", degreesTolerance.get());
+        // SmartDashboard.putNumber("4) Shooter/Hood/Angle Tolerance", degreesTolerance.in(Degrees));
         
 
         // SmartDashboard.putNumber("4) Shooter/Flywheel/RPM", getFlywheelVelocity().in(RPM));
@@ -326,7 +326,7 @@ public class Shooter extends SubsystemBase {
         // SmartDashboard.putNumber("4) Shooter/Flywheel/Target RPM", targetVelocity.in(RPM));
         // SmartDashboard.putNumber("4) Shooter/Flywheel/Current", getFlywheelCurrent().in(Amps));
         // SmartDashboard.putBoolean("4) Shooter/Flywheel/Up to speed", upToSpeedT().getAsBoolean());
-        // SmartDashboard.putNumber("4) Shooter/Flywheel/Velocity Tolerance", RPMTolerance.get());
+        // SmartDashboard.putNumber("4) Shooter/Flywheel/Velocity Tolerance", RPMTolerance.in(RPM));
     }
 
 

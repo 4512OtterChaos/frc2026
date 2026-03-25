@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Auto.AutoOptions;
-import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
@@ -35,7 +34,6 @@ import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
-import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SuperstructureViz;
 import frc.robot.subsystems.Vision.Vision;
@@ -84,7 +82,7 @@ public class RobotContainer {
         fourBar.setDefaultCommand(fourBar.setCurrentC(Amps.of(0)));
         spindexer.setDefaultCommand(spindexer.setVoltageC(0));
         feeder.setDefaultCommand(feeder.setVoltageC(0));
-        shooter.setDefaultCommand(shooter.setStateC(ShooterConstants.kHoodMinAngle, RPM.of(ShooterConstants.flywheelIdleRPM.get())));
+        shooter.setDefaultCommand(shooter.setStateC(ShooterConstants.kHoodMinAngle, ShooterConstants.flywheelIdleVelocity.get()));
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -158,7 +156,6 @@ public class RobotContainer {
     }
 
     public void periodic() {
-        Shotmap.periodic();
         vision.periodic();
         autos.periodic();
         // shooter.in

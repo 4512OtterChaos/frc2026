@@ -9,7 +9,6 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -17,8 +16,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
-import edu.wpi.first.units.measure.Torque;
 import frc.robot.util.TunableNumber;
+import frc.robot.util.TunableUnits.TunableAngle;
+import frc.robot.util.TunableUnits.TunableCurrent;
 
 public class IntakeConstants {
     public static final int kIntakeMotorID = 21;
@@ -33,9 +33,9 @@ public class IntakeConstants {
     public static final Angle kFourBarMaxAngle = Degrees.of(100.5); 
     public static final Angle kAngleTolerance = Degrees.of(2); //TODO: tune
 
-    public static final TunableNumber fourBarMinDegrees = new TunableNumber("2) Intake/Four Bar/Min Degrees", kFourBarMinAngle.in(Degrees));
-    public static final TunableNumber fourBarMaxDegrees = new TunableNumber("2) Intake/Four Bar/Max Degrees", kFourBarMaxAngle.in(Degrees));
-    public static final TunableNumber degreeTolerance = new TunableNumber("2) Intake/Four Bar/Degrees Tolerance", kAngleTolerance.in(Degrees));
+    public static final TunableAngle fourBarMinAngle = new TunableAngle("2) Intake/Four Bar/Min Degrees", kFourBarMinAngle);
+    public static final TunableAngle fourBarMaxAngle = new TunableAngle("2) Intake/Four Bar/Max Degrees", kFourBarMaxAngle);
+    public static final TunableAngle angleTolerance = new TunableAngle("2) Intake/Four Bar/Degrees Tolerance", kAngleTolerance);
 
     public static final double kIntakeVoltageIn = 8; //TODO: Tune
     public static final double kIntakeVoltageOut = -4; //TODO: Tune
@@ -48,14 +48,14 @@ public class IntakeConstants {
     public static final TunableNumber fourBarVoltageIn = new TunableNumber("2) Intake/Four Bar/Voltage In", kFourBarVoltageIn);
     public static final TunableNumber fourBarVoltageOut = new TunableNumber("2) Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
 
-    public static final Current kAmpsIn = Amps.of(20); //TODO: Tune
-    public static final Current kAmpsOut = Amps.of(-20);
+    public static final Current kCurrentIn = Amps.of(20); //TODO: Tune
+    public static final Current kCurrentOut = Amps.of(-20);
 
     // public static final Current kSmallAmpsIn = Amps.of(5); //TODO: Tune
     // public static final Current kSmallAmpsOut = Amps.of(-5); //TODO: Tune
 
-    public static final TunableNumber ampsIn = new TunableNumber("2) Intake/Four Bar/Amps In", kAmpsIn.in(Amps));
-    public static final TunableNumber ampsOut = new TunableNumber("2) Intake/Four Bar/Amps Out", kAmpsOut.in(Amps));
+    public static final TunableCurrent currentIn = new TunableCurrent("2) Intake/Four Bar/Amps In", kCurrentIn);
+    public static final TunableCurrent currentOut = new TunableCurrent("2) Intake/Four Bar/Amps Out", kCurrentOut);
 
     // public static final TunableNumber smallAmpsIn = new TunableNumber("Intake/Four Bar/Small Amps In", kSmallAmpsIn.in(Amps));
     // public static final TunableNumber smallAmpsOut = new TunableNumber("Intake/Four Bar/Small Amps Out", kSmallAmpsIn.in(Amps));

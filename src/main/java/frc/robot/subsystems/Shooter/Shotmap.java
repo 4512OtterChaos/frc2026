@@ -1,7 +1,6 @@
 package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -33,20 +32,16 @@ public class Shotmap {
     public static Distance nextToTower = Meters.of(4.716783828);
     public static Distance frontOfTower = Meters.of(3.55593061);
     public static Distance nearHub = Meters.of(2.342913695);
-    public static Shooter.State idleState = new Shooter.State(Degrees.of(ShooterConstants.hoodMinAngle.get()), RPM.of(ShooterConstants.flywheelIdleRPM.get()), null);
+    public static Shooter.State idleState = new Shooter.State(ShooterConstants.hoodMinAngle.get(), ShooterConstants.flywheelIdleVelocity.get(), null);
 
     private static Time minTof = null;
     private static Time maxTof = null;
 
     static {
         // 4.86 
-        addState(Meters.of(2.26), Degrees.of(21), RPM.of(2800), Seconds.of(1.02));
-        addState(Meters.of(3.5), Degrees.of(24), RPM.of(3200), Seconds.of(1.22));
-        addState(Meters.of(5.57), Degrees.of(34), RPM.of(3600), Seconds.of(1.31));//TODO: not measured for the correct pose, instead 4.86 meters
-    }
-
-    public static void periodic() {
-        changeTunable();
+        addState(Meters.of(2.26), Degrees.of(0), RPM.of(2800), Seconds.of(1.02));
+        addState(Meters.of(3.5), Degrees.of(3), RPM.of(3200), Seconds.of(1.22));
+        addState(Meters.of(5.57), Degrees.of(13), RPM.of(3600), Seconds.of(1.31));//TODO: not measured for the correct pose, instead 4.86 meters
     }
 
     private static void addState(Distance distance, Angle angle, AngularVelocity velocity, Time tof){
@@ -167,10 +162,6 @@ public class Shotmap {
         double vX = fieldSpeeds.vxMetersPerSecond;
         double vY = fieldSpeeds.vyMetersPerSecond;
         return Rotation2d.fromRadians((x * vY - y * vX) / distSq);
-    }
-
-    public static void changeTunable() {
-        targetMultiplier.poll();
     }
 
 }

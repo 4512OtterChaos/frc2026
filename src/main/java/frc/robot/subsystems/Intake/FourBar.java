@@ -2,8 +2,6 @@ package frc.robot.subsystems.Intake;
 
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
-import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
-import static frc.robot.subsystems.Climber.ClimberConstants.maxAngleRot;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -18,12 +16,10 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,10 +34,10 @@ public class FourBar extends SubsystemBase {
     private final StatusSignal<Voltage> voltageStatus = motor.getMotorVoltage();
     private final StatusSignal<Current> statorStatus = motor.getStatorCurrent();
 
-    private Current targetCurrent = Amps.of(ampsIn.get());
+    private Current targetCurrent = currentIn.get();
     private TorqueCurrentFOC torqueRequest = new TorqueCurrentFOC(0);
 
-    private Angle targetAngle = Degrees.of(fourBarMaxDegrees.get());
+    private Angle targetAngle = fourBarMaxAngle.get();
     private MotionMagicVoltage mmRequest = new MotionMagicVoltage(0);
 
     private Voltage targetVoltage = Volts.of(0);
@@ -60,7 +56,7 @@ public class FourBar extends SubsystemBase {
 
         SmartDashboard.putData("2) Intake/Four Bar/Subsystem", this);
 
-        resetAngle(Degrees.of(fourBarMaxDegrees.get()));
+        resetAngle(fourBarMaxAngle.get());
         if (Utils.isSimulation()) {
             resetAngle(Degrees.of(0));
         }
@@ -131,22 +127,22 @@ public class FourBar extends SubsystemBase {
     }
 
     public Command setCurrentInC() {
-        return run(()->setCurrent(Amps.of(ampsIn.get())));
+        return run(()->setCurrent(currentIn.get()));
     }
 
     public Command setCurrentOutC() {
-        return run(()->setCurrent(Amps.of(ampsOut.get())));
+        return run(()->setCurrent(currentOut.get()));
     }
 
     public Command oscillateC() {
         return sequence(
             setCurrentInC().withTimeout(0.3),
             setCurrentOutC().withTimeout(0.3)
-        ).finallyDo(()-> setAngle(Degrees.of(fourBarMinDegrees.get()))).repeatedly();
+        ).finallyDo(()-> setAngle(fourBarMinAngle.get())).repeatedly();
     }
 
     public void setAngle(Angle angle) {
-        targetAngle = Degrees.of(MathUtil.clamp(angle.in(Degrees), fourBarMinDegrees.get(), fourBarMaxDegrees.get()));
+        targetAngle = Degrees.of(MathUtil.clamp(angle.in(Degrees), fourBarMinAngle.in(Degrees), fourBarMaxAngle.in(Degrees)));
         controlMode = ControlMode.MotionMagic;
     }
 
@@ -155,15 +151,15 @@ public class FourBar extends SubsystemBase {
     }
 
     public Command setMinAngleC() {
-        return setAngleC(Degrees.of(fourBarMinDegrees.get()));
+        return setAngleC(fourBarMinAngle.get());
     }
 
     public Command setMaxAngleC() {
-        return setAngleC(Degrees.of(fourBarMaxDegrees.get()));
+        return setAngleC(fourBarMaxAngle.get());
     }
 
     public boolean atAngle(Angle angle) {
-        return getAngle().isNear(angle, Degrees.of(degreeTolerance.get()));
+        return getAngle().isNear(angle, angleTolerance.get());
     }
 
     public Trigger atAngleT(Angle angle) {
@@ -195,11 +191,11 @@ public class FourBar extends SubsystemBase {
     public void changeTunable() {
         fourBarVoltageIn.poll();
         fourBarVoltageOut.poll();
-        fourBarMinDegrees.poll();
-        fourBarMaxDegrees.poll();
-        degreeTolerance.poll();
-        ampsIn.poll();
-        ampsOut.poll();
+        fourBarMinAngle.poll();
+        fourBarMaxAngle.poll();
+        angleTolerance.poll();
+        currentIn.poll();
+        currentOut.poll();
     }
 
     public void log() {
@@ -219,10 +215,10 @@ public class FourBar extends SubsystemBase {
         kFourBarGearRatio,
         kFourBarMomentOfInertia.in(KilogramSquareMeters),
         kFourBarArmLength.in(Meters),
-        Degrees.of(fourBarMinDegrees.get()).in(Radians),
-        Degrees.of(fourBarMaxDegrees.get()).in(Radians),
+        fourBarMinAngle.get().in(Radians),
+        fourBarMaxAngle.get().in(Radians),
         true,
-        Degrees.of(fourBarMaxDegrees.get()).in(Radians)
+        fourBarMaxAngle.get().in(Radians)
     );
 
     @Override
