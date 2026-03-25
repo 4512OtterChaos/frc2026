@@ -199,7 +199,7 @@ public class Superstructure extends SubsystemBase{
                     }
 
                     shooter.setState(state);
-                    drivetrain.driveFacingTargetBrake(speeds.get(), target);
+                    drivetrain.driveFacingTargetSlowBrake(speeds.get(), target);
                 },
                 drivetrain, shooter
             ),

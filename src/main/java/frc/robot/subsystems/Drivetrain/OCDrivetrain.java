@@ -43,8 +43,16 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     public final SwerveDriveLimiter kStandardLimiter = new SwerveDriveLimiter(
             MetersPerSecond.of(getDriveSpeed()),
-            MetersPerSecondPerSecond.of(DrivetrainConstants.linearAccel.get()),
+            MetersPerSecondPerSecond.of(linearAccel.get()),
             MetersPerSecondPerSecond.of(linearDecel.get()),
+            RadiansPerSecond.of(getTurnSpeed()),
+            RadiansPerSecondPerSecond.of(angularAccel.get()),
+            RadiansPerSecondPerSecond.of(angularAccel.get()));
+
+    public final SwerveDriveLimiter kSOTMLimiter = new SwerveDriveLimiter(
+            MetersPerSecond.of(getSOTMDriveSpeed()),
+            MetersPerSecondPerSecond.of(sotmLinearAccel.get()),
+            MetersPerSecondPerSecond.of(sotmLinearDecel.get()),
             RadiansPerSecond.of(getTurnSpeed()),
             RadiansPerSecondPerSecond.of(angularAccel.get()),
             RadiansPerSecondPerSecond.of(angularAccel.get()));
@@ -105,6 +113,10 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         return turnSpeedRatio.get() * MaxAngularRate;
     }
 
+    public double getSOTMDriveSpeed() {
+        return sotmDriveSpeedRatio.get() * MaxSpeed;
+    }
+
     public Pose2d getGlobalPoseEstimate() {
         return visionEstimator.getEstimatedPosition();
     }
@@ -160,14 +172,28 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         return run(() -> driveFacingTarget(speeds.get(), target.get()));
     }
 
-    public void driveFacingTargetBrake(ChassisSpeeds speeds, Translation2d target) {
-        targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
+    public void driveFacingTargetSlowBrake(ChassisSpeeds speeds, Translation2d target) {
         if (speeds.equals(new ChassisSpeeds()) && facingTargetT().getAsBoolean()) {
             brake();
             return;
         }
-        driveFacingAngle(speeds, targetRotation);
+        driveFacingTargetSlow(speeds, target);
     } 
+
+    public void driveFacingTargetSlow(ChassisSpeeds speeds, Translation2d target) {
+        targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
+        driveFacingAngleSlow(speeds, targetRotation);
+    } 
+
+    public void driveFacingAngleSlow(ChassisSpeeds speeds, Angle target) {
+        ChassisSpeeds targetSpeeds = kSOTMLimiter.calculate(speeds, lastTargetSpeeds, Robot.kDefaultPeriod);
+        lastTargetSpeeds = targetSpeeds;
+        setControl(
+            face.withVelocityX(targetSpeeds.vxMetersPerSecond)
+                    .withVelocityY(targetSpeeds.vyMetersPerSecond)
+                    .withTargetDirection(Rotation2d.fromDegrees(target.in(Degrees))//.plus(Rotation2d.k180deg)
+        ));
+    }
 
     public void driveFacingTarget(ChassisSpeeds speeds, Translation2d target) {
         targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
@@ -356,6 +382,10 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         linearDecel.poll();
         angularAccel.poll();
         angularDecel.poll();
+        sotmDriveSpeedRatio.poll();
+
+        sotmLinearAccel.poll();
+        sotmLinearDecel.poll();
         rotationDebounceSeconds.poll();
         // brakeDebounceSeconds.poll();
 
@@ -370,6 +400,17 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
             kStandardLimiter.linearDeceleration = MetersPerSecondPerSecond.of(linearDecel.get());
             kStandardLimiter.angularAcceleration = RadiansPerSecondPerSecond.of(angularAccel.get());
             kStandardLimiter.angularDeceleration = RadiansPerSecondPerSecond.of(angularDecel.get());
+        }
+        
+        // SOTM limiter
+        if (sotmDriveSpeedRatio.hasChanged(hash) || turnSpeedRatio.hasChanged(hash) || sotmLinearAccel.hasChanged(hash)
+                || sotmLinearDecel.hasChanged(hash) || angularAccel.hasChanged(hash) || angularDecel.hasChanged(hash)) {
+            kSOTMLimiter.linearTopSpeed = MetersPerSecond.of(getSOTMDriveSpeed());
+            kSOTMLimiter.angularTopSpeed = RadiansPerSecond.of(getTurnSpeed());
+            kSOTMLimiter.linearAcceleration = MetersPerSecondPerSecond.of(sotmLinearAccel.get());
+            kSOTMLimiter.linearDeceleration = MetersPerSecondPerSecond.of(sotmLinearDecel.get());
+            kSOTMLimiter.angularAcceleration = RadiansPerSecondPerSecond.of(angularAccel.get());
+            kSOTMLimiter.angularDeceleration = RadiansPerSecondPerSecond.of(angularDecel.get());
         }
 
         if (rotationDebounceSeconds.hasChanged(hash)) {
