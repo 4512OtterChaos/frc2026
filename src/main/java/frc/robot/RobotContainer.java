@@ -48,7 +48,7 @@ public class RobotContainer {
 
     private final OCDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final Telemetry logger = new Telemetry(MaxSpeed);
-    private final Intake intake = new Intake();
+    private final Intake roller = new Intake();
     private final FourBar fourBar = new FourBar();
     private final Spindexer spindexer = new Spindexer();
     private final Feeder feeder = new Feeder();
@@ -56,10 +56,10 @@ public class RobotContainer {
     // private final Climber climber = new Climber(); //TODO: Re-enable
     private final Vision vision = new Vision();
 
-    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, shooter, null); // TODO: turn off climber when testing
-    private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, fourBar, spindexer, feeder, shooter, null);
+    private final Superstructure superstructure = new Superstructure(drivetrain, roller, fourBar, spindexer, feeder, shooter, null); // TODO: turn off climber when testing
+    private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, roller, fourBar, spindexer, feeder, shooter, null);
 
-    private final AutoOptions autos = new AutoOptions(drivetrain, intake, shooter, spindexer, fourBar, null, feeder, superstructure);
+    private final AutoOptions autos = new AutoOptions(drivetrain, roller, shooter, spindexer, fourBar, null, feeder, superstructure);
 
     TunableNumber feederVoltage = new TunableNumber("test/feederVoltage", 4);
     TunableNumber flywheelVelocity = new TunableNumber("test/flywheelVelocity", 1000);
@@ -75,7 +75,7 @@ public class RobotContainer {
     }
 
     public void configureDefaultCommands() {
-        intake.setDefaultCommand(intake.setVoltageC(0));
+        roller.setDefaultCommand(roller.setVoltageC(0));
         fourBar.setDefaultCommand(fourBar.setCurrentC(Amps.of(0)));
         spindexer.setDefaultCommand(spindexer.setVoltageC(0));
         feeder.setDefaultCommand(feeder.setVoltageC(0));
@@ -104,7 +104,6 @@ public class RobotContainer {
         driver.rightTrigger().whileTrue(superstructure.otterShootControllerC(driver, ()-> driver.leftTrigger().getAsBoolean()));
         driver.leftBumper().whileTrue(superstructure.otterShootOnTheSwimControllerC(driver));
         driver.rightBumper().whileTrue(parallel(
-        // shooter.setFlywheelVoltage(
             run(()-> shooter.setState(Degrees.of(5), RPM.of(2200))), 
             sequence(
                 waitSeconds(0.6),
@@ -112,16 +111,16 @@ public class RobotContainer {
             )
         ));
 
-        driver.leftTrigger().whileTrue(intake.setVoltageInC());
-        driver.x().whileTrue(intake.setVoltageOutC());
+        driver.leftTrigger().whileTrue(roller.setVoltageInC());
+        driver.x().whileTrue(roller.setVoltageOutC());
         driver.povLeft().whileTrue(
             parallel(
                 spindexer.reverseC(),
                 feeder.reverseC()
         ));
 
-        driver.y().whileTrue(fourBar.retractCurrentC().withTimeout(1.25)); 
-        driver.a().whileTrue(fourBar.extendCurrentC().withTimeout(1)); 
+        driver.y().whileTrue(fourBar.retractC().withTimeout(1.25)); 
+        driver.a().whileTrue(fourBar.extendC().withTimeout(1)); 
 
         
         // driver.povUp().whileTrue(run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get())))); //Testing command
@@ -230,7 +229,7 @@ public class RobotContainer {
  * ________________________________________________________________________________________________________________________
  * 
  * NOLAN'S TODO:
- * feeder pid, faster feeder
+ * feeder pid
  * shooter kP
  * shooter fuel counter from current sensing. Debounce last shot time timeout for auto detecting empty hopper
  * current sensing fourbar

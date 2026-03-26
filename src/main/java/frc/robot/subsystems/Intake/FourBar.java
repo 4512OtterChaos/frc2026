@@ -7,14 +7,12 @@ import static frc.robot.subsystems.Intake.IntakeConstants.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -24,7 +22,6 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class FourBar extends SubsystemBase {
     private TalonFX motor = new TalonFX(kFourBarMotorID);
@@ -34,15 +31,15 @@ public class FourBar extends SubsystemBase {
     private final StatusSignal<Voltage> voltageStatus = motor.getMotorVoltage();
     private final StatusSignal<Current> statorStatus = motor.getStatorCurrent();
 
-    private Current targetCurrent = currentIn.get();
+    private Current targetCurrent = Amps.of(0);
     private TorqueCurrentFOC torqueRequest = new TorqueCurrentFOC(0);
 
-    private Angle targetAngle = fourBarMaxAngle.get();
-    private MotionMagicVoltage mmRequest = new MotionMagicVoltage(0);
+    // private Angle targetAngle = fourBarMaxAngle.get();
+    // private MotionMagicVoltage mmRequest = new MotionMagicVoltage(0);
 
-    private Voltage targetVoltage = Volts.of(0);
+    // private Voltage targetVoltage = Volts.of(0);
 
-    private ControlMode controlMode = ControlMode.Voltage;
+    // private ControlMode controlMode = ControlMode.Torque;
 
     public FourBar() {
         motor.getConfigurator().apply(kFourBarConfig);
@@ -56,7 +53,7 @@ public class FourBar extends SubsystemBase {
 
         SmartDashboard.putData("2) Intake/Four Bar/Subsystem", this);
 
-        resetAngle(fourBarMaxAngle.get());
+        resetAngle(kFourBarMaxAngle);
         if (Utils.isSimulation()) {
             resetAngle(Degrees.of(0));
         }
@@ -71,25 +68,18 @@ public class FourBar extends SubsystemBase {
                 statorStatus);
         changeTunable();
 
-        switch (controlMode) {
-            case Torque: 
-                // if (motor.getPosition().isNear(fourBarMaxDegrees.get(), degreeTolerance.get())) {
-                //     motor.setControl(torqueRequest.withOutput(MathUtil.clamp(targetCurrent.in(Amps), targetCurrent.in(Amps), smallAmpsIn.get())));
-                //     break;   
-                // }
-                // else if (motor.getPosition().isNear(fourBarMinDegrees.get(), degreeTolerance.get())) {
-                //     motor.setControl(torqueRequest.withOutput(MathUtil.clamp(targetCurrent.in(Amps), smallAmpsOut.get(), targetCurrent.in(Amps)))); 
-                //     break;
-                // }
-                motor.setControl(torqueRequest.withOutput(targetCurrent));
-                break;
-            case MotionMagic:
-                motor.setControl(mmRequest.withPosition(targetAngle));
-                break;
-            case Voltage:
-                motor.setVoltage(targetVoltage.in(Volts));
-                break;
-        }
+        // switch (controlMode) {
+        //     case Torque:
+        //         motor.setControl(torqueRequest.withOutput(targetCurrent));
+        //         break;
+        //     case MotionMagic:
+        //         motor.setControl(mmRequest.withPosition(targetAngle));
+        //         break;
+        //     case Voltage:
+        //         motor.setVoltage(targetVoltage.in(Volts));
+        //         break;
+        // }
+        motor.setControl(torqueRequest.withOutput(targetCurrent));
         log();
     }
 
@@ -97,9 +87,9 @@ public class FourBar extends SubsystemBase {
         return positionStatus.getValue();
     }
 
-    public Angle getTargetAngle() {
-        return targetAngle;
-    }
+    // public Angle getTargetAngle() {
+    //     return targetAngle;
+    // }
 
     public AngularVelocity getVelocity() {
         return velocityStatus.getValue();
@@ -119,83 +109,106 @@ public class FourBar extends SubsystemBase {
 
     public void setCurrent(Current current) {
         targetCurrent = current;
-        controlMode = ControlMode.Torque;
+        // controlMode = ControlMode.Torque;
     }
 
     public Command setCurrentC(Current current) {
         return run(()-> setCurrent(current));
     }
 
-    public Command retractCurrentC() {
-        return run(()->setCurrent(currentIn.get()));
+    public Command setRetractCurrent1C() {
+        return run(()->setCurrent(retractCurrent1.get()));
     }
 
-    public Command extendCurrentC() {
-        return run(()->setCurrent(currentOut.get()));
+    public Command setRetractCurrent2C() {
+        return run(()->setCurrent(retractCurrent2.get()));
+    }
+
+    public Command retractC() {
+        return sequence(
+            setRetractCurrent1C().withTimeout(0.25),
+            setRetractCurrent2C()
+        );
+    }
+
+    public Command setExtendCurrent1C() {
+        return run(()->setCurrent(extendCurrent1.get()));
+    }
+
+    public Command setExtendCurrent2C() {
+        return run(()->setCurrent(extendCurrent2.get()));
+    }
+
+    public Command extendC() {
+        return sequence(
+            setExtendCurrent1C().withTimeout(0.25),
+            setExtendCurrent2C()
+        );
     }
 
     public Command oscillateC() {
         return sequence(
-            retractCurrentC().withTimeout(0.3),
-            extendCurrentC().withTimeout(0.3)
-        ).finallyDo(()-> setAngle(fourBarMinAngle.get())).repeatedly();
+            retractC().withTimeout(0.3),
+            extendC().withTimeout(0.3)
+        ).repeatedly().andThen(()-> extendC());
     }
 
-    public void setAngle(Angle angle) {
-        targetAngle = Degrees.of(MathUtil.clamp(angle.in(Degrees), fourBarMinAngle.in(Degrees), fourBarMaxAngle.in(Degrees)));
-        controlMode = ControlMode.MotionMagic;
-    }
+    // public void setAngle(Angle angle) {
+    //     targetAngle = Degrees.of(MathUtil.clamp(angle.in(Degrees), fourBarMinAngle.in(Degrees), fourBarMaxAngle.in(Degrees)));
+    //     controlMode = ControlMode.MotionMagic;
+    // }
 
-    public Command setAngleC(Angle angle) {
-        return run(() -> setAngle(angle));
-    }
+    // public Command setAngleC(Angle angle) {
+    //     return run(() -> setAngle(angle));
+    // }
 
-    public Command setMinAngleC() {
-        return setAngleC(fourBarMinAngle.get());
-    }
+    // public Command setMinAngleC() {
+    //     return setAngleC(fourBarMinAngle.get());
+    // }
 
-    public Command setMaxAngleC() {
-        return setAngleC(fourBarMaxAngle.get());
-    }
+    // public Command setMaxAngleC() {
+    //     return setAngleC(fourBarMaxAngle.get());
+    // }
 
-    public boolean atAngle(Angle angle) {
-        return getAngle().isNear(angle, angleTolerance.get());
-    }
+    // public boolean atAngle(Angle angle) {
+    //     return getAngle().isNear(angle, angleTolerance.get());
+    // }
 
-    public Trigger atAngleT(Angle angle) {
-        return new Trigger(() -> atAngle(angle));
-    }
+    // public Trigger atAngleT(Angle angle) {
+    //     return new Trigger(() -> atAngle(angle));
+    // }
 
-    public void setVoltage(double voltage) {
-        // if (getAngle().in(Degrees) >= fourBarMaxDegrees.get()) { //TODO: Re-enable?
-        //     voltage = MathUtil.clamp(voltage, -12, 0);
-        // } else if (getAngle().in(Degree) <= fourBarMinDegrees.get()) {
-        //     voltage = MathUtil.clamp(voltage, 0, 12);
-        // }
-        targetVoltage = Volts.of(voltage);
-        controlMode = ControlMode.Voltage;
-    }
+    // public void setVoltage(double voltage) {
+    //     // if (getAngle().in(Degrees) >= fourBarMaxDegrees.get()) { //TODO: Re-enable?
+    //     //     voltage = MathUtil.clamp(voltage, -12, 0);
+    //     // } else if (getAngle().in(Degree) <= fourBarMinDegrees.get()) {
+    //     //     voltage = MathUtil.clamp(voltage, 0, 12);
+    //     // }
+    //     targetVoltage = Volts.of(voltage);
+    //     controlMode = ControlMode.Voltage;
+    // }
 
-    public Command setVoltageC(double voltage) {
-        return runOnce(() -> setVoltage(voltage)).withName("Set Voltage: " + voltage);
-    }
+    // public Command setVoltageC(double voltage) {
+    //     return runOnce(() -> setVoltage(voltage)).withName("Set Voltage: " + voltage);
+    // }
 
-    public Command setVoltageInC() {
-        return setVoltageC(fourBarVoltageIn.get()).withName("Voltage In");
-    }
+    // public Command setVoltageInC() {
+    //     return setVoltageC(fourBarVoltageIn.get()).withName("Voltage In");
+    // }
 
-    public Command setVoltageOutC() {
-        return setVoltageC(fourBarVoltageOut.get()).withName("Voltage Out");
-    }
+    // public Command setVoltageOutC() {
+    //     return setVoltageC(fourBarVoltageOut.get()).withName("Voltage Out");
+    // }
 
     public void changeTunable() {
-        fourBarVoltageIn.poll();
-        fourBarVoltageOut.poll();
-        fourBarMinAngle.poll();
-        fourBarMaxAngle.poll();
-        angleTolerance.poll();
-        currentIn.poll();
-        currentOut.poll();
+        // fourBarMinAngle.poll();
+        // fourBarMaxAngle.poll();
+        // angleTolerance.poll();
+        retractCurrent1.poll();
+        retractCurrent2.poll();
+        extendCurrent1.poll();
+        extendCurrent2.poll();
+        
     }
 
     public void log() {
@@ -205,7 +218,7 @@ public class FourBar extends SubsystemBase {
         SmartDashboard.putNumber("2) Intake/Four Bar/Voltage", getVoltage().in(Volts));
         // SmartDashboard.putNumber("2) Intake/Four Bar/Target Voltage", targetVoltage.in(Volts));
         SmartDashboard.putNumber("2) Intake/Four Bar/Current", getCurrent().in(Amps));
-        // SmartDashboard.putNumber("2) Intake/Four Bar/Target Current", targetCurrent.in(Amps));
+        SmartDashboard.putNumber("2) Intake/Four Bar/Target Current", targetCurrent.in(Amps));
         // SmartDashboard.putString("2) Intake/Four Bar/Control Mode", controlMode.toString());
     }
 
@@ -215,10 +228,10 @@ public class FourBar extends SubsystemBase {
         kFourBarGearRatio,
         kFourBarMomentOfInertia.in(KilogramSquareMeters),
         kFourBarArmLength.in(Meters),
-        fourBarMinAngle.get().in(Radians),
-        fourBarMaxAngle.get().in(Radians),
+        kFourBarMinAngle.in(Radians),
+        kFourBarMaxAngle.in(Radians),
         true,
-        fourBarMaxAngle.get().in(Radians)
+        kFourBarMaxAngle.in(Radians)
     );
 
     @Override
@@ -235,9 +248,9 @@ public class FourBar extends SubsystemBase {
         motorSimState.setRotorVelocity(RadiansPerSecond.of(fourBarSim.getVelocityRadPerSec() * kFourBarGearRatio));
     }
 
-    private enum ControlMode {
-        Torque,
-        MotionMagic,
-        Voltage
-    }
+    // private enum ControlMode {
+    //     Torque,
+    //     MotionMagic,
+    //     Voltage
+    // }
 }

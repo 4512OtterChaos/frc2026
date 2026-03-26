@@ -93,11 +93,11 @@ public class AutoOptions {
                 superstructure.otterShootC(()->new ChassisSpeeds(), ()-> false)
         ));
         autoChooser.addCmd("Right Double Cycle", ()->sequence(
-            fourBar.extendCurrentC().withTimeout(1),
+            fourBar.extendC().withTimeout(1),
             AutoBuilder.buildAuto("Bottom Double Cycle")
         ));
         autoChooser.addCmd("Left Double Cycle", ()->sequence(
-            fourBar.extendCurrentC().withTimeout(1),
+            fourBar.extendC().withTimeout(1),
             AutoBuilder.buildAuto("Top Double Cycle")
         ));
 

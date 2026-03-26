@@ -219,9 +219,9 @@ public class Superstructure extends SubsystemBase{
 
     public Command fourbarRetractC() {
         return parallel(
-            fourBar.retractCurrentC(),
+            fourBar.retractC(),
             intake.setVoltageInC()
-            );
+        );
     }
 
     public static class ShootOnTheSwim {

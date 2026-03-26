@@ -17,7 +17,6 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.robot.util.TunableNumber;
-import frc.robot.util.TunableUnits.TunableAngle;
 import frc.robot.util.TunableUnits.TunableCurrent;
 
 public class IntakeConstants {
@@ -31,31 +30,35 @@ public class IntakeConstants {
 
     public static final Angle kFourBarMinAngle = Degrees.of(16.5); 
     public static final Angle kFourBarMaxAngle = Degrees.of(100.5); 
-    public static final Angle kAngleTolerance = Degrees.of(2); //TODO: tune
+    // public static final Angle kAngleTolerance = Degrees.of(2); //TODO: tune
 
-    public static final TunableAngle fourBarMinAngle = new TunableAngle("2) Intake/Four Bar/Min Degrees", kFourBarMinAngle);
-    public static final TunableAngle fourBarMaxAngle = new TunableAngle("2) Intake/Four Bar/Max Degrees", kFourBarMaxAngle);
-    public static final TunableAngle angleTolerance = new TunableAngle("2) Intake/Four Bar/Degrees Tolerance", kAngleTolerance);
+    // public static final TunableAngle fourBarMinAngle = new TunableAngle("2) Intake/Four Bar/Min Degrees", kFourBarMinAngle);
+    // public static final TunableAngle fourBarMaxAngle = new TunableAngle("2) Intake/Four Bar/Max Degrees", kFourBarMaxAngle);
+    // public static final TunableAngle angleTolerance = new TunableAngle("2) Intake/Four Bar/Degrees Tolerance", kAngleTolerance);
 
     public static final double kIntakeVoltageIn = 8; //TODO: Tune
     public static final double kIntakeVoltageOut = -4; //TODO: Tune
 
-    public static final double kFourBarVoltageIn = 2; //TODO: Tune
-    public static final double kFourBarVoltageOut = -2; //TODO: Tune
+    // public static final double kFourBarVoltageIn = 2; //TODO: Tune
+    // public static final double kFourBarVoltageOut = -2; //TODO: Tune
 
     public static final TunableNumber intakeVoltageIn = new TunableNumber("2) Intake/Roller/Voltage In", kIntakeVoltageIn);
     public static final TunableNumber intakeVoltageOut = new TunableNumber("2) Intake/Roller/Voltage Out", kIntakeVoltageOut);
-    public static final TunableNumber fourBarVoltageIn = new TunableNumber("2) Intake/Four Bar/Voltage In", kFourBarVoltageIn);
-    public static final TunableNumber fourBarVoltageOut = new TunableNumber("2) Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
+    // public static final TunableNumber fourBarVoltageIn = new TunableNumber("2) Intake/Four Bar/Voltage In", kFourBarVoltageIn);
+    // public static final TunableNumber fourBarVoltageOut = new TunableNumber("2) Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
 
-    public static final Current kCurrentIn = Amps.of(20); //TODO: Tune
-    public static final Current kCurrentOut = Amps.of(-20);
+    public static final Current kRetractCurrent1 = Amps.of(30);
+    public static final Current kRetractCurrent2 = Amps.of(15);
+    public static final Current kExtendCurrent1 = Amps.of(-30);
+    public static final Current kExtendCurrent2 = Amps.of(-10);
+
+    public static final TunableCurrent retractCurrent1 = new TunableCurrent("2) Intake/Four Bar/Retract Amps 1", kRetractCurrent1);
+    public static final TunableCurrent retractCurrent2 = new TunableCurrent("2) Intake/Four Bar/Retract Amps 2", kRetractCurrent2);
+    public static final TunableCurrent extendCurrent1 = new TunableCurrent("2) Intake/Four Bar/Extend Amps 1", kExtendCurrent1);
+    public static final TunableCurrent extendCurrent2 = new TunableCurrent("2) Intake/Four Bar/Extend Amps 2", kExtendCurrent2);
 
     // public static final Current kSmallAmpsIn = Amps.of(5); //TODO: Tune
     // public static final Current kSmallCurrentOut = Amps.of(-5); //TODO: Tune
-
-    public static final TunableCurrent currentIn = new TunableCurrent("2) Intake/Four Bar/Amps In", kCurrentIn);
-    public static final TunableCurrent currentOut = new TunableCurrent("2) Intake/Four Bar/Amps Out", kCurrentOut);
 
     // public static final TunableCurrent smallCurrentIn = new TunableCurrent("Intake/Four Bar/Small Current In", kSmallCurrentIn);
     // public static final TunableCurrent smallCurrentOut = new TunableCurrent("Intake/Four Bar/Small Current Out", kSmallCurrentOut);
