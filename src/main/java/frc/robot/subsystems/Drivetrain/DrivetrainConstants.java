@@ -24,8 +24,8 @@ public class DrivetrainConstants {
     public static final TunableNumber turnSpeedRatio = new TunableNumber("1) Drivetrain/Standard/Turn Speed", kTurnSpeedRatio);
 
     // Normal driving acceleration limits
-    public static final LinearAcceleration kLinearAccel = FeetPerSecondPerSecond.of(35);
-    public static final LinearAcceleration kLinearDecel = FeetPerSecondPerSecond.of(50);
+    public static final LinearAcceleration kLinearAccel = FeetPerSecondPerSecond.of(40);
+    public static final LinearAcceleration kLinearDecel = FeetPerSecondPerSecond.of(60);
     public static final AngularAcceleration kAngularAccel = RotationsPerSecondPerSecond.of(6);
     public static final AngularAcceleration kAngularDecel = RotationsPerSecondPerSecond.of(10);
 

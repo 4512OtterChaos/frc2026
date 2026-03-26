@@ -125,18 +125,21 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         return visionEstimator.sampleAt(timestampSeconds);
     }
 
-    public Command driveC(OCXboxController controller) {
-        return driveC(controllerToChassisSpeeds(controller));
+    public Command driveC(OCXboxController controller, boolean lockAngle) {
+        return driveC(controllerToChassisSpeeds(controller), lockAngle);
     }
 
-    public Command driveC(Supplier<ChassisSpeeds> chassisSpeeds) {
-        return run(()-> drive(chassisSpeeds.get()));
+    public Command driveC(Supplier<ChassisSpeeds> chassisSpeeds, boolean lockAngle) {
+        return run(()-> drive(chassisSpeeds.get(), lockAngle));
     }
 
-    public void drive(ChassisSpeeds chassisSpeeds) {
+    public void drive(ChassisSpeeds chassisSpeeds, boolean lockAngle) {
         ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(chassisSpeeds, lastTargetSpeeds, //why do we call it last target speeds
                 Robot.kDefaultPeriod);
         lastTargetSpeeds = targetSpeeds;
+        if(lockAngle && chassisSpeeds.omegaRadiansPerSecond == 0){
+            driveFacingAngle(chassisSpeeds, targetRotation);
+        }
         setControl(
             drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
             .withVelocityY(targetSpeeds.vyMetersPerSecond)
@@ -212,7 +215,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     public Command driveFacingOptionalTarget(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
         return either(
-            runOnce(()-> drive(speeds.get())), 
+            runOnce(()-> drive(speeds.get(), true)), //TODO: Change to false?
             runOnce(()-> driveFacingTarget(speeds.get(), target.get().get())), 
             ()-> target.get().isEmpty()
         ).repeatedly();

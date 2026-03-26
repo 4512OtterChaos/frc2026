@@ -99,7 +99,7 @@ public class RobotContainer {
 
 
     private void configureDriverBindings() {
-        drivetrain.setDefaultCommand(drivetrain.driveC(driver));
+        drivetrain.setDefaultCommand(drivetrain.driveC(driver, true));
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.b().whileTrue(drivetrain.brakeC());
         driver.rightTrigger().whileTrue(superstructure.otterShootControllerC(driver, ()-> driver.leftTrigger().getAsBoolean()));
