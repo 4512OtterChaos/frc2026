@@ -127,23 +127,22 @@ public class Superstructure extends SubsystemBase{
                 shooter
             ),
             drivetrain.driveFacingOptionalTarget(speeds, target),
-            sequence(
+            repeatingSequence(
                 // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
                 parallel(
                     waitUntil(hasTarget.debounce(0.7)),
-                    waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean())
+                    waitSeconds(0.7).until(()-> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean())
                 ),
                 parallel(
                     fourBar.oscillateC().onlyWhile(()-> !isIntakePressed.getAsBoolean()).repeatedly(),
                     indexC()
-                ).until(hasTarget.negate())//.andThen(feeder.feedC()).withTimeout(kShooterTurnOffDelay) TODO: fix
-            ).repeatedly()            
+                ).until(hasTarget.negate())//.andThen(feeder.feedC().withTimeout(RobotConstants.kShooterTurnOffDelay).asProxy()) TODO: fix
+            )            
         ).withName("Otter Shoot");
     }
     
     /**
      * @param speeds Field relative chassis speeds
-     * @param target
      * @return
      */
     public Command otterShootOnTheSwimControllerC(OCXboxController controller) {

@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Intake;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
@@ -126,7 +127,7 @@ public class FourBar extends SubsystemBase {
 
     public Command retractC() {
         return sequence(
-            setRetractCurrent1C().withTimeout(0.25),
+            setRetractCurrent1C().withTimeout(0.2),
             setRetractCurrent2C()
         );
     }
@@ -141,16 +142,16 @@ public class FourBar extends SubsystemBase {
 
     public Command extendC() {
         return sequence(
-            setExtendCurrent1C().withTimeout(0.25),
+            setExtendCurrent1C().withTimeout(0.2),
             setExtendCurrent2C()
         );
     }
 
     public Command oscillateC() {
-        return sequence(
+        return repeatingSequence(
             retractC().withTimeout(0.3),
             extendC().withTimeout(0.3)
-        ).repeatedly().andThen(()-> extendC());
+        );// TODO: finally do down
     }
 
     // public void setAngle(Angle angle) {
