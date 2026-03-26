@@ -5,6 +5,7 @@ import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -78,7 +79,6 @@ public class Shooter extends SubsystemBase {
 
         // HOOD
         hMotor.getConfigurator().apply(kHoodConfig);
-        resetAngle(hoodMinAngle.get());
         
         hPositionStatus.setUpdateFrequency(100);
         hVelocityStatus.setUpdateFrequency(100);
@@ -88,6 +88,11 @@ public class Shooter extends SubsystemBase {
         ParentDevice.optimizeBusUtilizationForAll(fwLeftMotor, fwRightMotor, hMotor);
 
         SmartDashboard.putData("4) Shooter/Subsystem", this);
+
+        resetAngle(hoodMinAngle.get());
+        if (Utils.isSimulation()) {
+            resetAngle(Degrees.of(0));
+        }
     }
 
     @Override 
@@ -341,16 +346,8 @@ public class Shooter extends SubsystemBase {
             kHoodLength.in(Meters),
             kHoodMinAngle.in(Radians),
             kHoodMaxAngle.in(Radians),
-            true, // TODO:Include gravity?
+            true, 
             kHoodMinAngle.in(Radians));
-
-    DCMotorSim hMotorSim = new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(
-                    DCMotor.getKrakenX60(1),
-                    kHoodMomentOfInertia.in(KilogramSquareMeters),
-                    kHoodGearRatio),
-            DCMotor.getKrakenX60(1));
-
 
     FlywheelSim flywheelSim = new FlywheelSim(
             LinearSystemId.createFlywheelSystem(
@@ -370,20 +367,16 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
-        TalonFXSimState hMotorSimState = hMotor.getSimState();
-        hMotorSimState.Orientation = ChassisReference.Clockwise_Positive;
+        TalonFXSimState motorSimState = hMotor.getSimState();
+        motorSimState.Orientation = ChassisReference.Clockwise_Positive;
 
-        hMotorSimState.setSupplyVoltage(hMotor.getSupplyVoltage().getValue());
-        hMotorSim.setInputVoltage(hMotorSimState.getMotorVoltage());
+        motorSimState.setSupplyVoltage(hMotor.getSupplyVoltage().getValue());// TODO: Add friction? Also, idk that the voltage should be accessed like this
+        hoodSim.setInputVoltage(motorSimState.getMotorVoltage());
 
-        hMotorSim.update(0.02);
-
-        hMotorSimState.setRawRotorPosition(hMotorSim.getAngularPositionRotations() * kHoodGearRatio);
-        hMotorSimState.setRotorVelocity(hMotorSim.getAngularVelocityRPM() / 60 * kHoodGearRatio);
-        // shaft RPM --> rotations per second --> motor rotations per second
-        double hoodVoltage = hMotorSim.getInputVoltage();
-        hoodSim.setInput(hoodVoltage);
         hoodSim.update(0.02);
+
+        motorSimState.setRawRotorPosition(Radians.of(hoodSim.getAngleRads() * kHoodGearRatio));
+        motorSimState.setRotorVelocity(RadiansPerSecond.of(hoodSim.getVelocityRadPerSec() * kHoodGearRatio));
 
 
         TalonFXSimState fwMotorSimState = fwLeftMotor.getSimState();

@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.Pair;
@@ -20,8 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
-import frc.robot.subsystems.Indexer.Feeder;
-import frc.robot.subsystems.Indexer.Spindexer;
+import frc.robot.subsystems.Indexer.*;
 import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
@@ -61,7 +61,10 @@ public class Superstructure extends SubsystemBase{
             feeder.feedC(),
             sequence(
                 waitSeconds(0.2),
-                spindexer.spindexC()
+                parallel(
+                    spindexer.spindexC(),
+                    intake.setVoltageInC().asProxy()
+                )
             )
         );
     }
@@ -70,8 +73,8 @@ public class Superstructure extends SubsystemBase{
      * @param speeds Field relative chassis speeds
      * @return
      */
-    public Command otterShootControllerC(OCXboxController controller) {
-        return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller));
+    public Command otterShootControllerC(OCXboxController controller, BooleanSupplier isIntakePressed) {
+        return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller), isIntakePressed);
     }
     
     /**
@@ -80,14 +83,14 @@ public class Superstructure extends SubsystemBase{
      * @return
      */
     public Command otterShootControllerC(OCXboxController controller, Supplier<Optional<Translation2d>> target) {
-        return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller), target);
+        return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller), target, ()-> false);
     }
 
     /**
      * @param speeds Field relative chassis speeds
      * @return
      */
-    public Command otterShootC(Supplier<ChassisSpeeds> speeds) {
+    public Command otterShootC(Supplier<ChassisSpeeds> speeds, BooleanSupplier isIntakePressed) {
         return otterShootC(speeds, ()-> {
             if (drivetrain.inTrenchZone().getAsBoolean()) {
                 return Optional.empty();
@@ -96,15 +99,17 @@ public class Superstructure extends SubsystemBase{
                 return Optional.of(FieldUtil.kHubTrl);
             }
             return Optional.of(drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
-        });
+        }, 
+        isIntakePressed);
     } 
 
     /**
      * @param speeds Field relative chassis speeds
      * @param target
+     * @param isIntakePressed is da intake pressed or is it not or is it like in the middle or somehting idk
      * @return
      */
-    public Command otterShootC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
+    public Command otterShootC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target, BooleanSupplier isIntakePressed) {
         Trigger hasTarget = new Trigger(()-> target.get().isEmpty()).negate();
         return parallel(
             Commands.run(
@@ -128,9 +133,11 @@ public class Superstructure extends SubsystemBase{
                     waitUntil(hasTarget.debounce(0.7)),
                     waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean())
                 ),
-                indexC().until(hasTarget.negate()))//.andThen(feeder.feedC()).withTimeout(kShooterTurnOffDelay) TODO: fix
-            .repeatedly()//, 
-            // fourBar.oscillateC()
+                parallel(
+                    fourBar.oscillateC().onlyWhile(()-> !isIntakePressed.getAsBoolean()).repeatedly(),
+                    indexC()
+                ).until(hasTarget.negate())//.andThen(feeder.feedC()).withTimeout(kShooterTurnOffDelay) TODO: fix
+            ).repeatedly()            
         ).withName("Otter Shoot");
     }
     
@@ -210,7 +217,14 @@ public class Superstructure extends SubsystemBase{
         ).withName("Otter Shoot");
     }
 
-    public static class ShootOnTheMove {
+    public Command fourbarRetractC() {
+        return parallel(
+            fourBar.retractCurrentC(),
+            intake.setVoltageInC()
+            );
+    }
+
+    public static class ShootOnTheSwim {
         public static Pair<Shooter.State, Angle> getTargets(Pose2d robotPose, ChassisSpeeds speed){
             double latency = SOTMLatency.in(Seconds);
             

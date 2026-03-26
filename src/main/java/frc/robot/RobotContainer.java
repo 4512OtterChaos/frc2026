@@ -102,27 +102,14 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(drivetrain.driveC(driver));
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.b().whileTrue(drivetrain.brakeC());
-
-        driver.rightTrigger().whileTrue(superstructure.otterShootControllerC(driver));
-        driver.leftBumper().whileTrue(superstructure.otterShootOnTheSwimControllerC(driver));/*parallel(
-            run(()-> shooter.setState(Shotmap.getState(Shotmap.trench))),
-            sequence(
-                waitSeconds(0.6),
-                parallel(
-                    spindexer.spindexC(),
-                    feeder.feedC()
-                )
-            )
-        ));*/
+        driver.rightTrigger().whileTrue(superstructure.otterShootControllerC(driver, ()-> driver.leftTrigger().getAsBoolean()));
+        driver.leftBumper().whileTrue(superstructure.otterShootOnTheSwimControllerC(driver));
         driver.rightBumper().whileTrue(parallel(
         // shooter.setFlywheelVoltage(
             run(()-> shooter.setState(Degrees.of(5), RPM.of(2200))), 
             sequence(
                 waitSeconds(0.6),
-                parallel(
-                    spindexer.spindexC(),
-                    feeder.feedC()
-                )
+                superstructure.indexC()
             )
         ));
 
@@ -134,8 +121,8 @@ public class RobotContainer {
                 feeder.reverseC()
         ));
 
-        driver.y().whileTrue(fourBar.setCurrentInC().withTimeout(1.25)); 
-        driver.a().whileTrue(fourBar.setCurrentOutC().withTimeout(1)); 
+        driver.y().whileTrue(fourBar.retractCurrentC().withTimeout(1.25)); 
+        driver.a().whileTrue(fourBar.extendCurrentC().withTimeout(1)); 
 
         
         // driver.povUp().whileTrue(run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get())))); //Testing command
@@ -238,8 +225,17 @@ public class RobotContainer {
 /*
  * TODO:
  * drivetrain current limits
- * speeds limiter shoot on the move
  * tune autos (do they do everything right?)
  * shooter turn off delay
  * consider fourbar raising a lil while not intaking
+ * ________________________________________________________________________________________________________________________
+ * 
+ * NOLAN'S TODO:
+ * feeder pid, faster feeder
+ * shooter kP
+ * shooter fuel intake buttons from current sensing. Debounce last shot time timeout for auto detecting empty hopper
+ * current sensing fourbar
+ *     detect stall by sensing when velocity = 0 and current > constant
+ * drive accel, rotation lock
+ *     faster accel/deccel, and consider using driveFacingAngle() when right stick = 0?
  */

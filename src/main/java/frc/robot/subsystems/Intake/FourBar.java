@@ -126,18 +126,18 @@ public class FourBar extends SubsystemBase {
         return run(()-> setCurrent(current));
     }
 
-    public Command setCurrentInC() {
+    public Command retractCurrentC() {
         return run(()->setCurrent(currentIn.get()));
     }
 
-    public Command setCurrentOutC() {
+    public Command extendCurrentC() {
         return run(()->setCurrent(currentOut.get()));
     }
 
     public Command oscillateC() {
         return sequence(
-            setCurrentInC().withTimeout(0.3),
-            setCurrentOutC().withTimeout(0.3)
+            retractCurrentC().withTimeout(0.3),
+            extendCurrentC().withTimeout(0.3)
         ).finallyDo(()-> setAngle(fourBarMinAngle.get())).repeatedly();
     }
 
