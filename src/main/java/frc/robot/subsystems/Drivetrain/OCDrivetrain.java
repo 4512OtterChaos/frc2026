@@ -140,11 +140,13 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         if(lockAngle && chassisSpeeds.omegaRadiansPerSecond == 0){
             driveFacingAngle(chassisSpeeds, targetRotation);
         }
-        setControl(
-            drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
-            .withVelocityY(targetSpeeds.vyMetersPerSecond)
-            .withRotationalRate(targetSpeeds.omegaRadiansPerSecond)
-        );
+        else {
+            setControl(
+                drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
+                .withVelocityY(targetSpeeds.vyMetersPerSecond)
+                .withRotationalRate(targetSpeeds.omegaRadiansPerSecond)
+            );
+        }
     }
 
     public void driveAutos(ChassisSpeeds chassisSpeeds) {

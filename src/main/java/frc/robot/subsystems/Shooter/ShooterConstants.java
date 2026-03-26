@@ -41,7 +41,7 @@ public final class ShooterConstants {
     public static final double kBackRollerRatio = 22.0 / 36.0; // back roller upduction
 
     public static final MomentOfInertia kHoodMomentOfInertia = PoundSquareInches.of(168.737616);
-    public static final MomentOfInertia kFlywheelMomentOfInertia = PoundSquareInches.of(8); // TODO: Get Real
+    public static final MomentOfInertia kFlywheelMomentOfInertia = PoundSquareInches.of(8);
 
     public static final Distance kWheelDiameter = Inches.of(3);
     public static final Distance kBackRollerDiameter = Inches.of(1);
@@ -60,16 +60,16 @@ public final class ShooterConstants {
 
     public static final AngularVelocity kFlywheelIdleVelocity = RPM.of(500);
 
-    public static final TunableAngularVelocity flywheelIdleVelocity = new TunableAngularVelocity("4) Shooter/Flywheel/Idle RPM", kFlywheelIdleVelocity);
+//     public static final TunableAngularVelocity flywheelIdleVelocity = new TunableAngularVelocity("4) Shooter/Flywheel/Idle RPM", kFlywheelIdleVelocity);
 
     public static final Angle kHoodMinAngle = Degrees.of(21);
     public static final Angle kHoodMaxAngle = Degrees.of(45);
 
-    public static final TunableAngle hoodMinAngle = new TunableAngle("4) Shooter/Hood/Min Angle", kHoodMinAngle);
-    public static final TunableAngle hoodMaxAngle = new TunableAngle("4) Shooter/Hood/Max Angle", kHoodMaxAngle);
+//     public static final TunableAngle hoodMinAngle = new TunableAngle("4) Shooter/Hood/Min Angle", kHoodMinAngle);
+//     public static final TunableAngle hoodMaxAngle = new TunableAngle("4) Shooter/Hood/Max Angle", kHoodMaxAngle);
 
-    public static final double kFlywheelDebounceTime = 0.25;
-    public static final double kHoodDebounceTime = 0.25;
+    public static final double kFlywheelDebounceTime = 0.2;
+    public static final double kHoodDebounceTime = 0.2;
 
     public static final TunableNumber flywheelDebounceTime = new TunableNumber("4) Shooter/Flywheel/Debounce Time",
             kFlywheelDebounceTime);
@@ -92,19 +92,19 @@ public final class ShooterConstants {
 
         MotorOutputConfigs output = kFlywheelConfig.MotorOutput;
         output.NeutralMode = NeutralModeValue.Coast;
-        output.Inverted = InvertedValue.CounterClockwise_Positive; // TODO: find direction later
+        output.Inverted = InvertedValue.CounterClockwise_Positive;
 
         CurrentLimitsConfigs current = kFlywheelConfig.CurrentLimits;
         current.StatorCurrentLimitEnable = true;
         current.StatorCurrentLimit = 80;
 
-        Slot0Configs control = kFlywheelConfig.Slot0;// TODO: Tune PID
+        Slot0Configs control = kFlywheelConfig.Slot0;
         control.kP = 0;
         control.kI = 0;
         control.kD = 0;
 
         control.kS = 0;
-        control.kV = 0.12;//2980 RPM, 312.06 rad/sec
+        control.kV = 0.12;//2980 RPM
         control.kA = 0;
     }
 

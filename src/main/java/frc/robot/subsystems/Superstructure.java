@@ -60,7 +60,7 @@ public class Superstructure extends SubsystemBase{
         return parallel(
             feeder.feedC(),
             sequence(
-                waitSeconds(0.2),
+                waitSeconds(0.1),
                 parallel(
                     spindexer.spindexC(),
                     intake.setVoltageInC().asProxy()

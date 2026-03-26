@@ -30,7 +30,6 @@ import frc.robot.subsystems.Indexer.Spindexer;
 import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
-import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SuperstructureViz;
@@ -80,7 +79,7 @@ public class RobotContainer {
         fourBar.setDefaultCommand(fourBar.setCurrentC(Amps.of(0)));
         spindexer.setDefaultCommand(spindexer.setVoltageC(0));
         feeder.setDefaultCommand(feeder.setVoltageC(0));
-        shooter.setDefaultCommand(shooter.setStateC(ShooterConstants.kHoodMinAngle, ShooterConstants.flywheelIdleVelocity.get()));
+        shooter.setDefaultCommand(shooter.setIdleC());
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -233,9 +232,7 @@ public class RobotContainer {
  * NOLAN'S TODO:
  * feeder pid, faster feeder
  * shooter kP
- * shooter fuel intake buttons from current sensing. Debounce last shot time timeout for auto detecting empty hopper
+ * shooter fuel counter from current sensing. Debounce last shot time timeout for auto detecting empty hopper
  * current sensing fourbar
  *     detect stall by sensing when velocity = 0 and current > constant
- * drive accel, rotation lock
- *     faster accel/deccel, and consider using driveFacingAngle() when right stick = 0?
  */

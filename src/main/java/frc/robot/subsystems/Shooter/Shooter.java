@@ -46,7 +46,7 @@ public class Shooter extends SubsystemBase {
     private TalonFX hMotor = new TalonFX(kHoodMotorID);
 
     private AngularVelocity targetVelocity = RPM.of(0); // flywheel
-    private Angle targetAngle = hoodMinAngle.get(); //hood
+    private Angle targetAngle = kHoodMinAngle; //hood
 
     private Trigger upToSpeed = new Trigger(() -> upToSpeed()).debounce(flywheelDebounceTime.get());
     private Trigger atAngle = new Trigger(() -> atAngle()).debounce(hoodDebounceTime.get());
@@ -89,7 +89,7 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboard.putData("4) Shooter/Subsystem", this);
 
-        resetAngle(hoodMinAngle.get());
+        resetAngle(kHoodMinAngle);
         if (Utils.isSimulation()) {
             resetAngle(Degrees.of(0));
         }
@@ -147,7 +147,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setAngle(Angle angle) {
-        angle = Degrees.of(MathUtil.clamp(angle.in(Degrees), hoodMinAngle.in(Degrees), hoodMaxAngle.in(Degrees)));
+        angle = Degrees.of(MathUtil.clamp(angle.in(Degrees), kHoodMinAngle.in(Degrees), kHoodMaxAngle.in(Degrees)));
         targetAngle = angle;
     }
 
@@ -207,11 +207,11 @@ public class Shooter extends SubsystemBase {
     }
     
     public void setIdle(){
-        setState(kHoodMinAngle, flywheelIdleVelocity.get());
+        setState(kHoodMinAngle, kFlywheelIdleVelocity);
     }
     
     public Command setIdleC(){
-        return setStateC(kHoodMinAngle, flywheelIdleVelocity.get());
+        return setStateC(kHoodMinAngle, kFlywheelIdleVelocity);
     }
 
     public Command setStateC(State state) {
@@ -239,8 +239,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public void changeTunable() {
-        hoodMinAngle.poll();
-        hoodMaxAngle.poll();
+        // hoodMinAngle.poll();
+        // hoodMaxAngle.poll();
         hoodDebounceTime.poll();
         angleTolerance.poll();
         hoodkP.poll();
@@ -253,7 +253,7 @@ public class Shooter extends SubsystemBase {
         hoodCruiseVelocity.poll();
         hoodAcceleration.poll();
 
-        flywheelIdleVelocity.poll();
+        // flywheelIdleVelocity.poll();
         flywheelDebounceTime.poll();
         velocityTolerance.poll();
         flywheelkP.poll();
