@@ -8,72 +8,56 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0427244266772484,
-        "y": 7.184634634894656
+        "x": 2.4209634538354834,
+        "y": 6.984128908372148
       },
       "isLocked": false,
       "linkedName": "Top Trench Shoot"
     },
     {
       "anchor": {
-        "x": 4.608359486447931,
-        "y": 7.392582025677603
+        "x": 6.044550641940085,
+        "y": 7.146747503566334
       },
       "prevControl": {
-        "x": 4.372504322386972,
-        "y": 7.309682438309642
+        "x": 4.6601141226818825,
+        "y": 7.923067047075605
       },
       "nextControl": {
-        "x": 4.84421465050889,
-        "y": 7.475481613045564
+        "x": 6.269389365284704,
+        "y": 7.020669714774959
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.648944365192582,
-        "y": 7.159686162624822
+        "x": 6.186875891583452,
+        "y": 4.546077032810271
       },
       "prevControl": {
-        "x": 7.23323823109843,
-        "y": 7.263195435092725
+        "x": 6.251569186875892,
+        "y": 4.973052781740371
       },
       "nextControl": {
-        "x": 7.899082019049272,
-        "y": 7.097402822438001
+        "x": 6.142591372828375,
+        "y": 4.25379920902676
       },
       "isLocked": false,
-      "linkedName": "Top Sweep Start"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.817146932952923,
-        "y": 4.701340941512126
+        "x": 6.264507845934379,
+        "y": 6.7974037089871615
       },
       "prevControl": {
-        "x": 7.739514978601994,
-        "y": 5.115378031383738
+        "x": 6.361287088280059,
+        "y": 6.354256651930627
       },
       "nextControl": {
-        "x": 7.871625144068824,
-        "y": 4.41079048222733
-      },
-      "isLocked": false,
-      "linkedName": "Top Sweep Middle"
-    },
-    {
-      "anchor": {
-        "x": 6.199814550641939,
-        "y": 7.250256776034237
-      },
-      "prevControl": {
-        "x": 6.180931276247219,
-        "y": 6.797058190560933
-      },
-      "nextControl": {
-        "x": 6.212753209700426,
-        "y": 7.560784593437946
+        "x": 6.018673323823108,
+        "y": 7.923067047075605
       },
       "isLocked": false,
       "linkedName": "Top Sweep End"
@@ -84,8 +68,8 @@
         "y": 7.198502139800285
       },
       "prevControl": {
-        "x": 3.068659058487873,
-        "y": 7.366704707560627
+        "x": 2.7840085592011405,
+        "y": 7.276134094151213
       },
       "nextControl": null,
       "isLocked": false,
@@ -94,12 +78,16 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.75,
+      "waypointRelativePos": 0.39981743496120986,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 1.3214285714285359,
+      "waypointRelativePos": 0.78685531720675,
       "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.0862619808306644,
+      "rotationDegrees": -90.0
     },
     {
       "waypointRelativePos": 2.0,
@@ -107,14 +95,10 @@
     },
     {
       "waypointRelativePos": 3.0,
-      "rotationDegrees": -90.0
-    },
-    {
-      "waypointRelativePos": 4.0,
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 4.704244637151952,
+      "waypointRelativePos": 3.7042446371519517,
       "rotationDegrees": 180.0
     }
   ],
