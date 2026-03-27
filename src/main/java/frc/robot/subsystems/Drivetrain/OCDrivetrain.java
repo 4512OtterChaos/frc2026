@@ -79,11 +79,19 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     public ChassisSpeeds lastTargetSpeeds = new ChassisSpeeds();
     public Angle targetRotation = Degrees.of(0);
+    public AngularVelocity targetOmega = DegreesPerSecond.of(0);
 
     private double lastFacingTime = Timer.getFPGATimestamp();
 
-    private Trigger facingTarget = new Trigger(() -> facingTarget())
-                .debounce(rotationDebounceTime.in(Seconds), DebounceType.kBoth);
+    private Trigger isRotationTolerance = new Trigger(()-> {
+        return getGlobalPoseEstimate().getRotation().getMeasure().isNear(targetRotation, rotationTolerance.get());
+    });
+    // TODO: to use this, we need to supply the target omega
+    // (derived from the target translation and target chassis speeds while facing target)
+    private Trigger isOmegaTolerance = new Trigger(()-> {
+        return RadiansPerSecond.of(getState().Speeds.omegaRadiansPerSecond).isNear(targetOmega, omegaTolerance.get());
+    });
+    private Trigger facingTarget = isFacingTarget();
     // private Trigger driving = new Trigger(()-> driving())
     //             .debounce(brakeDebounceSeconds.get());
 
@@ -201,7 +209,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public void driveFacingTargetSlowBrake(ChassisSpeeds speeds, Translation2d target) {
-        if (speeds.equals(new ChassisSpeeds()) && facingTargetT().getAsBoolean()) {
+        if (speeds.equals(new ChassisSpeeds()) && isFacingTargetT().getAsBoolean()) {
             brake();
         }
         else{
@@ -215,7 +223,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public void driveFacingOptionalTargetSlowBrake(ChassisSpeeds speeds, Supplier<Optional<Translation2d>> target) {
-        if (speeds.equals(new ChassisSpeeds()) && facingTargetT().getAsBoolean()) {
+        if (speeds.equals(new ChassisSpeeds()) && isFacingTargetT().getAsBoolean()) {
             brake();
         }
         else{
@@ -282,13 +290,12 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         };
     }
 
-    private boolean facingTarget() {
-        boolean withinRotationTolerance = Degrees.of(getGlobalPoseEstimate().getRotation().getDegrees()).isNear(targetRotation, rotationTolerance.get());
-        boolean withinOmegaTolerance = true;//RadiansPerSecond.of(getState().Speeds.omegaRadiansPerSecond).isNear(DegreesPerSecond.of(0), kOmegaTolerance) TODO: use later
-        return withinRotationTolerance && withinOmegaTolerance;
+    private Trigger isFacingTarget() {
+        // TODO: omega tolerance
+        return isRotationTolerance.debounce(rotationDebounceTime.in(Seconds), DebounceType.kBoth);
     }
 
-    public Trigger facingTargetT() {
+    public Trigger isFacingTargetT() {
         return facingTarget;
     }
 
@@ -497,7 +504,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         }
 
         if (rotationDebounceTime.hasChanged(hash)) {
-            facingTarget = new Trigger(facingTarget).debounce(rotationDebounceTime.in(Seconds));
+            facingTarget = isFacingTarget();
         }
     }
 
@@ -506,7 +513,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         SmartDashboard.putBoolean("1) Drivetrain/In Aliiance Zone", inAllianceZoneT().getAsBoolean());
         SmartDashboard.putBoolean("1) Drivetrain/In Neutral Zone", inNeutralZoneT().getAsBoolean());
         SmartDashboard.putBoolean("1) Drivetrain/Behind Hub", behindHubT().getAsBoolean());
-        SmartDashboard.putBoolean("1) Drivetrain/Facting Target Angle", facingTargetT().getAsBoolean());
+        SmartDashboard.putBoolean("1) Drivetrain/Facing Target Angle", isFacingTargetT().getAsBoolean());
         var state = getState();
         if (state != null && state.Pose != null) {
             Rotation2d targetAngle = Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), FieldUtil.kHubTrl);
