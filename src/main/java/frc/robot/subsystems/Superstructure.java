@@ -1,21 +1,16 @@
 package frc.robot.subsystems;
 
-import java.util.Optional;
-import java.util.function.BooleanSupplier;
+import java.util.Optional; 
 import java.util.function.Supplier;
 
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.math.kinematics.ChassisSpeeds; 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj2.command.Commands.*;
-import static frc.robot.subsystems.Shooter.ShooterConstants.SOTMLatency;
+import static edu.wpi.first.wpilibj2.command.Commands.*; 
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -28,8 +23,7 @@ import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
-import frc.robot.util.OCXboxController;
-import frc.robot.util.RobotConstants;
+import frc.robot.util.OCXboxController; 
 
 public class Superstructure extends SubsystemBase{
     private OCDrivetrain drivetrain;
@@ -73,38 +67,66 @@ public class Superstructure extends SubsystemBase{
             )
         );
     }
-    
+
     /**
-     * @param speeds Field relative chassis speeds
-     * @return
+     * 
+     * @return A command that retracts the fourBar while running the intake
      */
-    public Command otterShootControllerC(OCXboxController controller) {
-        return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller));
+    public Command fourbarRetractC() {
+        return parallel(
+            fourBar.retractC(),
+            intake.setVoltageInC()
+        );
     }
     
     /**
-     * @param speeds Field relative chassis speeds
+     * @param controller Controller to get strafe input from
+     * @return A command sequence that turns to shoot into the hub, setting the drivetrain rotation, intake, fourbar, spindexer, feeder and shooter.
+     */
+    public Command otterShootStationaryControllerC(OCXboxController controller) {
+        return otterShootStationaryC(OCDrivetrain.controllerToChassisSpeeds(controller));
+    }
+    
+    /**
+     * @param controller Controller to get strafe input from
+     * @return
+     */
+    public Command otterShootOnTheSwimControllerC(OCXboxController controller) {
+        return otterShootOnTheSwimC(OCDrivetrain.controllerToChassisSpeeds(controller));
+    }
+    
+    /**
+     * @param controller Controller to get strafe input from
      * @param target
      * @return
      */
     public Command otterShootControllerC(OCXboxController controller, Supplier<Optional<Translation2d>> target) {
-        return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller), target);
+        return otterShootStationaryC(OCDrivetrain.controllerToChassisSpeeds(controller), target);
+    }
+    
+    /**
+     * @param controller Controller to get strafe input from
+     * @param target
+     * @return
+     */
+    public Command otterShootOnTheSwimControllerC(OCXboxController controller, Supplier<Optional<Translation2d>> target) {
+        return otterShootOnTheSwimC(OCDrivetrain.controllerToChassisSpeeds(controller), target);
     }
 
     /**
      * @param speeds Field relative chassis speeds
      * @return
      */
-    public Command otterShootC(Supplier<ChassisSpeeds> speeds) {
-        return otterShootC(speeds, ()-> {
-            if (drivetrain.inTrenchZoneT().getAsBoolean()) {
-                return Optional.empty();
-            }
-            if (drivetrain.inAllianceZoneT().getAsBoolean()) {
-                return Optional.of(FieldUtil.kHubTrl);
-            }
-            return Optional.of(drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
-        });
+    public Command otterShootStationaryC(Supplier<ChassisSpeeds> speeds) {
+        return otterShootStationaryC(speeds, drivetrain.getTarget());
+    } 
+
+    /**
+     * @param speeds Field relative chassis speeds
+     * @return
+     */
+    public Command otterShootOnTheSwimC(Supplier<ChassisSpeeds> speeds) {
+        return otterShootOnTheSwimC(speeds, drivetrain.getTarget());
     } 
 
     /**
@@ -112,37 +134,76 @@ public class Superstructure extends SubsystemBase{
      * @param target the retail store with the dog with the red bullseye on his face as the mascot yk whayt im talking about. Target Corporation began as the Dayton Dry Goods Company, founded by George D. Dayton in 1902 in Minneapolis. The first Target discount store opened in Roseville, Minnesota, on May 1, 1962, aiming to offer high-quality goods at low prices. It grew into a national retailer, becoming the Dayton-Hudson Corporation in 1969 before renaming to Target Corporation in 2000. 
      * @return
      */
-    public Command otterShootC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
+    public Command otterShootStationaryC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
         Trigger hasTarget = new Trigger(()-> target.get().isEmpty()).negate();
-        return parallel(
-            Commands.run(
-                () -> {
-                    if (hasTarget.negate().getAsBoolean()) {
-                        shooter.setIdleC();
-                    }
-                    else {
-                        Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target.get().get());
-                        Shooter.State state = Shotmap.getState(distance);
-
-                        shooter.setState(state);
-                    }
-                },
-                shooter
-            ),
-            drivetrain.driveFacingOptionalTarget(speeds, target),
-            repeatingSequence(
-                // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
-                parallel(
-                    waitUntil(hasTarget.debounce(0.2)),
-                    waitSeconds(0.7).until(()-> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean())
-                ),
-                runOnce(()->wasFeeding = true),
-                parallel(
-                    fourBar.setReadyToOscillateC(true),
-                    indexC().asProxy()
-                ).until(hasTarget.negate()).finallyDo(()-> fourBar.setReadyToOscillate(false))//.andThen(feeder.feedC().withTimeout(RobotConstants.kShooterTurnOffDelay).asProxy()) TODO: fix
+        return sequence(
+            parallel(
+                shootStationaryBaseC(speeds, target),
+                autoIndexForShooting(hasTarget)
             )
-        ).finallyDo(()->{if(wasFeeding && hasTarget.getAsBoolean()) doneShooting = true;}).withName("Otter Shoot");
+        ).finallyDo(()-> setDoneShooting(hasTarget)).withName("Otter Shoot Stationary");
+    }
+
+    /**
+     * @param speeds Field relative chassis speeds
+     * @param target
+     * @return
+     */
+    public Command otterShootOnTheSwimC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
+        Trigger hasTarget = new Trigger(()-> target.get().isEmpty()).negate();
+        return sequence(
+            parallel(
+                shootOnTheSwimBaseC(speeds, target, hasTarget),
+                autoIndexForShooting(hasTarget)
+            )
+        ).finallyDo(()-> setDoneShooting(hasTarget)).withName("Otter Shoot on the Swim");
+    }
+
+    public Command shootStationaryBaseC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target){
+        Trigger hasTarget = new Trigger(()-> target.get().isEmpty()).negate();
+        return Commands.run(
+            () -> {
+                if (hasTarget.negate().getAsBoolean()) {
+                    shooter.setIdleC();
+                }
+                else {
+                    Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target.get().get());
+                    Shooter.State state = Shotmap.getState(distance);
+
+                    shooter.setState(state);
+                }
+                drivetrain.driveFacingOptionalTarget(speeds, target);
+            },
+            drivetrain, shooter
+        );
+    }
+
+    public Command shootOnTheSwimBaseC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target, Trigger hasTarget){
+        return Commands.run(
+            () -> {
+                if (hasTarget.negate().getAsBoolean()) {
+                    shooter.setIdleC();
+                }
+                else{
+                    var currSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getState().Pose.getRotation());
+                    var vel = new Translation2d(currSpeeds.vxMetersPerSecond, currSpeeds.vyMetersPerSecond);
+                    Translation2d hub = FieldUtil.kHubTrl;
+                    Translation2d targetTrl = target.get().get();
+                    Shooter.State state = null;
+
+                    // perform TOF recursion for several iterations to account for the change in target position as the robot moves during the shot
+                    for (int i = 0; i < 5; i++) {
+                        Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), targetTrl);
+                        state = Shotmap.getState(distance);
+                        targetTrl = hub.minus(vel.times(state.getTof().times(1).in(Seconds))); //TODO Tune compensation percentage?
+                    }
+
+                    shooter.setState(state);
+                }
+                drivetrain.driveFacingOptionalTargetSlowBrake(speeds.get(), target);
+            },
+            drivetrain, shooter
+        );
     }
     
     /**
@@ -153,7 +214,8 @@ public class Superstructure extends SubsystemBase{
         return either(
             otterShootEndC(OCDrivetrain.controllerToChassisSpeeds(controller)),
             otterShootEndC(()-> new ChassisSpeeds()), 
-            RobotModeTriggers.autonomous().negate());
+            RobotModeTriggers.autonomous().negate()
+        );
     }
 
     /**
@@ -161,15 +223,7 @@ public class Superstructure extends SubsystemBase{
      * @return
      */
     public Command otterShootEndC(Supplier<ChassisSpeeds> speeds) {
-        return otterShootC(speeds, ()-> {
-            if (drivetrain.inTrenchZoneT().getAsBoolean()) {
-                return Optional.empty();
-            }
-            if (drivetrain.inAllianceZoneT().getAsBoolean()) {
-                return Optional.of(FieldUtil.kHubTrl);
-            }
-            return Optional.of(drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
-        });
+        return otterShootStationaryC(speeds, drivetrain.getTarget());
     } 
 
     /**
@@ -194,126 +248,65 @@ public class Superstructure extends SubsystemBase{
                 },
                 shooter
             ),
-            drivetrain.driveFacingOptionalTarget(speeds, target),
+            drivetrain.driveFacingOptionalTargetC(speeds, target),
             feeder.feedC()
-        ).until(hasTarget.negate()).withTimeout(0.2).finallyDo(()->doneShooting = false).withName("Otter Shoot End");
+        ).until(hasTarget.negate()).withTimeout(0.2).finallyDo(()->resetDoneShooting()).withName("Otter Shoot End");
     }
-    
-    /**
-     * @param speeds Field relative chassis speeds
-     * @return
-     */
-    public Command otterShootOnTheSwimControllerC(OCXboxController controller) {
-        return otterShootOnTheSwimC(OCDrivetrain.controllerToChassisSpeeds(controller));
-    }
-    
 
-    // /**
-    //  * @param speeds Field relative chassis speeds
-    //  * @param target
-    //  * @return
-    //  */
-    // public Command otterShootOnTheSwimC(Supplier<ChassisSpeeds> speeds) {
-    //     return parallel(
-    //         Commands.run(
-    //             () -> {
-    //                 Pair<Shooter.State, Angle> targets = ShootOnTheMove.getTargets(drivetrain.getGlobalPoseEstimate(), drivetrain.getState().Speeds);
-
-    //                 shooter.setState(targets.getFirst());
-    //                 drivetrain.driveFacingAngle(speeds, targets.getSecond());
-    //             },
-    //             drivetrain, shooter
-    //         ),
-    //         sequence(
-    //             // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
-    //             parallel(
-    //                 waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean())
-    //             ),
-    //             indexC()
-    //         ).repeatedly()//, 
-    //         // fourBar.oscillateC()
-    //     ).withName("Otter Shoot");
-    // }
-
-    /**
-     * @param speeds Field relative chassis speeds
-     * @param target
-     * @return
-     */
-    public Command otterShootOnTheSwimC(Supplier<ChassisSpeeds> speeds) {
-        return parallel(
-            Commands.run(
-                () -> {
-                    var currSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getState().Pose.getRotation());
-                    var vel = new Translation2d(currSpeeds.vxMetersPerSecond, currSpeeds.vyMetersPerSecond);
-                    Translation2d hub = FieldUtil.kHubTrl;
-                    Translation2d target = hub;
-                    Shooter.State state = null;
-
-                    // perform TOF recursion for several iterations to account for the change in target position as the robot moves during the shot
-                    for (int i = 0; i < 5; i++) {
-                        Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target);
-                        state = Shotmap.getState(distance);
-                        // TODO: magic 0.25 coefficient, is this just simulation?
-                        target = hub.minus(vel.times(state.getTof().times(1).in(Seconds)));
-                    }
-
-                    shooter.setState(state);
-                    drivetrain.driveFacingTargetSlowBrake(speeds.get(), target);
-                },
-                drivetrain, shooter
+    public Command autoIndexForShooting(Trigger hasTarget){
+        return repeatingSequence(
+            parallel(
+                waitUntil(hasTarget.debounce(0.2)),
+                waitSeconds(0.7).until(()-> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean())
             ),
-            sequence(
-                // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
-                parallel(
-                    waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean() /*&& drivetrain.behindHubT().negate().getAsBoolean()*/) // TODO: turn on behind hub detection?
-                ),
-                indexC() //.andThen(feeder.feedC()).withTimeout(kShooterTurnOffDelay) TODO: fix
-            ).repeatedly()//, 
-            // fourBar.oscillateC()
-        ).withName("Otter Shoot");
-    }
-
-    public Command fourbarRetractC() {
-        return parallel(
-            fourBar.retractC(),
-            intake.setVoltageInC()
+            runOnce(()->wasFeeding = true),
+            parallel(
+                fourBar.setReadyToOscillateC(true),
+                indexC().asProxy()
+            ).until(hasTarget.negate()).finallyDo(()-> fourBar.setReadyToOscillate(false))
         );
     }
 
-    public void resetDoneShooting(){
+    private void setDoneShooting(Trigger hasTarget){
+        if (wasFeeding && hasTarget.getAsBoolean()) {
+            doneShooting = true;
+            wasFeeding = false;
+        }
+    }
+
+    private void resetDoneShooting(){
         doneShooting = false;
     }
 
-    public static class ShootOnTheSwim {
-        public static Pair<Shooter.State, Angle> getTargets(Pose2d robotPose, ChassisSpeeds speed){
-            double latency = SOTMLatency.in(Seconds);
+    // public static class ShootOnTheSwim {
+    //     public static Pair<Shooter.State, Angle> getTargets(Pose2d robotPose, ChassisSpeeds speed){
+    //         double latency = SOTMLatency.in(Seconds);
             
-            Translation2d futurePos = robotPose.getTranslation().plus(
-                new Translation2d(speed.vxMetersPerSecond, speed.vyMetersPerSecond).times(latency)
-            ).plus(RobotConstants.kShooterTranslation);
+    //         Translation2d futurePos = robotPose.getTranslation().plus(
+    //             new Translation2d(speed.vxMetersPerSecond, speed.vyMetersPerSecond).times(latency)
+    //         ).plus(RobotConstants.kShooterTranslation);
 
-            Translation2d hubGoalLocation = FieldUtil.kHubTrl;
+    //         Translation2d hubGoalLocation = FieldUtil.kHubTrl;
             
-            Translation2d targetVec = hubGoalLocation.minus(futurePos);
-            Distance dist = Meters.of(targetVec.getNorm());
-            Translation2d targetDirection = targetVec.div(dist.in(Meters));
+    //         Translation2d targetVec = hubGoalLocation.minus(futurePos);
+    //         Distance dist = Meters.of(targetVec.getNorm());
+    //         Translation2d targetDirection = targetVec.div(dist.in(Meters));
 
-            Shooter.State baseline = Shotmap.getState(dist);
-            double baselineVelocity = dist.in(Meters) / baseline.getTof().in(Seconds);
+    //         Shooter.State baseline = Shotmap.getState(dist);
+    //         double baselineVelocity = dist.in(Meters) / baseline.getTof().in(Seconds);
 
-            Translation2d targetVelocity = targetDirection.times(baselineVelocity);
+    //         Translation2d targetVelocity = targetDirection.times(baselineVelocity);
 
-            Translation2d robotVelVec = new Translation2d(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
-            Translation2d shotVelocity = targetVelocity.minus(robotVelVec).times(-1);
+    //         Translation2d robotVelVec = new Translation2d(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
+    //         Translation2d shotVelocity = targetVelocity.minus(robotVelVec).times(-1);
 
-            Angle chassisAngle = Degrees.of(shotVelocity.getAngle().getDegrees());
-            double requiredVelocity = shotVelocity.getNorm();
+    //         Angle chassisAngle = Degrees.of(shotVelocity.getAngle().getDegrees());
+    //         double requiredVelocity = shotVelocity.getNorm();
 
-            double effectiveDistance = Shotmap.horizontalVelocityToEffectiveDistance(requiredVelocity);
-            Shooter.State effectiveState = Shotmap.getState(Meters.of(effectiveDistance));
+    //         double effectiveDistance = Shotmap.horizontalVelocityToEffectiveDistance(requiredVelocity);
+    //         Shooter.State effectiveState = Shotmap.getState(Meters.of(effectiveDistance));
 
-            return new Pair<Shooter.State,Angle>(effectiveState, chassisAngle);
-        }
-    }   
+    //         return new Pair<Shooter.State,Angle>(effectiveState, chassisAngle);
+    //     }
+    // }   
 }

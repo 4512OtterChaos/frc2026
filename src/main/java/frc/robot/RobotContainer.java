@@ -103,8 +103,8 @@ public class RobotContainer {
         driver.b().whileTrue(drivetrain.brakeC());
 
         // superstructure.doneShootingT.whileTrue(superstructure.otterShootEndControllerC(driver));
-        driver.rightTrigger().whileTrue(superstructure.otterShootControllerC(driver));
-        driver.leftBumper().whileTrue(superstructure.otterShootOnTheSwimControllerC(driver));
+        driver.rightTrigger().whileTrue(superstructure.otterShootOnTheSwimControllerC(driver));
+        driver.leftBumper().whileTrue(superstructure.otterShootStationaryControllerC(driver));
         driver.rightBumper().whileTrue(parallel(
             run(()-> shooter.setState(Degrees.of(5), RPM.of(2200))), 
             sequence(

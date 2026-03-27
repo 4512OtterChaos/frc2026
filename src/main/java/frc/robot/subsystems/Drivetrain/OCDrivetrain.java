@@ -1,7 +1,6 @@
 package frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj2.command.Commands.either;
 import static frc.robot.subsystems.Drivetrain.DrivetrainConstants.*;
 
 import java.util.Optional;
@@ -156,6 +155,27 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         }
     }
 
+    public void driveSlow(ChassisSpeeds chassisSpeeds, boolean lockAngle) {
+        ChassisSpeeds targetSpeeds = kSOTMLimiter.calculate(chassisSpeeds, lastTargetSpeeds, //why do we call it last target speeds
+                Robot.kDefaultPeriod);
+        lastTargetSpeeds = targetSpeeds;
+        double now = Timer.getFPGATimestamp();
+        if(lockAngle && chassisSpeeds.omegaRadiansPerSecond == 0 && now - lastFacingTime > 0.25){
+            driveFacingAngleSlow(chassisSpeeds, targetRotation);
+        }
+        else {
+            if (chassisSpeeds.omegaRadiansPerSecond != 0){
+                lastFacingTime = now;
+            }
+            targetRotation = Degrees.of(getState().Pose.getRotation().getDegrees());
+            setControl(
+                drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
+                .withVelocityY(targetSpeeds.vyMetersPerSecond)
+                .withRotationalRate(targetSpeeds.omegaRadiansPerSecond)
+            );
+        }
+    }
+
     public void driveAutos(ChassisSpeeds chassisSpeeds) {
         setControl(
             driveautos.withVelocityX(chassisSpeeds.vxMetersPerSecond)
@@ -183,15 +203,34 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     public void driveFacingTargetSlowBrake(ChassisSpeeds speeds, Translation2d target) {
         if (speeds.equals(new ChassisSpeeds()) && facingTargetT().getAsBoolean()) {
             brake();
-            return;
         }
-        driveFacingTargetSlow(speeds, target);
+        else{
+            driveFacingTargetSlow(speeds, target);
+        }
     } 
 
     public void driveFacingTargetSlow(ChassisSpeeds speeds, Translation2d target) {
         targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
         driveFacingAngleSlow(speeds, targetRotation);
-    } 
+    }
+
+    public void driveFacingOptionalTargetSlowBrake(ChassisSpeeds speeds, Supplier<Optional<Translation2d>> target) {
+        if (speeds.equals(new ChassisSpeeds()) && facingTargetT().getAsBoolean()) {
+            brake();
+        }
+        else{
+            driveFacingOptionalTargetSlow(speeds, target);
+        }
+    }
+
+    public void driveFacingOptionalTargetSlow(ChassisSpeeds speeds, Supplier<Optional<Translation2d>> target) {
+        if(target.get().isEmpty()) {
+            driveSlow(speeds, false);
+        }
+        else {
+            driveFacingTargetSlow(speeds, target.get().get());
+        }
+    }
 
     public void driveFacingAngleSlow(ChassisSpeeds speeds, Angle target) {
         ChassisSpeeds targetSpeeds = kSOTMLimiter.calculate(speeds, lastTargetSpeeds, Robot.kDefaultPeriod);
@@ -218,12 +257,29 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         );
     }
 
-    public Command driveFacingOptionalTarget(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
-        return either(
-            runOnce(()-> drive(speeds.get(), false)), //TODO: Change to false?
-            runOnce(()-> driveFacingTarget(speeds.get(), target.get().get())), 
-            ()-> target.get().isEmpty()
-        ).repeatedly();
+    public Command driveFacingOptionalTargetC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
+        return run(()->driveFacingOptionalTarget(speeds, target));
+    }
+
+    public void driveFacingOptionalTarget(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
+        if(target.get().isEmpty()) {
+            drive(speeds.get(), false);
+        }
+        else {
+            driveFacingTarget(speeds.get(), target.get().get());
+        }
+    }
+
+    public Supplier<Optional<Translation2d>> getTarget(){
+        return ()-> {
+            if (inTrenchZoneT().getAsBoolean()/* || behindHubT().getAsBoolean() */) { //TODO: Enable behindHubT
+                return Optional.empty();
+            }
+            if (inAllianceZoneT().getAsBoolean()) {
+                return Optional.of(FieldUtil.kHubTrl);
+            }
+            return Optional.of(getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
+        };
     }
 
     private boolean facingTarget() {
