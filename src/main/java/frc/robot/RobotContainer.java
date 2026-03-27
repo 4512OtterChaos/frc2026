@@ -78,7 +78,7 @@ public class RobotContainer {
         fourBar.setDefaultCommand(fourBar.setCurrentC(Amps.of(0)));
         fourBar.doneOscillatingT().whileTrue(fourBar.extendC().finallyDo(()->fourBar.resetDoneOscillating()).withName("Extend(Done Oscillating)"));
         spindexer.setDefaultCommand(spindexer.setVoltageC(0));
-        feeder.setDefaultCommand(feeder.setVoltageC(0));
+        feeder.setDefaultCommand(feeder.setVelocityC(RPM.of(0)));
         shooter.setDefaultCommand(shooter.setIdleC());
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -227,13 +227,11 @@ public class RobotContainer {
  * tune autos (do they do everything right?)
  * shooter turn off delay
  * consider fourbar raising a lil while not intaking
- * reduce drivetrain "snapping" on stick release
+ * fix drive snap to angle
+ * mirror autos
+ * merge shoot commands/use shoot on the moves with agitation amd other stuff
  * ________________________________________________________________________________________________________________________
  * 
  * NOLAN'S TODO:
- * feeder pid
- * shooter kP (Practice Field)
  * shooter fuel counter from current sensing. Debounce last shot time timeout for auto detecting empty hopper
- * current sensing fourbar
- *     detect stall by sensing when velocity = 0 and current > constant
  */

@@ -5,6 +5,7 @@ import static frc.robot.subsystems.Indexer.IndexerConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.ChassisReference;
@@ -14,12 +15,14 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Feeder extends SubsystemBase{
     private final TalonFX motor = new TalonFX(kFeederID);
@@ -31,6 +34,11 @@ public class Feeder extends SubsystemBase{
     private final StatusSignal<AngularVelocity> velocityStatus = motor.getVelocity();
     private final StatusSignal<Voltage> voltageStatus = motor.getMotorVoltage();
     private final StatusSignal<Current> statorStatus = motor.getStatorCurrent();
+    
+    private AngularVelocity targetVelocity = RPM.of(0);
+    private Trigger upToSpeed = new Trigger(() -> upToSpeed()).debounce(feederDebounceTime.get());
+
+    private final VelocityVoltage velocityrequest = new VelocityVoltage(0);
 
     public Feeder(){
         motor.getConfigurator().apply(kFeederConfig);
@@ -54,6 +62,9 @@ public class Feeder extends SubsystemBase{
             statorStatus
         );
         changeTunable();
+
+        motor.setControl(velocityrequest.withVelocity(targetVelocity));
+        
         log();
     }
 
@@ -77,20 +88,48 @@ public class Feeder extends SubsystemBase{
         motor.setVoltage(voltage);
     }
 
-    public Command setVoltageC(double voltage){
-        return run(()-> setVoltage(voltage)).withName("Set Voltage: " + voltage);    
+    // public Command setVoltageC(double voltage){
+    //     return run(()-> setVoltage(voltage)).withName("Set Voltage: " + voltage);    
+    // }
+
+    // public Command reverseC(){
+    //     return run(()->setVoltage(feederReverseVoltage.get())).withName("Reverse");
+    // }
+
+    // public Command feedC(){
+    //     return run(()->setVoltage(feederVoltage.get())).withName("Feed");
+    // }
+
+    // public void feed() {
+    //     setVoltage(feederVoltage.get());
+    // }
+
+    public void setVelocity(AngularVelocity velocity){
+        targetVelocity = velocity;
+    }
+
+    public Command setVelocityC(AngularVelocity velocity){
+        return run(()-> setVelocity(velocity)).withName("Set Velocity: " + velocity);    
     }
 
     public Command reverseC(){
-        return run(()->setVoltage(feederReverseVoltage.get())).withName("Reverse");
+        return run(()->setVelocity(feederReverseVelocity.get())).withName("Reverse");
     }
 
     public Command feedC(){
-        return run(()->setVoltage(feederVoltage.get())).withName("Feed");
+        return run(()->feed()).withName("Feed");
     }
 
     public void feed() {
-        setVoltage(feederVoltage.get());
+        setVelocity(feederVelocity.get());
+    }
+
+    private boolean upToSpeed() {
+        return Math.abs(targetVelocity.in(RPM) - getVelocity().in(RPM)) < feederVelocityTolerance.in(RPM); 
+    }
+
+    public Trigger upToSpeedT() {
+        return upToSpeed;
     }
 
     // public Command passiveIndexC(){
