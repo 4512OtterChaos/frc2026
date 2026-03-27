@@ -18,6 +18,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.subsystems.Shooter.ShooterConstants.SOTMLatency;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
@@ -38,6 +39,10 @@ public class Superstructure extends SubsystemBase{
     private Feeder feeder;
     private Shooter shooter;
     private Climber climber;
+
+    private boolean wasFeeding = false;
+    private boolean doneShooting = false;
+    public final Trigger doneShootingT = new Trigger(()->doneShooting);
 
     public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter, Climber climber) {
         this.drivetrain = drivetrain;
@@ -105,7 +110,6 @@ public class Superstructure extends SubsystemBase{
     /**
      * @param speeds Field relative chassis speeds of the gosh diddily dang robot
      * @param target the retail store with the dog with the red bullseye on his face as the mascot yk whayt im talking about. Target Corporation began as the Dayton Dry Goods Company, founded by George D. Dayton in 1902 in Minneapolis. The first Target discount store opened in Roseville, Minnesota, on May 1, 1962, aiming to offer high-quality goods at low prices. It grew into a national retailer, becoming the Dayton-Hudson Corporation in 1969 before renaming to Target Corporation in 2000. 
-     * @param isIntakePressed is da intake pressed or is it not or is it like in the middle or somehting idk
      * @return
      */
     public Command otterShootC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
@@ -132,12 +136,67 @@ public class Superstructure extends SubsystemBase{
                     waitUntil(hasTarget.debounce(0.2)),
                     waitSeconds(0.7).until(()-> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean())
                 ),
+                runOnce(()->wasFeeding = true),
                 parallel(
                     fourBar.setReadyToOscillateC(true),
                     indexC().asProxy()
                 ).until(hasTarget.negate()).finallyDo(()-> fourBar.setReadyToOscillate(false))//.andThen(feeder.feedC().withTimeout(RobotConstants.kShooterTurnOffDelay).asProxy()) TODO: fix
             )
-        ).withName("Otter Shoot");
+        ).finallyDo(()->{if(wasFeeding && hasTarget.getAsBoolean()) doneShooting = true;}).withName("Otter Shoot");
+    }
+    
+    /**
+     * @param speeds Field relative chassis speeds
+     * @return
+     */
+    public Command otterShootEndControllerC(OCXboxController controller) {
+        return either(
+            otterShootEndC(OCDrivetrain.controllerToChassisSpeeds(controller)),
+            otterShootEndC(()-> new ChassisSpeeds()), 
+            RobotModeTriggers.autonomous().negate());
+    }
+
+    /**
+     * @param speeds Field relative chassis speeds
+     * @return
+     */
+    public Command otterShootEndC(Supplier<ChassisSpeeds> speeds) {
+        return otterShootC(speeds, ()-> {
+            if (drivetrain.inTrenchZone().getAsBoolean()) {
+                return Optional.empty();
+            }
+            if (drivetrain.inAllianceZone().getAsBoolean()) {
+                return Optional.of(FieldUtil.kHubTrl);
+            }
+            return Optional.of(drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
+        });
+    } 
+
+    /**
+     * @param speeds Field relative chassis speeds 
+     * @param target 
+     * @return
+     */
+    public Command otterShootEndC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
+        Trigger hasTarget = new Trigger(()-> target.get().isEmpty()).negate();
+        return parallel(
+            Commands.run(
+                () -> {
+                    if (hasTarget.negate().getAsBoolean()) {
+                        shooter.setIdleC();
+                    }
+                    else {
+                        Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target.get().get());
+                        Shooter.State state = Shotmap.getState(distance);
+
+                        shooter.setState(state);
+                    }
+                },
+                shooter
+            ),
+            drivetrain.driveFacingOptionalTarget(speeds, target),
+            feeder.feedC()
+        ).until(hasTarget.negate()).withTimeout(0.2).finallyDo(()->doneShooting = false).withName("Otter Shoot End");
     }
     
     /**
@@ -196,7 +255,7 @@ public class Superstructure extends SubsystemBase{
                         Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target);
                         state = Shotmap.getState(distance);
                         // TODO: magic 0.25 coefficient, is this just simulation?
-                        target = hub.minus(vel.times(state.getTof().times(0.25).in(Seconds)));
+                        target = hub.minus(vel.times(state.getTof().times(1).in(Seconds)));
                     }
 
                     shooter.setState(state);
@@ -220,6 +279,10 @@ public class Superstructure extends SubsystemBase{
             fourBar.retractC(),
             intake.setVoltageInC()
         );
+    }
+
+    public void resetDoneShooting(){
+        doneShooting = false;
     }
 
     public static class ShootOnTheSwim {
