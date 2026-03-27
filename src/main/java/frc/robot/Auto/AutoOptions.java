@@ -68,7 +68,7 @@ public class AutoOptions {
 
     private void addNamedCommands() {
         NamedCommands.registerCommand("Intake", intake.setVoltageInC());
-        NamedCommands.registerCommand("Shoot", superstructure.otterShootC(()-> new ChassisSpeeds(), ()-> false).withTimeout(3).finallyDo(()->{shooter.setIdle();feeder.setVoltage(0);spindexer.setVoltage(0);}));
+        NamedCommands.registerCommand("Shoot", superstructure.otterShootC(()-> new ChassisSpeeds()).withTimeout(3).finallyDo(()->{shooter.setIdle();feeder.setVoltage(0);spindexer.setVoltage(0);}));
         NamedCommands.registerCommand("Wait", Commands.waitSeconds(1));
         // NamedCommands.registerCommand("Climber Up", climber.setMaxHeightC()); 
         // NamedCommands.registerCommand("Climber Down", climber.setMinHeightC());
@@ -90,7 +90,7 @@ public class AutoOptions {
                 drivetrain.driveC(()-> new ChassisSpeeds(-1, 0, 0), true).withTimeout(2.25),
                 drivetrain.driveC(()-> new ChassisSpeeds(0, 0, 0), true).withTimeout(.5),
                 waitSeconds(5),
-                superstructure.otterShootC(()->new ChassisSpeeds(), ()-> false)
+                superstructure.otterShootC(()->new ChassisSpeeds())
         ));
         autoChooser.addCmd("Right Double Cycle", ()->sequence(
             fourBar.extendC().withTimeout(1),

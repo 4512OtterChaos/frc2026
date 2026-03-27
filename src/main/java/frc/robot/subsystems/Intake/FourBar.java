@@ -22,7 +22,9 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class FourBar extends SubsystemBase {
     private TalonFX motor = new TalonFX(kFourBarMotorID);
@@ -34,6 +36,9 @@ public class FourBar extends SubsystemBase {
 
     private Current targetCurrent = Amps.of(0);
     private TorqueCurrentFOC torqueRequest = new TorqueCurrentFOC(0);
+
+    private boolean readyToOscillate = false;
+    private boolean doneOscillating = false;
 
     // private Angle targetAngle = fourBarMaxAngle.get();
     // private MotionMagicVoltage mmRequest = new MotionMagicVoltage(0);
@@ -114,7 +119,7 @@ public class FourBar extends SubsystemBase {
     }
 
     public Command setCurrentC(Current current) {
-        return run(()-> setCurrent(current));
+        return run(()-> setCurrent(current)).withName("Set Current: " + current.in(Amps));
     }
 
     public Command setRetractCurrent1C() {
@@ -129,7 +134,7 @@ public class FourBar extends SubsystemBase {
         return sequence(
             setRetractCurrent1C().withTimeout(0.2),
             setRetractCurrent2C()
-        );
+        ).withTimeout(1.25).withName("Retract Fourbar");
     }
 
     public Command setExtendCurrent1C() {
@@ -144,14 +149,34 @@ public class FourBar extends SubsystemBase {
         return sequence(
             setExtendCurrent1C().withTimeout(0.2),
             setExtendCurrent2C()
-        );
+        ).withTimeout(1).finallyDo(()-> resetDoneOscillating()).withName("Extend Fourbar");
     }
 
     public Command oscillateC() {
         return repeatingSequence(
             retractC().withTimeout(0.3),
             extendC().withTimeout(0.3)
-        );// TODO: finally do down
+        ).finallyDo(()-> doneOscillating = true).withName("Otterscillate");
+    }
+
+    public void setReadyToOscillate(boolean isTrue) {
+        readyToOscillate = isTrue;
+    }
+
+    public Command setReadyToOscillateC(boolean isTrue) {
+        return Commands.runOnce(()-> setReadyToOscillate(isTrue));
+    }
+
+    public Trigger readyToOscillateT() {
+        return new Trigger(()-> readyToOscillate);
+    }
+
+    public Trigger doneOscillatingT() {
+        return new Trigger(() ->doneOscillating);
+    }
+
+    public void resetDoneOscillating() {
+        doneOscillating = false;
     }
 
     // public void setAngle(Angle angle) {
@@ -221,6 +246,8 @@ public class FourBar extends SubsystemBase {
         SmartDashboard.putNumber("2) Intake/Four Bar/Current", getCurrent().in(Amps));
         SmartDashboard.putNumber("2) Intake/Four Bar/Target Current", targetCurrent.in(Amps));
         // SmartDashboard.putString("2) Intake/Four Bar/Control Mode", controlMode.toString());
+
+        SmartDashboard.putBoolean("test", doneOscillating);
     }
 
     // Simulation

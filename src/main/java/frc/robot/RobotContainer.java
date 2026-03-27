@@ -76,6 +76,7 @@ public class RobotContainer {
     public void configureDefaultCommands() {
         intake.setDefaultCommand(intake.setVoltageC(0));
         fourBar.setDefaultCommand(fourBar.setCurrentC(Amps.of(0)));
+        fourBar.doneOscillatingT().whileTrue(fourBar.extendC().finallyDo(()->fourBar.resetDoneOscillating()).withName("Extend(Done Oscillating)"));
         spindexer.setDefaultCommand(spindexer.setVoltageC(0));
         feeder.setDefaultCommand(feeder.setVoltageC(0));
         shooter.setDefaultCommand(shooter.setIdleC());
@@ -100,7 +101,8 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(drivetrain.driveC(driver, true));
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.b().whileTrue(drivetrain.brakeC());
-        driver.rightTrigger().whileTrue(superstructure.otterShootControllerC(driver, ()-> driver.leftTrigger().getAsBoolean()));
+
+        driver.rightTrigger().whileTrue(superstructure.otterShootControllerC(driver));
         driver.leftBumper().whileTrue(superstructure.otterShootOnTheSwimControllerC(driver));
         driver.rightBumper().whileTrue(parallel(
             run(()-> shooter.setState(Degrees.of(5), RPM.of(2200))), 
@@ -118,8 +120,9 @@ public class RobotContainer {
                 feeder.reverseC()
         ));
 
-        driver.y().whileTrue(fourBar.retractC().withTimeout(1.25)); 
-        driver.a().whileTrue(fourBar.extendC().withTimeout(1)); 
+        fourBar.readyToOscillateT().and(driver.leftTrigger().negate()).whileTrue(fourBar.oscillateC());
+        driver.y().whileTrue(fourBar.retractC()); 
+        driver.a().whileTrue(fourBar.extendC()); 
 
         
         // driver.povUp().whileTrue(run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get())))); //Testing command
@@ -225,6 +228,7 @@ public class RobotContainer {
  * tune autos (do they do everything right?)
  * shooter turn off delay
  * consider fourbar raising a lil while not intaking
+ * reduce drivetrain "snapping" on stick release
  * ________________________________________________________________________________________________________________________
  * 
  * NOLAN'S TODO:

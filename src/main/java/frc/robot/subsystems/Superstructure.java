@@ -83,14 +83,14 @@ public class Superstructure extends SubsystemBase{
      * @return
      */
     public Command otterShootControllerC(OCXboxController controller, Supplier<Optional<Translation2d>> target) {
-        return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller), target, ()-> false);
+        return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller), target);
     }
 
     /**
      * @param speeds Field relative chassis speeds
      * @return
      */
-    public Command otterShootC(Supplier<ChassisSpeeds> speeds, BooleanSupplier isIntakePressed) {
+    public Command otterShootC(Supplier<ChassisSpeeds> speeds) {
         return otterShootC(speeds, ()-> {
             if (drivetrain.inTrenchZone().getAsBoolean()) {
                 return Optional.empty();
@@ -99,17 +99,16 @@ public class Superstructure extends SubsystemBase{
                 return Optional.of(FieldUtil.kHubTrl);
             }
             return Optional.of(drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
-        }, 
-        isIntakePressed);
+        });
     } 
 
     /**
-     * @param speeds Field relative chassis speeds
-     * @param target
+     * @param speeds Field relative chassis speeds of the gosh diddily dang robot
+     * @param target the retail store with the dog with the red bullseye on his face as the mascot yk whayt im talking about. Target Corporation began as the Dayton Dry Goods Company, founded by George D. Dayton in 1902 in Minneapolis. The first Target discount store opened in Roseville, Minnesota, on May 1, 1962, aiming to offer high-quality goods at low prices. It grew into a national retailer, becoming the Dayton-Hudson Corporation in 1969 before renaming to Target Corporation in 2000. 
      * @param isIntakePressed is da intake pressed or is it not or is it like in the middle or somehting idk
      * @return
      */
-    public Command otterShootC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target, BooleanSupplier isIntakePressed) {
+    public Command otterShootC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
         Trigger hasTarget = new Trigger(()-> target.get().isEmpty()).negate();
         return parallel(
             Commands.run(
@@ -130,14 +129,14 @@ public class Superstructure extends SubsystemBase{
             repeatingSequence(
                 // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
                 parallel(
-                    waitUntil(hasTarget.debounce(0.7)),
+                    waitUntil(hasTarget.debounce(0.2)),
                     waitSeconds(0.7).until(()-> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean())
                 ),
                 parallel(
-                    fourBar.oscillateC().onlyWhile(()-> !isIntakePressed.getAsBoolean()).repeatedly(),
-                    indexC()
-                ).until(hasTarget.negate())//.andThen(feeder.feedC().withTimeout(RobotConstants.kShooterTurnOffDelay).asProxy()) TODO: fix
-            )            
+                    fourBar.setReadyToOscillateC(true),
+                    indexC().asProxy()
+                ).until(hasTarget.negate()).finallyDo(()-> fourBar.setReadyToOscillate(false))//.andThen(feeder.feedC().withTimeout(RobotConstants.kShooterTurnOffDelay).asProxy()) TODO: fix
+            )
         ).withName("Otter Shoot");
     }
     
