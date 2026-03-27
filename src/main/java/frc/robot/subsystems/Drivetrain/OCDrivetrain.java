@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
+import frc.robot.util.OCTrigger;
 import frc.robot.util.OCXboxController;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain {
@@ -292,7 +293,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     private Trigger isFacingTarget() {
         // TODO: omega tolerance
-        return isRotationTolerance.debounce(rotationDebounceTime.in(Seconds), DebounceType.kBoth);
+        return OCTrigger.debounce(isRotationTolerance, () -> rotationDebounceTime.in(Seconds), DebounceType.kBoth);
     }
 
     public Trigger isFacingTargetT() {
