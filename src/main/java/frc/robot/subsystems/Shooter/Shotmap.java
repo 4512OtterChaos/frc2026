@@ -38,9 +38,9 @@ public class Shotmap {
 
     static {
         // 4.86 
-        addState(Meters.of(2.26), Degrees.of(0), RPM.of(2800), Seconds.of(1.02));
-        addState(Meters.of(3.5), Degrees.of(3), RPM.of(3200), Seconds.of(1.22));
-        addState(Meters.of(5.57), Degrees.of(13), RPM.of(3600), Seconds.of(1.31));//TODO: not measured for the correct pose, instead 4.86 meters
+        addState(Meters.of(2.26), Degrees.of(21), RPM.of(2800), Seconds.of(1.02));
+        addState(Meters.of(3.5), Degrees.of(24), RPM.of(3200), Seconds.of(1.22));
+        addState(Meters.of(5.57), Degrees.of(34), RPM.of(3600), Seconds.of(1.31));//TODO: not measured for the correct pose, instead 4.86 meters
     }
 
     private static void addState(Distance distance, Angle angle, AngularVelocity velocity, Time tof){
