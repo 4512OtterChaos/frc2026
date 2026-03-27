@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.397617689015691,
-        "y": 7.224379457917262
+        "x": 5.501126961483594,
+        "y": 7.35376604850214
       },
       "isLocked": false,
       "linkedName": "Top Trench"
@@ -20,12 +20,12 @@
         "y": 6.836219686162625
       },
       "prevControl": {
-        "x": 7.610128388017118,
-        "y": 7.521968616262481
+        "x": 7.4678031383737515,
+        "y": 7.521968616262482
       },
       "nextControl": {
-        "x": 7.75316838509912,
-        "y": 6.43895149549876
+        "x": 7.829562922727805,
+        "y": 6.456787028997771
       },
       "isLocked": false,
       "linkedName": "Top Sweep Start"
@@ -48,19 +48,19 @@
     },
     {
       "anchor": {
-        "x": 6.264507845934379,
-        "y": 6.7974037089871615
+        "x": 5.52700427960057,
+        "y": 7.41845934379458
       },
       "prevControl": {
-        "x": 6.585193954859047,
-        "y": 6.476717600062493
+        "x": 7.0667047075606275,
+        "y": 7.35376604850214
       },
       "nextControl": {
-        "x": 5.902225392296718,
-        "y": 7.159686162624822
+        "x": 4.941269884108541,
+        "y": 7.4430700326808
       },
       "isLocked": false,
-      "linkedName": "Top Sweep End"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -78,7 +78,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.4582382473756481,
+      "waypointRelativePos": 0.34706117552979343,
       "rotationDegrees": 0.0
     },
     {
@@ -90,7 +90,7 @@
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 2.75,
+      "waypointRelativePos": 2.842063174730106,
       "rotationDegrees": 180.0
     },
     {

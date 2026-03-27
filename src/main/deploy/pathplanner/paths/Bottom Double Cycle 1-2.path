@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.475249643366619,
-        "y": 0.4703994293865924
+        "x": 5.953980028530669,
+        "y": 0.7421112696148362
       },
       "isLocked": false,
       "linkedName": "Bottom Trench"
     },
     {
       "anchor": {
-        "x": 7.773033333333334,
-        "y": 1.0921777777777766
+        "x": 7.687760342368046,
+        "y": 1.2984736091298146
       },
       "prevControl": {
-        "x": 7.545972312355911,
-        "y": 0.9875675834720106
+        "x": 7.525984561127736,
+        "y": 0.4761133878248952
       },
       "nextControl": {
-        "x": 8.000094354310757,
-        "y": 1.1967879720835426
+        "x": 7.843024251069899,
+        "y": 2.0877318116975756
       },
       "isLocked": false,
       "linkedName": "Bottom Sweep Start"
@@ -52,12 +52,12 @@
         "y": 0.702399999999999
       },
       "prevControl": {
-        "x": 6.3861492133330025,
-        "y": 0.8361630202960852
+        "x": 7.8947788873038505,
+        "y": 0.9620684736091312
       },
       "nextControl": {
-        "x": 5.7867846726898104,
-        "y": 0.45656547788872925
+        "x": 5.68386339583709,
+        "y": 0.6282543362474858
       },
       "isLocked": false,
       "linkedName": "Bottom Sweep End"
@@ -68,8 +68,8 @@
         "y": 1.0921777777777766
       },
       "prevControl": {
-        "x": 2.0949238548105886,
-        "y": 0.6898604533206505
+        "x": 2.9910271041369465,
+        "y": 0.4315834522111266
       },
       "nextControl": null,
       "isLocked": false,
@@ -78,11 +78,11 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.3048836147877668,
+      "waypointRelativePos": 0.2958816473410589,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.9036385445821549,
       "rotationDegrees": 90.0
     },
     {
@@ -90,11 +90,11 @@
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 3.0,
+      "waypointRelativePos": 3.0787684926029533,
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 3.5910543130990544,
+      "waypointRelativePos": 3.6801279488204677,
       "rotationDegrees": 180.0
     },
     {
@@ -131,12 +131,6 @@
           "name": "Lower Fourbar"
         }
       }
-    },
-    {
-      "name": "Intake",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": 3.2939866369710593,
-      "command": null
     }
   ],
   "globalConstraints": {
