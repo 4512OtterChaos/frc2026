@@ -226,12 +226,14 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         ).repeatedly();
     }
 
-    public boolean facingTarget() {
-        return Degrees.of(getGlobalPoseEstimate().getRotation().getDegrees()).isNear(targetRotation, rotationTolerance.get());
+    private boolean facingTarget() {
+        boolean withinRotationTolerance = Degrees.of(getGlobalPoseEstimate().getRotation().getDegrees()).isNear(targetRotation, rotationTolerance.get());
+        boolean withinOmegaTolerance = true;//RadiansPerSecond.of(getState().Speeds.omegaRadiansPerSecond).isNear(DegreesPerSecond.of(0), kOmegaTolerance) TODO: use later
+        return withinRotationTolerance && withinOmegaTolerance;
     }
 
     public Trigger facingTargetT() {
-        return new Trigger(facingTarget);
+        return facingTarget;
     }
 
     public Command brakeC(){
@@ -437,6 +439,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         SmartDashboard.putBoolean("1) Drivetrain/In Trench Zone", inTrenchZone().getAsBoolean());
         SmartDashboard.putBoolean("1) Drivetrain/In Aliiance Zone", inAllianceZone().getAsBoolean());
         SmartDashboard.putBoolean("1) Drivetrain/In Neutral Zone", inNeutralZone().getAsBoolean());
+        SmartDashboard.putBoolean("1) Drivetrain/Facting Target Angle", facingTargetT().getAsBoolean());
         var state = getState();
         if (state != null && state.Pose != null) {
             Rotation2d targetAngle = Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), FieldUtil.kHubTrl);

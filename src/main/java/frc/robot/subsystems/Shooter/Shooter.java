@@ -151,12 +151,12 @@ public class Shooter extends SubsystemBase {
         targetAngle = angle;
     }
 
-    public boolean atAngle() {
+    private boolean atAngle() {
         return Math.abs(targetAngle.in(Degrees) - getHoodAngle().in(Degrees)) < angleTolerance.in(Degrees);
     }
 
     public Trigger atAngleT() {
-        return new Trigger(atAngle);
+        return atAngle;
     }
 
     // FLYWHEEL
@@ -188,12 +188,12 @@ public class Shooter extends SubsystemBase {
         targetVelocity = velocity;
     }
 
-    public boolean upToSpeed() {
+    private boolean upToSpeed() {
         return Math.abs(targetVelocity.in(RPM) - getFlywheelVelocity().in(RPM)) < velocityTolerance.in(RPM); 
     }
 
     public Trigger upToSpeedT() {
-        return new Trigger(upToSpeed);
+        return upToSpeed;
     }
     
     //OVERALL
