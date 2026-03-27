@@ -258,7 +258,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     //     return new Trigger(driving);
     // }
 
-    public Trigger inAllianceZone() {
+    public Trigger inAllianceZoneT() {
         return new Trigger(() -> {
             Pose2d botTrl = getGlobalPoseEstimate();
             return botTrl.getX() <= FieldUtil.kAllianceZoneMax.getX() &&
@@ -267,7 +267,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         );
     }    
 
-    public Trigger inTrenchZone() {
+    public Trigger inTrenchZoneT() {
         return new Trigger(() -> {
             Pose2d botTrl = getGlobalPoseEstimate();
             boolean inBottomTrench = botTrl.getX() >= FieldUtil.kBottomTrenchZoneMin.getX()
@@ -285,7 +285,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         );
     } 
 
-    public Trigger inNeutralZone() {
+    public Trigger inNeutralZoneT() {
         return new Trigger(() -> {
             Pose2d botTrl = getGlobalPoseEstimate();
             return botTrl.getX() >= FieldUtil.kNeutralZoneMin.getX() &&
@@ -294,6 +294,16 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
                 botTrl.getY() <= FieldUtil.kNeutralZoneMax.getY();
             }
         );
+    }
+
+    public Trigger behindHubT() {
+        return new Trigger(() -> {
+            Pose2d botTrl = getGlobalPoseEstimate();
+            return botTrl.getX() >= FieldUtil.kBehindHubMin.getX() &&
+                botTrl.getX() <= FieldUtil.kBehindHubMax.getX() &&
+                botTrl.getY() >= FieldUtil.kBehindHubMin.getY() &&
+                botTrl.getY() <= FieldUtil.kBehindHubMax.getY();
+        });
     }
 
     public static Supplier<ChassisSpeeds> controllerToChassisSpeeds(OCXboxController controller) {
@@ -436,9 +446,10 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     private void log() {
-        SmartDashboard.putBoolean("1) Drivetrain/In Trench Zone", inTrenchZone().getAsBoolean());
-        SmartDashboard.putBoolean("1) Drivetrain/In Aliiance Zone", inAllianceZone().getAsBoolean());
-        SmartDashboard.putBoolean("1) Drivetrain/In Neutral Zone", inNeutralZone().getAsBoolean());
+        SmartDashboard.putBoolean("1) Drivetrain/In Trench Zone", inTrenchZoneT().getAsBoolean());
+        SmartDashboard.putBoolean("1) Drivetrain/In Aliiance Zone", inAllianceZoneT().getAsBoolean());
+        SmartDashboard.putBoolean("1) Drivetrain/In Neutral Zone", inNeutralZoneT().getAsBoolean());
+        SmartDashboard.putBoolean("1) Drivetrain/Behind Hub", behindHubT().getAsBoolean());
         SmartDashboard.putBoolean("1) Drivetrain/Facting Target Angle", facingTargetT().getAsBoolean());
         var state = getState();
         if (state != null && state.Pose != null) {

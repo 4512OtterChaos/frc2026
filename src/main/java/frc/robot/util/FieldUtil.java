@@ -60,6 +60,16 @@ public class FieldUtil {
         kFieldWidth.minus(kFieldWidth.div(5)).in(Meters)
     );
 
+    public static final Translation2d kBehindHubMin = new Translation2d(
+        Inches.of(158.6 + 30), 
+        kFieldWidth.div(2).minus(Inches.of(23.5))
+    );
+
+    public static final Translation2d kBehindHubMax = new Translation2d(
+        kFieldLength.minus(Inches.of(158.6).plus(Inches.of(150))), // TODO: test and tune shortening
+        kFieldWidth.div(2).plus(Inches.of(23.5))
+    );
+
     public static final ArrayList<Pose2d> kSetpoints;
     static{
         kSetpoints = new ArrayList<Pose2d>();

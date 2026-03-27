@@ -97,10 +97,10 @@ public class Superstructure extends SubsystemBase{
      */
     public Command otterShootC(Supplier<ChassisSpeeds> speeds) {
         return otterShootC(speeds, ()-> {
-            if (drivetrain.inTrenchZone().getAsBoolean()) {
+            if (drivetrain.inTrenchZoneT().getAsBoolean()) {
                 return Optional.empty();
             }
-            if (drivetrain.inAllianceZone().getAsBoolean()) {
+            if (drivetrain.inAllianceZoneT().getAsBoolean()) {
                 return Optional.of(FieldUtil.kHubTrl);
             }
             return Optional.of(drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
@@ -162,10 +162,10 @@ public class Superstructure extends SubsystemBase{
      */
     public Command otterShootEndC(Supplier<ChassisSpeeds> speeds) {
         return otterShootC(speeds, ()-> {
-            if (drivetrain.inTrenchZone().getAsBoolean()) {
+            if (drivetrain.inTrenchZoneT().getAsBoolean()) {
                 return Optional.empty();
             }
-            if (drivetrain.inAllianceZone().getAsBoolean()) {
+            if (drivetrain.inAllianceZoneT().getAsBoolean()) {
                 return Optional.of(FieldUtil.kHubTrl);
             }
             return Optional.of(drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
@@ -266,7 +266,7 @@ public class Superstructure extends SubsystemBase{
             sequence(
                 // waitUntil(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT(target).getAsBoolean()),
                 parallel(
-                    waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean())
+                    waitSeconds(0.7).until(() -> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean() /*&& drivetrain.behindHubT().negate().getAsBoolean()*/) // TODO: turn on behind hub detection?
                 ),
                 indexC() //.andThen(feeder.feedC()).withTimeout(kShooterTurnOffDelay) TODO: fix
             ).repeatedly()//, 
