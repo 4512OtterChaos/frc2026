@@ -36,8 +36,8 @@ public class IntakeConstants {
     // public static final TunableAngle fourBarMaxAngle = new TunableAngle("2) Intake/Four Bar/Max Degrees", kFourBarMaxAngle);
     // public static final TunableAngle angleTolerance = new TunableAngle("2) Intake/Four Bar/Degrees Tolerance", kAngleTolerance);
 
-    public static final double kIntakeVoltageIn = 8; //TODO: Tune
-    public static final double kIntakeVoltageOut = -4; //TODO: Tune
+    public static final double kIntakeVoltageIn = 9; 
+    public static final double kIntakeVoltageOut = -6;
 
     // public static final double kFourBarVoltageIn = 2; //TODO: Tune
     // public static final double kFourBarVoltageOut = -2; //TODO: Tune
@@ -47,7 +47,7 @@ public class IntakeConstants {
     // public static final TunableNumber fourBarVoltageIn = new TunableNumber("2) Intake/Four Bar/Voltage In", kFourBarVoltageIn);
     // public static final TunableNumber fourBarVoltageOut = new TunableNumber("2) Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
 
-    public static final Current kRetractCurrent1 = Amps.of(30);
+    public static final Current kRetractCurrent1 = Amps.of(35);
     public static final Current kRetractCurrent2 = Amps.of(15);
     public static final Current kExtendCurrent1 = Amps.of(-30);
     public static final Current kExtendCurrent2 = Amps.of(-10);
@@ -83,7 +83,9 @@ public class IntakeConstants {
 
         CurrentLimitsConfigs current = kIntakeConfig.CurrentLimits;
         current.StatorCurrentLimitEnable = true;
-        current.StatorCurrentLimit = 55; 
+        current.StatorCurrentLimit = 70;
+        current.SupplyCurrentLimitEnable = true;
+        current.SupplyCurrentLimit = 55;
 
         Slot0Configs control = kIntakeConfig.Slot0;// TODO: Tune PID
             control.kP = 9; 

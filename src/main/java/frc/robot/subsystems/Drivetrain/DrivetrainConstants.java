@@ -4,11 +4,13 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.util.TunableNumber;
 import frc.robot.util.TunableUnits.TunableAngle;
 import frc.robot.util.TunableUnits.TunableAngularAcceleration;
+import frc.robot.util.TunableUnits.TunableAngularVelocity;
 import frc.robot.util.TunableUnits.TunableLinearAcceleration;
 import frc.robot.util.TunableUnits.TunableTime;
 
@@ -34,18 +36,21 @@ public class DrivetrainConstants {
     public static final TunableAngularAcceleration angularAccel = new TunableAngularAcceleration("1) Drivetrain/Angular Acceleration", kAngularAccel);
     public static final TunableAngularAcceleration angularDecel = new TunableAngularAcceleration("1) Drivetrain/Angular Deceleration", kAngularDecel);
 
-    public static final double kSOTMDriveSpeedRatio = 0.56;
+    public static final double kSOTMDriveSpeedRatio = 0.2;
 
     public static final TunableNumber sotmDriveSpeedRatio = new TunableNumber("1) Drivetrain/SOTM/Drive Speed", kSOTMDriveSpeedRatio);
 
-    public static final LinearAcceleration kSOTMLinearAccel = FeetPerSecondPerSecond.of(25);
-    public static final LinearAcceleration kSOTMLinearDecel = FeetPerSecondPerSecond.of(35);
+    public static final LinearAcceleration kSOTMLinearAccel = FeetPerSecondPerSecond.of(15);
+    public static final LinearAcceleration kSOTMLinearDecel = FeetPerSecondPerSecond.of(20);
 
     public static final TunableLinearAcceleration sotmLinearAccel = new TunableLinearAcceleration("1) Drivetrain/SOTM/Linear Acceleration", kSOTMLinearAccel);
     public static final TunableLinearAcceleration sotmLinearDecel = new TunableLinearAcceleration("1) Drivetrain/SOTM/Linear Deceleration", kSOTMLinearDecel);
     
-    public static final Angle kRotationTolerance = Degrees.of(2);
+    public static final Angle kRotationTolerance = Degrees.of(5);
     public static final TunableAngle rotationTolerance = new TunableAngle("1) Drivetrain/Rotation Tolerance", kRotationTolerance);
+
+    public static final AngularVelocity kOmegaTolerance = DegreesPerSecond.of(5);
+    public static final TunableAngularVelocity omegaTolerance = new TunableAngularVelocity("1) Drivetrain/Omega Tolerance", kOmegaTolerance);
 
     public static final Time kRotationDebounceTime = Seconds.of(0.2);
     public static final TunableTime rotationDebounceTime = new TunableTime("1) Drivetrain/Rotation Debounce", kRotationDebounceTime);

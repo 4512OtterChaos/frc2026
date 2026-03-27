@@ -99,7 +99,7 @@ public final class ShooterConstants {
         current.StatorCurrentLimit = 80;
 
         Slot0Configs control = kFlywheelConfig.Slot0;
-        control.kP = 0;
+        control.kP = 0.1;
         control.kI = 0;
         control.kD = 0;
 

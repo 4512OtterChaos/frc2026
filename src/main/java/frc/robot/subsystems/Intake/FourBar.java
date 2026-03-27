@@ -132,7 +132,7 @@ public class FourBar extends SubsystemBase {
 
     public Command retractC() {
         return sequence(
-            setRetractCurrent1C().withTimeout(0.2),
+            setRetractCurrent1C().withTimeout(0.5),
             setRetractCurrent2C()
         ).withTimeout(1.25).withName("Retract Fourbar");
     }
@@ -154,8 +154,8 @@ public class FourBar extends SubsystemBase {
 
     public Command oscillateC() {
         return repeatingSequence(
-            retractC().withTimeout(0.3),
-            extendC().withTimeout(0.3)
+            retractC().withTimeout(0.5),
+            extendC().withTimeout(0.5)
         ).finallyDo(()-> doneOscillating = true).withName("Otterscillate");
     }
 
