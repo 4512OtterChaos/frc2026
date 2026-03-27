@@ -19,10 +19,13 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.OCTrigger;
 
 public class FourBar extends SubsystemBase {
     private TalonFX motor = new TalonFX(kFourBarMotorID);
@@ -34,6 +37,13 @@ public class FourBar extends SubsystemBase {
 
     private Current targetCurrent = Amps.of(0);
     private TorqueCurrentFOC torqueRequest = new TorqueCurrentFOC(0);
+
+    /** Velocity is near 0 */
+    public final Trigger isStationary = new Trigger(() -> getVelocity().isNear(DegreesPerSecond.of(0), DegreesPerSecond.of(3)));
+    /** Current is above stall threshold */
+    public final Trigger isStalled = new Trigger(() -> getCurrent().gt(stallThreshold.get()));
+    private Trigger isHomed = isHomed();
+
 
     // private Angle targetAngle = fourBarMaxAngle.get();
     // private MotionMagicVoltage mmRequest = new MotionMagicVoltage(0);
@@ -47,8 +57,8 @@ public class FourBar extends SubsystemBase {
         
         positionStatus.setUpdateFrequency(100);
         velocityStatus.setUpdateFrequency(100);
-        voltageStatus.setUpdateFrequency(100);
-        statorStatus.setUpdateFrequency(50);
+        voltageStatus.setUpdateFrequency(50);
+        statorStatus.setUpdateFrequency(100);
 
         ParentDevice.optimizeBusUtilizationForAll(motor);
 
@@ -104,6 +114,14 @@ public class FourBar extends SubsystemBase {
         return statorStatus.getValue();
     }
 
+    private Trigger isHomed() {
+        return OCTrigger.debounce(isStalled.and(isStationary), () -> stallTime.in(Seconds));
+    }
+
+    public Trigger isHomedT() {
+        return isHomed;
+    }
+
     public void resetAngle(Angle angle) {
         motor.setPosition(angle);
     }
@@ -149,8 +167,8 @@ public class FourBar extends SubsystemBase {
 
     public Command oscillateC() {
         return repeatingSequence(
-            retractC().withTimeout(0.3),
-            extendC().withTimeout(0.3)
+            retractC().withTimeout(0.3).until(isHomed),
+            extendC().withTimeout(0.3).until(isHomed)
         );// TODO: finally do down
     }
 
@@ -209,7 +227,13 @@ public class FourBar extends SubsystemBase {
         retractCurrent2.poll();
         extendCurrent1.poll();
         extendCurrent2.poll();
+        stallThreshold.poll();
+        stallTime.poll();
         
+        int hash = hashCode();
+        if (stallTime.hasChanged(hash)) {
+            isHomed = isHomed();
+        }
     }
 
     public void log() {
