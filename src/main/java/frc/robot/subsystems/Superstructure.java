@@ -73,8 +73,8 @@ public class Superstructure extends SubsystemBase{
      * @param speeds Field relative chassis speeds
      * @return
      */
-    public Command otterShootControllerC(OCXboxController controller, BooleanSupplier isIntakePressed) {
-        return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller), isIntakePressed);
+    public Command otterShootControllerC(OCXboxController controller) {
+        return otterShootC(OCDrivetrain.controllerToChassisSpeeds(controller));
     }
     
     /**

@@ -87,8 +87,8 @@ public class AutoOptions {
         autoChooser.addCmd("New and super cool", 
             ()->sequence(
                 runOnce(()-> drivetrain.resetPose(new Pose2d(Meters.of(4.5), FieldUtil.kFieldWidth.div(2), Rotation2d.k180deg)), drivetrain),
-                drivetrain.driveC(()-> new ChassisSpeeds(-1, 0, 0), true).withTimeout(2.25),
-                drivetrain.driveC(()-> new ChassisSpeeds(0, 0, 0), true).withTimeout(.5),
+                drivetrain.driveC(()-> new ChassisSpeeds(-1, 0, 0), false).withTimeout(2.25),
+                drivetrain.driveC(()-> new ChassisSpeeds(0, 0, 0), false).withTimeout(.5),
                 waitSeconds(5),
                 superstructure.otterShootC(()->new ChassisSpeeds())
         ));

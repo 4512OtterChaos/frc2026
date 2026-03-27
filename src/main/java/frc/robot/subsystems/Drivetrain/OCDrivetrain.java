@@ -81,6 +81,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     public ChassisSpeeds lastTargetSpeeds = new ChassisSpeeds();
     public Angle targetRotation = Degrees.of(0);
 
+    private double lastFacingTime = Timer.getFPGATimestamp();
+
     private Trigger facingTarget = new Trigger(() -> facingTarget())
                 .debounce(rotationDebounceTime.in(Seconds), DebounceType.kBoth);
     // private Trigger driving = new Trigger(()-> driving())
@@ -137,10 +139,15 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(chassisSpeeds, lastTargetSpeeds, //why do we call it last target speeds
                 Robot.kDefaultPeriod);
         lastTargetSpeeds = targetSpeeds;
-        if(lockAngle && chassisSpeeds.omegaRadiansPerSecond == 0){
+        double now = Timer.getFPGATimestamp();
+        if(lockAngle && chassisSpeeds.omegaRadiansPerSecond == 0 && now - lastFacingTime > 0.25){
             driveFacingAngle(chassisSpeeds, targetRotation);
         }
         else {
+            if (chassisSpeeds.omegaRadiansPerSecond != 0){
+                lastFacingTime = now;
+            }
+            targetRotation = Degrees.of(getState().Pose.getRotation().getDegrees());
             setControl(
                 drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
                 .withVelocityY(targetSpeeds.vyMetersPerSecond)
@@ -155,10 +162,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
                 .withVelocityY(chassisSpeeds.vyMetersPerSecond)
                 .withRotationalRate(chassisSpeeds.omegaRadiansPerSecond)
         );
-    }
-
-    public Command faceAngle(Angle angle) {
-        return applyRequest(() -> face.withTargetDirection(Rotation2d.fromDegrees(angle.in(Degrees))));
     }
 
     public Command driveFacingHubController(OCXboxController controller) {
@@ -196,8 +199,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         setControl(
             face.withVelocityX(targetSpeeds.vxMetersPerSecond)
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(Rotation2d.fromDegrees(target.in(Degrees))//.plus(Rotation2d.k180deg)
-        ));
+                    .withTargetDirection(offsetTargetAngle(target))
+        );
     }
 
     public void driveFacingTarget(ChassisSpeeds speeds, Translation2d target) {
@@ -211,13 +214,13 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         setControl(
             face.withVelocityX(targetSpeeds.vxMetersPerSecond)
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(Rotation2d.fromDegrees(target.in(Degrees))//.plus(Rotation2d.k180deg)
-        ));
+                    .withTargetDirection(offsetTargetAngle(target))
+        );
     }
 
     public Command driveFacingOptionalTarget(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
         return either(
-            runOnce(()-> drive(speeds.get(), true)), //TODO: Change to false?
+            runOnce(()-> drive(speeds.get(), false)), //TODO: Change to false?
             runOnce(()-> driveFacingTarget(speeds.get(), target.get().get())), 
             ()-> target.get().isEmpty()
         ).repeatedly();
@@ -237,6 +240,12 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     public void brake() {
         setControl(brake);
+    }
+
+    private Rotation2d offsetTargetAngle(Angle target){
+        var adjAngle = Rotation2d.fromDegrees(target.in(Degrees));
+        var offset = getState().Pose.getRotation().minus(getGlobalPoseEstimate().getRotation());
+        return adjAngle.plus(offset);
     }
 
     // public boolean driving() {
@@ -377,7 +386,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
             Pose2d visionRobotPoseMeters,
             double timestampSeconds,
             Matrix<N3, N1> visionMeasurementStdDevs) {
-        visionEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+                visionEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+                
     }
 
     public void changeTunable() {

@@ -98,7 +98,7 @@ public class RobotContainer {
 
 
     private void configureDriverBindings() {
-        drivetrain.setDefaultCommand(drivetrain.driveC(driver, true));
+        drivetrain.setDefaultCommand(drivetrain.driveC(driver, false));
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.b().whileTrue(drivetrain.brakeC());
 
@@ -224,7 +224,6 @@ public class RobotContainer {
 }
 /*
  * TODO:
- * drivetrain current limits
  * tune autos (do they do everything right?)
  * shooter turn off delay
  * consider fourbar raising a lil while not intaking
