@@ -186,7 +186,7 @@ public class Superstructure extends SubsystemBase{
         return repeatingSequence(
             parallel(
                 waitUntil(hasTarget.debounce(0.2)),
-                waitSeconds(0.7).until(()-> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.isFacingTargetAngleT().getAsBoolean())
+                waitSeconds(0.7).until(()-> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.isFacingTarget.getAsBoolean())
             ),
             parallel(
                 fourBar.setReadyToOscillateC(true),

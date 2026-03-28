@@ -101,7 +101,9 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     public final Trigger turningToFaceTarget = new Trigger(()-> Timer.getFPGATimestamp() - lastTargetTime < 0.04);
 
-    private Trigger isFacingTarget = isFacingTarget();
+    // TODO: omega tolerance
+    public final Trigger isFacingTarget = turningToFaceTarget.or(isBraking).and(OCTrigger.debounce(isRotationTolerance, () -> rotationDebounceTime.in(Seconds), DebounceType.kBoth));
+    
     // private Trigger driving = new Trigger(()-> driving())
     //             .debounce(brakeDebounceSeconds.get());
 
@@ -234,15 +236,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         else {
             driveFacingOptionalTarget(speeds, target);
         }
-    }
-
-    private Trigger isFacingTarget() {
-        // TODO: omega tolerance
-        return turningToFaceTarget.or(isBraking).and(OCTrigger.debounce(isRotationTolerance, () -> rotationDebounceTime.in(Seconds), DebounceType.kBoth));
-    }
-
-    public Trigger isFacingTargetAngleT() {
-        return isFacingTarget;
     }
 
     public Command brakeC(){
@@ -396,10 +389,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
             kSOTMLimiter.linearDeceleration = sotmLinearDecel.get();
             kSOTMLimiter.angularAcceleration = angularAccel.get();
             kSOTMLimiter.angularDeceleration = angularDecel.get();
-        }
-
-        if (rotationDebounceTime.hasChanged(hash)) {
-            isFacingTarget = isFacingTarget();
         }
     }
 
