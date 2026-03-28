@@ -20,7 +20,9 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Intake extends SubsystemBase{
     private final TalonFX motor = new TalonFX(kIntakeMotorID);
@@ -29,6 +31,9 @@ public class Intake extends SubsystemBase{
     private final StatusSignal<AngularVelocity> velocityStatus = motor.getVelocity();
     private final StatusSignal<Voltage> voltageStatus = motor.getMotorVoltage();
     private final StatusSignal<Current> statorStatus = motor.getStatorCurrent();
+
+    private boolean isIntaking = false;
+    public Trigger isIntakingT = new Trigger(()->isIntaking);
 
     public Intake(){
         motor.getConfigurator().apply(kIntakeConfig);
@@ -85,6 +90,10 @@ public class Intake extends SubsystemBase{
 
     public Command setVoltageOutC(){
         return run(()->setVoltage(intakeVoltageOut.get())).withName("Voltage Out");
+    }
+
+    public Command setIsIntakingC(boolean isTrue){
+        return Commands.runOnce(null);
     }
 
     public void changeTunable(){

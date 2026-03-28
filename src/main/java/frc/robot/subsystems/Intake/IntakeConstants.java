@@ -87,7 +87,7 @@ public class IntakeConstants {
         current.SupplyCurrentLimitEnable = true;
         current.SupplyCurrentLimit = 55;
 
-        Slot0Configs control = kIntakeConfig.Slot0;// TODO: Tune PID
+        Slot0Configs control = kIntakeConfig.Slot0;
             control.kP = 9; 
             control.kI = 0;
             control.kD = 0;
@@ -111,7 +111,7 @@ public class IntakeConstants {
         current.StatorCurrentLimitEnable = true;
         current.StatorCurrentLimit = 50; 
 
-        Slot0Configs control = kFourBarConfig.Slot0;// TODO: Tune PID
+        Slot0Configs control = kFourBarConfig.Slot0;
             control.kP = 20; 
             control.kI = 0.1;
             control.kD = 0;

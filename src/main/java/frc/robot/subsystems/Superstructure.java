@@ -35,6 +35,9 @@ public class Superstructure extends SubsystemBase{
 
     public final Trigger readyToShoot;
 
+    private boolean isIndexing = false;
+    public final Trigger isShootingT = new Trigger(()-> isIndexing);
+
     public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter, Climber climber) {
         this.drivetrain = drivetrain;
         this.intake = intake;
@@ -190,10 +193,14 @@ public class Superstructure extends SubsystemBase{
     public Command autoIndexForShooting(Trigger hasTarget){
         return sequence(
             waitUntil(readyToShoot), // wait for all ready parameters
+            runOnce(()-> isIndexing = true),
             parallel( // proxy indexing and agitation
                 fourBar.setReadyToOscillateC(true),
                 indexC().asProxy().until(readyToShoot.negate())
-            ).finallyDo(()-> fourBar.setReadyToOscillate(false))
+            ).finallyDo(()-> {
+                fourBar.setReadyToOscillate(false);
+                isIndexing = false;
+            })
         ).repeatedly();
     }
 
