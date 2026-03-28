@@ -38,7 +38,6 @@ import frc.robot.Robot;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.OCTrigger;
-import frc.robot.util.OCXboxController;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain {
     public final SwerveDriveLimiter kStandardLimiter = new SwerveDriveLimiter(
@@ -191,10 +190,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         );
     }
 
-    public Command driveC(OCXboxController controller, boolean lockAngle) {
-        return driveC(controllerToChassisSpeeds(controller), lockAngle);
-    }
-
     public Command driveC(Supplier<ChassisSpeeds> chassisSpeeds, boolean lockAngle) {
         return run(()-> drive(chassisSpeeds.get(), lockAngle));
     }
@@ -303,10 +298,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     // public Trigger drivingT() {
     //     return new Trigger(driving);
     // }
-
-    public static Supplier<ChassisSpeeds> controllerToChassisSpeeds(OCXboxController controller) {
-        return ()->controller.getSpeeds(MaxSpeed, MaxAngularRate);
-    }
 
     public void disturbSimPose() {
         var disturbance = new Transform2d(new Translation2d(1.0, 1.0), new Rotation2d(0.17 * 2 * Math.PI));

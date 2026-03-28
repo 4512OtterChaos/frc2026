@@ -14,7 +14,6 @@ import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*; 
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
@@ -24,7 +23,6 @@ import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
-import frc.robot.util.OCXboxController; 
 
 public class Superstructure extends SubsystemBase{
     private OCDrivetrain drivetrain;
@@ -34,10 +32,6 @@ public class Superstructure extends SubsystemBase{
     private Feeder feeder;
     private Shooter shooter;
     private Climber climber;
-
-    private boolean wasFeeding = false;
-    private boolean doneShooting = false;
-    public final Trigger doneShootingT = new Trigger(()->doneShooting);
 
     public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter, Climber climber) {
         this.drivetrain = drivetrain;
@@ -123,7 +117,7 @@ public class Superstructure extends SubsystemBase{
                 shootStationaryBaseC(speeds, target),
                 autoIndexForShooting(hasTarget)
             )
-        ).finallyDo(()-> setDoneShooting(hasTarget)).withName("Otter Shoot Stationary");
+        ).withName("Otter Shoot Stationary");
     }
 
     /**
@@ -138,7 +132,7 @@ public class Superstructure extends SubsystemBase{
                 shootOnTheSwimBaseC(speeds, target, hasTarget),
                 autoIndexForShooting(hasTarget)
             )
-        ).finallyDo(()-> setDoneShooting(hasTarget)).withName("Otter Shoot on the Swim");
+        ).withName("Otter Shoot on the Swim");
     }
 
     public Command shootStationaryBaseC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target){
@@ -187,53 +181,6 @@ public class Superstructure extends SubsystemBase{
             drivetrain, shooter
         );
     }
-    
-    /**
-     * @param speeds Field relative chassis speeds
-     * @return
-     */
-    public Command otterShootEndControllerC(OCXboxController controller) {
-        return either(
-            otterShootEndC(OCDrivetrain.controllerToChassisSpeeds(controller)),
-            otterShootEndC(()-> new ChassisSpeeds()), 
-            RobotModeTriggers.autonomous().negate()
-        );
-    }
-
-    /**
-     * @param speeds Field relative chassis speeds
-     * @return
-     */
-    public Command otterShootEndC(Supplier<ChassisSpeeds> speeds) {
-        return otterShootStationaryC(speeds, () -> getTarget());
-    } 
-
-    /**
-     * @param speeds Field relative chassis speeds 
-     * @param target 
-     * @return
-     */
-    public Command otterShootEndC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
-        Trigger hasTarget = new Trigger(()-> target.get().isEmpty()).negate();
-        return parallel(
-            Commands.run(
-                () -> {
-                    if (hasTarget.negate().getAsBoolean()) {
-                        shooter.setIdleC();
-                    }
-                    else {
-                        Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target.get().get());
-                        Shooter.State state = Shotmap.getState(distance);
-
-                        shooter.setState(state);
-                    }
-                },
-                shooter
-            ),
-            drivetrain.driveFacingOptionalTargetC(speeds, target),
-            feeder.feedC()
-        ).until(hasTarget.negate()).withTimeout(0.2).finallyDo(()->resetDoneShooting()).withName("Otter Shoot End");
-    }
 
     public Command autoIndexForShooting(Trigger hasTarget){
         return repeatingSequence(
@@ -241,23 +188,11 @@ public class Superstructure extends SubsystemBase{
                 waitUntil(hasTarget.debounce(0.2)),
                 waitSeconds(0.7).until(()-> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.isFacingTargetT().getAsBoolean())
             ),
-            runOnce(()->wasFeeding = true),
             parallel(
                 fourBar.setReadyToOscillateC(true),
                 indexC().asProxy()
             ).until(hasTarget.negate()).finallyDo(()-> fourBar.setReadyToOscillate(false))
         );
-    }
-
-    private void setDoneShooting(Trigger hasTarget){
-        if (wasFeeding && hasTarget.getAsBoolean()) {
-            doneShooting = true;
-            wasFeeding = false;
-        }
-    }
-
-    private void resetDoneShooting(){
-        doneShooting = false;
     }
 
     public void log() {
