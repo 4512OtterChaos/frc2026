@@ -7,12 +7,15 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Auto.AutoOptions;
+import frc.robot.subsystems.Drivetrain.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Drivetrain.Telemetry;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
@@ -43,6 +47,7 @@ public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
 
     private final OCXboxController driver = new OCXboxController(0);
+    private final Supplier<ChassisSpeeds> driverSpeedsSupplier = () -> driver.getSpeeds(DrivetrainConstants.MaxSpeed, DrivetrainConstants.MaxAngularRate);
     // private final OCXboxController operator = new OCXboxController(1);
 
     private final OCDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -98,13 +103,16 @@ public class RobotContainer {
 
 
     private void configureDriverBindings() {
-        drivetrain.setDefaultCommand(drivetrain.driveC(driver, false));
+        drivetrain.setDefaultCommand(drivetrain.driveC(
+            () -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kStandardLimiter),
+            false // rotation lock
+        ));
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.b().whileTrue(drivetrain.brakeC());
 
         // superstructure.doneShootingT.whileTrue(superstructure.otterShootEndControllerC(driver));
-        driver.rightTrigger().whileTrue(superstructure.otterShootOnTheSwimControllerC(driver));
-        driver.leftBumper().whileTrue(superstructure.otterShootStationaryControllerC(driver));
+        driver.rightTrigger().whileTrue(superstructure.otterShootOnTheSwimC(() -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kSOTMLimiter)));
+        driver.leftBumper().whileTrue(superstructure.otterShootStationaryC(() -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kSOTMLimiter)));
         driver.rightBumper().whileTrue(parallel(
             run(()-> shooter.setState(Degrees.of(5), RPM.of(2200))), 
             sequence(
@@ -178,6 +186,8 @@ public class RobotContainer {
         SmartDashboard.putBoolean(
             "Match Dashboard/Shifts/Active First?",
             DriverStation.getAlliance().orElse(Alliance.Blue) == HubShiftUtil.getFirstActiveAlliance());
+
+        superstructure.log();
     }
 
     public void changeTunable() {

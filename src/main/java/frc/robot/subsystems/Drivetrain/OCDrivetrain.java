@@ -135,12 +135,10 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         return visionEstimator.sampleAt(timestampSeconds);
     }
 
-    public Command driveC(OCXboxController controller, boolean lockAngle) {
-        return driveC(controllerToChassisSpeeds(controller), lockAngle);
-    }
-
-    public Command driveC(Supplier<ChassisSpeeds> chassisSpeeds, boolean lockAngle) {
-        return run(()-> drive(chassisSpeeds.get(), lockAngle));
+    public ChassisSpeeds limitTargetSpeeds(ChassisSpeeds targetSpeeds, SwerveDriveLimiter limiter) {
+        var newSpeeds = limiter.calculate(targetSpeeds, lastTargetSpeeds, Robot.kDefaultPeriod);
+        lastTargetSpeeds = newSpeeds;
+        return newSpeeds;
     }
 
     public void drive(ChassisSpeeds chassisSpeeds, boolean lockAngle) {
@@ -193,16 +191,12 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         );
     }
 
-    public Command driveFacingHubController(OCXboxController controller) {
-        return driveFacingHub(controllerToChassisSpeeds(controller));
-    }
-    
-    public Command driveFacingHub(Supplier<ChassisSpeeds> speeds) {
-        return driveFacingTargetC(speeds, () -> FieldUtil.kHubTrl);
+    public Command driveC(OCXboxController controller, boolean lockAngle) {
+        return driveC(controllerToChassisSpeeds(controller), lockAngle);
     }
 
-    public Command driveFacingSetpoint(Supplier<ChassisSpeeds> speeds) {
-        return driveFacingTargetC(speeds, () -> getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
+    public Command driveC(Supplier<ChassisSpeeds> chassisSpeeds, boolean lockAngle) {
+        return run(()-> drive(chassisSpeeds.get(), lockAngle));
     }
 
     public Command driveFacingTargetC(Supplier<ChassisSpeeds> speeds, Supplier<Translation2d> target) {
@@ -279,18 +273,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         }
     }
 
-    public Supplier<Optional<Translation2d>> getTarget(){
-        return ()-> {
-            if (inTrenchZoneT().getAsBoolean()/* || behindHubT().getAsBoolean() */) { //TODO: Enable behindHubT
-                return Optional.empty();
-            }
-            if (inAllianceZoneT().getAsBoolean()) {
-                return Optional.of(FieldUtil.kHubTrl);
-            }
-            return Optional.of(getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
-        };
-    }
-
     private Trigger isFacingTarget() {
         // TODO: omega tolerance
         return OCTrigger.debounce(isRotationTolerance, () -> rotationDebounceTime.in(Seconds), DebounceType.kBoth);
@@ -321,54 +303,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     // public Trigger drivingT() {
     //     return new Trigger(driving);
     // }
-
-    public Trigger inAllianceZoneT() {
-        return new Trigger(() -> {
-            Pose2d botTrl = getGlobalPoseEstimate();
-            return botTrl.getX() <= FieldUtil.kAllianceZoneMax.getX() &&
-                botTrl.getY() <= FieldUtil.kAllianceZoneMax.getY();
-            }
-        );
-    }    
-
-    public Trigger inTrenchZoneT() {
-        return new Trigger(() -> {
-            Pose2d botTrl = getGlobalPoseEstimate();
-            boolean inBottomTrench = botTrl.getX() >= FieldUtil.kBottomTrenchZoneMin.getX()
-                && botTrl.getX() <= FieldUtil.kBottomTrenchZoneMax.getX()
-                && botTrl.getY() >= FieldUtil.kBottomTrenchZoneMin.getY()
-                && botTrl.getY() <= FieldUtil.kBottomTrenchZoneMax.getY();
-
-            boolean inTopTrench = botTrl.getX() >= FieldUtil.kTopTrenchZoneMin.getX()
-                && botTrl.getX() <= FieldUtil.kTopTrenchZoneMax.getX()
-                && botTrl.getY() >= FieldUtil.kTopTrenchZoneMin.getY()
-                && botTrl.getY() <= FieldUtil.kTopTrenchZoneMax.getY();
-
-            return inBottomTrench || inTopTrench;
-            }
-        );
-    } 
-
-    public Trigger inNeutralZoneT() {
-        return new Trigger(() -> {
-            Pose2d botTrl = getGlobalPoseEstimate();
-            return botTrl.getX() >= FieldUtil.kNeutralZoneMin.getX() &&
-                botTrl.getX() <= FieldUtil.kNeutralZoneMax.getX() &&
-                botTrl.getY() >= FieldUtil.kNeutralZoneMin.getY() &&
-                botTrl.getY() <= FieldUtil.kNeutralZoneMax.getY();
-            }
-        );
-    }
-
-    public Trigger behindHubT() {
-        return new Trigger(() -> {
-            Pose2d botTrl = getGlobalPoseEstimate();
-            return botTrl.getX() >= FieldUtil.kBehindHubMin.getX() &&
-                botTrl.getX() <= FieldUtil.kBehindHubMax.getX() &&
-                botTrl.getY() >= FieldUtil.kBehindHubMin.getY() &&
-                botTrl.getY() <= FieldUtil.kBehindHubMax.getY();
-        });
-    }
 
     public static Supplier<ChassisSpeeds> controllerToChassisSpeeds(OCXboxController controller) {
         return ()->controller.getSpeeds(MaxSpeed, MaxAngularRate);
@@ -510,10 +444,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     private void log() {
-        SmartDashboard.putBoolean("1) Drivetrain/In Trench Zone", inTrenchZoneT().getAsBoolean());
-        SmartDashboard.putBoolean("1) Drivetrain/In Aliiance Zone", inAllianceZoneT().getAsBoolean());
-        SmartDashboard.putBoolean("1) Drivetrain/In Neutral Zone", inNeutralZoneT().getAsBoolean());
-        SmartDashboard.putBoolean("1) Drivetrain/Behind Hub", behindHubT().getAsBoolean());
         SmartDashboard.putBoolean("1) Drivetrain/Facing Target Angle", isFacingTargetT().getAsBoolean());
         var state = getState();
         if (state != null && state.Pose != null) {

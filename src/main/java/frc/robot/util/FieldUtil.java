@@ -79,4 +79,36 @@ public class FieldUtil {
 
     public static final Distance kHubHeight = Inches.of(72);
     public static final Distance kHubWidth = Inches.of(47);
+
+    /** Is pos between a and b */
+    public static boolean isInZone(Translation2d pos, Translation2d a, Translation2d b) {
+        Translation2d min = new Translation2d(
+            Math.min(a.getX(), b.getX()),
+            Math.min(a.getY(), b.getY())
+        );
+        Translation2d max = new Translation2d(
+            Math.max(a.getX(), b.getX()),
+            Math.max(a.getY(), b.getY())
+        );
+        return pos.getX() >= min.getX() && pos.getX() <= max.getX() &&
+               pos.getY() >= min.getY() && pos.getY() <= max.getY();
+    }
+
+    public static boolean isInAllianceZone(Translation2d pos) {
+        return isInZone(pos, Translation2d.kZero, kAllianceZoneMax);
+    }
+
+    public static boolean isInTrenchZone(Translation2d pos) {
+        boolean inBottomTrench = isInZone(pos, kBottomTrenchZoneMin, kBottomTrenchZoneMax);
+        boolean inTopTrench = isInZone(pos, kTopTrenchZoneMin, kTopTrenchZoneMax);
+        return inBottomTrench || inTopTrench;
+    }
+
+    public static boolean isInNeutralZone(Translation2d pos) {
+        return isInZone(pos, kNeutralZoneMin, kNeutralZoneMax);
+    }
+
+    public static boolean isInBehindHubZone(Translation2d pos) {
+        return isInZone(pos, kBehindHubMin, kBehindHubMax);
+    }
 }

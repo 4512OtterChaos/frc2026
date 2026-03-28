@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds; 
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -78,39 +79,20 @@ public class Superstructure extends SubsystemBase{
             intake.setVoltageInC()
         );
     }
-    
+
     /**
-     * @param controller Controller to get strafe input from
-     * @return A command sequence that turns to shoot into the hub, setting the drivetrain rotation, intake, fourbar, spindexer, feeder and shooter.
+     * Gets the shooting target based on current position.
+     * @return An optional translation of the target, empty if there is no valid target
      */
-    public Command otterShootStationaryControllerC(OCXboxController controller) {
-        return otterShootStationaryC(OCDrivetrain.controllerToChassisSpeeds(controller));
-    }
-    
-    /**
-     * @param controller Controller to get strafe input from
-     * @return
-     */
-    public Command otterShootOnTheSwimControllerC(OCXboxController controller) {
-        return otterShootOnTheSwimC(OCDrivetrain.controllerToChassisSpeeds(controller));
-    }
-    
-    /**
-     * @param controller Controller to get strafe input from
-     * @param target
-     * @return
-     */
-    public Command otterShootControllerC(OCXboxController controller, Supplier<Optional<Translation2d>> target) {
-        return otterShootStationaryC(OCDrivetrain.controllerToChassisSpeeds(controller), target);
-    }
-    
-    /**
-     * @param controller Controller to get strafe input from
-     * @param target
-     * @return
-     */
-    public Command otterShootOnTheSwimControllerC(OCXboxController controller, Supplier<Optional<Translation2d>> target) {
-        return otterShootOnTheSwimC(OCDrivetrain.controllerToChassisSpeeds(controller), target);
+    public Optional<Translation2d> getTarget() {
+        var trl = drivetrain.getGlobalPoseEstimate().getTranslation();
+        if (FieldUtil.isInTrenchZone(trl) /* || FieldUtil.isBehindHub(trl) */) { //TODO: Enable behindHubT
+            return Optional.empty();
+        }
+        if (FieldUtil.isInAllianceZone(trl)) {
+            return Optional.of(FieldUtil.kHubTrl);
+        }
+        return Optional.of(drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
     }
 
     /**
@@ -118,7 +100,7 @@ public class Superstructure extends SubsystemBase{
      * @return
      */
     public Command otterShootStationaryC(Supplier<ChassisSpeeds> speeds) {
-        return otterShootStationaryC(speeds, drivetrain.getTarget());
+        return otterShootStationaryC(speeds, () -> getTarget());
     } 
 
     /**
@@ -126,7 +108,7 @@ public class Superstructure extends SubsystemBase{
      * @return
      */
     public Command otterShootOnTheSwimC(Supplier<ChassisSpeeds> speeds) {
-        return otterShootOnTheSwimC(speeds, drivetrain.getTarget());
+        return otterShootOnTheSwimC(speeds, () -> getTarget());
     } 
 
     /**
@@ -223,7 +205,7 @@ public class Superstructure extends SubsystemBase{
      * @return
      */
     public Command otterShootEndC(Supplier<ChassisSpeeds> speeds) {
-        return otterShootStationaryC(speeds, drivetrain.getTarget());
+        return otterShootStationaryC(speeds, () -> getTarget());
     } 
 
     /**
@@ -276,6 +258,14 @@ public class Superstructure extends SubsystemBase{
 
     private void resetDoneShooting(){
         doneShooting = false;
+    }
+
+    public void log() {
+        var trl = drivetrain.getGlobalPoseEstimate().getTranslation();
+        SmartDashboard.putBoolean("1) Drivetrain/In Trench Zone", FieldUtil.isInTrenchZone(trl));
+        SmartDashboard.putBoolean("1) Drivetrain/In Alliance Zone", FieldUtil.isInAllianceZone(trl));
+        SmartDashboard.putBoolean("1) Drivetrain/In Neutral Zone", FieldUtil.isInNeutralZone(trl));
+        SmartDashboard.putBoolean("1) Drivetrain/In BehindHub Zone", FieldUtil.isInBehindHubZone(trl));
     }
 
     // public static class ShootOnTheSwim {
