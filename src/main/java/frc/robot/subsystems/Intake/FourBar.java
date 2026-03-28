@@ -42,7 +42,8 @@ public class FourBar extends SubsystemBase {
     public final Trigger isStationary = new Trigger(() -> getVelocity().isNear(DegreesPerSecond.of(0), DegreesPerSecond.of(3)));
     /** Current is above stall threshold */
     public final Trigger isStalled = new Trigger(() -> getCurrent().gt(stallThreshold.get()));
-    private Trigger isHomed = isHomed();
+    /** Stationary and pulling current above threshold for some time */
+    public final Trigger isHomed = OCTrigger.debounce(isStalled.and(isStationary), () -> stallTime.in(Seconds));
 
 
     // private Angle targetAngle = fourBarMaxAngle.get();
@@ -112,14 +113,6 @@ public class FourBar extends SubsystemBase {
 
     public Current getCurrent() {
         return statorStatus.getValue();
-    }
-
-    private Trigger isHomed() {
-        return OCTrigger.debounce(isStalled.and(isStationary), () -> stallTime.in(Seconds));
-    }
-
-    public Trigger isHomedT() {
-        return isHomed;
     }
 
     public void resetAngle(Angle angle) {
@@ -231,9 +224,6 @@ public class FourBar extends SubsystemBase {
         stallTime.poll();
         
         int hash = hashCode();
-        if (stallTime.hasChanged(hash)) {
-            isHomed = isHomed();
-        }
     }
 
     public void log() {
@@ -245,6 +235,9 @@ public class FourBar extends SubsystemBase {
         SmartDashboard.putNumber("2) Intake/Four Bar/Current", getCurrent().in(Amps));
         SmartDashboard.putNumber("2) Intake/Four Bar/Target Current", targetCurrent.in(Amps));
         // SmartDashboard.putString("2) Intake/Four Bar/Control Mode", controlMode.toString());
+        SmartDashboard.putBoolean("2) Intake/Four Bar/Is Stationary", isStationary.getAsBoolean());
+        SmartDashboard.putBoolean("2) Intake/Four Bar/Is Stalled", isStalled.getAsBoolean());
+        SmartDashboard.putBoolean("2) Intake/Four Bar/Is Homed", isHomed.getAsBoolean());
     }
 
     // Simulation
