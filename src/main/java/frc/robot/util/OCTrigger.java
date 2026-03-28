@@ -32,7 +32,7 @@ public abstract class OCTrigger {
      * @return The debounced trigger.
      */
     public static Trigger debounce(Trigger trigger, DoubleSupplier tunableSeconds, Debouncer.DebounceType type) {
-        return trigger.and(new Trigger(
+        return new Trigger(
                 new BooleanSupplier() {
                     final Debouncer m_debouncer = new Debouncer(tunableSeconds.getAsDouble(), type);
 
@@ -41,6 +41,6 @@ public abstract class OCTrigger {
                         m_debouncer.setDebounceTime(tunableSeconds.getAsDouble());
                         return m_debouncer.calculate(trigger.getAsBoolean());
                     }
-                }));
+                });
     }
 }
