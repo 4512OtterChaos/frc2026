@@ -44,7 +44,8 @@ public class Superstructure extends SubsystemBase{
         this.shooter = shooter;
         this.climber = climber;
 
-        readyToShoot = shooter.isUpToSpeed.and(shooter.isAtAngle).and(drivetrain.isFacingTarget);
+        // readyToShoot = shooter.isUpToSpeed.and(shooter.isAtAngle).and(drivetrain.isFacingTarget);
+        readyToShoot = drivetrain.isFacingTarget;
     }
 
     // public Command passiveSpindexC() {

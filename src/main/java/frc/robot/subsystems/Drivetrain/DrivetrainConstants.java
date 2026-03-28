@@ -46,13 +46,13 @@ public class DrivetrainConstants {
     public static final TunableLinearAcceleration sotmLinearAccel = new TunableLinearAcceleration("1) Drivetrain/SOTM/Linear Acceleration", kSOTMLinearAccel);
     public static final TunableLinearAcceleration sotmLinearDecel = new TunableLinearAcceleration("1) Drivetrain/SOTM/Linear Deceleration", kSOTMLinearDecel);
     
-    public static final Angle kRotationTolerance = Degrees.of(5);
+    public static final Angle kRotationTolerance = Degrees.of(4);
     public static final TunableAngle rotationTolerance = new TunableAngle("1) Drivetrain/Rotation Tolerance", kRotationTolerance);
 
     public static final AngularVelocity kOmegaTolerance = DegreesPerSecond.of(5);
     public static final TunableAngularVelocity omegaTolerance = new TunableAngularVelocity("1) Drivetrain/Omega Tolerance", kOmegaTolerance);
 
-    public static final Time kRotationDebounceTime = Seconds.of(0.2);
+    public static final Time kRotationDebounceTime = Seconds.of(0.3);
     public static final TunableTime rotationDebounceTime = new TunableTime("1) Drivetrain/Rotation Debounce", kRotationDebounceTime);
    
     // public static final Time kBrakeDebounceTime = Seconds.of(0.2);
