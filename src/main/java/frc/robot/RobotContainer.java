@@ -135,7 +135,13 @@ public class RobotContainer {
         driver.a().whileTrue(fourBar.extendC()); 
 
         
-        driver.povUp().whileTrue(run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get())))); //Testing command
+        driver.povUp().whileTrue(parallel(
+            run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get()))),
+            sequence(
+                waitSeconds(0.6),
+                superstructure.indexC()
+            )
+        )); //Testing command
 
         // driver.povUp().whileTrue(climber.setMaxHeightC()); //TODO: Re-enable
         // driver.povDown().whileTrue(climber.setMinHeightC()); //TODO: Re-enable
