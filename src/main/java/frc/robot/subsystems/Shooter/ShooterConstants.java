@@ -68,16 +68,16 @@ public final class ShooterConstants {
 //     public static final TunableAngle hoodMinAngle = new TunableAngle("4) Shooter/Hood/Min Angle", kHoodMinAngle);
 //     public static final TunableAngle hoodMaxAngle = new TunableAngle("4) Shooter/Hood/Max Angle", kHoodMaxAngle);
 
-    public static final double kFlywheelDebounceTime = 0.2;
-    public static final double kHoodDebounceTime = 0.2;
+    public static final Time kFlywheelDebounceTime = Seconds.of(0.2);
+    public static final Time kHoodDebounceTime = Seconds.of(0.2);
 
-    public static final TunableNumber flywheelDebounceTime = new TunableNumber("4) Shooter/Flywheel/Debounce Time",
+    public static final TunableTime flywheelDebounceTime = new TunableTime("4) Shooter/Flywheel/Debounce Time",
             kFlywheelDebounceTime);
-    public static final TunableNumber hoodDebounceTime = new TunableNumber("4) Shooter/Hood/Debounce Time",
+    public static final TunableTime hoodDebounceTime = new TunableTime("4) Shooter/Hood/Debounce Time",
             kHoodDebounceTime);
 
-    public static final AngularVelocity kVelocityTolerance = RPM.of(100); // TODO: tune tolerance
-    public static final Angle kAngleTolerance = Degrees.of(0.5); // TODO: tune tolerance
+    public static final AngularVelocity kVelocityTolerance = RPM.of(300); // TODO: tune tolerance
+    public static final Angle kAngleTolerance = Degrees.of(1.5); // TODO: tune tolerance
     
     public static final TunableAngularVelocity velocityTolerance = new TunableAngularVelocity("4) Shooter/Flywheel/RPM Tolerance", kVelocityTolerance);
     public static final TunableAngle angleTolerance = new TunableAngle("4) Shooter/Hood/Degrees Tolerance", kAngleTolerance);

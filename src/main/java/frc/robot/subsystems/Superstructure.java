@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds; 
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -13,7 +14,6 @@ import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*; 
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
@@ -23,7 +23,6 @@ import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
-import frc.robot.util.OCXboxController; 
 
 public class Superstructure extends SubsystemBase{
     private OCDrivetrain drivetrain;
@@ -34,9 +33,7 @@ public class Superstructure extends SubsystemBase{
     private Shooter shooter;
     private Climber climber;
 
-    private boolean wasFeeding = false;
-    private boolean doneShooting = false;
-    public final Trigger doneShootingT = new Trigger(()->doneShooting);
+    public final Trigger readyToShoot;
 
     public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter, Climber climber) {
         this.drivetrain = drivetrain;
@@ -46,6 +43,8 @@ public class Superstructure extends SubsystemBase{
         this.feeder = feeder;
         this.shooter = shooter;
         this.climber = climber;
+
+        readyToShoot = shooter.isUpToSpeed.and(shooter.isAtAngle).and(drivetrain.isFacingTarget);
     }
 
     // public Command passiveSpindexC() {
@@ -65,7 +64,7 @@ public class Superstructure extends SubsystemBase{
                     intake.setVoltageInC().asProxy()
                 )
             )
-        );
+        ).withName("IndexC");
     }
 
     /**
@@ -78,39 +77,20 @@ public class Superstructure extends SubsystemBase{
             intake.setVoltageInC()
         );
     }
-    
+
     /**
-     * @param controller Controller to get strafe input from
-     * @return A command sequence that turns to shoot into the hub, setting the drivetrain rotation, intake, fourbar, spindexer, feeder and shooter.
+     * Gets the shooting target based on current position.
+     * @return An optional translation of the target, empty if there is no valid target
      */
-    public Command otterShootStationaryControllerC(OCXboxController controller) {
-        return otterShootStationaryC(OCDrivetrain.controllerToChassisSpeeds(controller));
-    }
-    
-    /**
-     * @param controller Controller to get strafe input from
-     * @return
-     */
-    public Command otterShootOnTheSwimControllerC(OCXboxController controller) {
-        return otterShootOnTheSwimC(OCDrivetrain.controllerToChassisSpeeds(controller));
-    }
-    
-    /**
-     * @param controller Controller to get strafe input from
-     * @param target
-     * @return
-     */
-    public Command otterShootControllerC(OCXboxController controller, Supplier<Optional<Translation2d>> target) {
-        return otterShootStationaryC(OCDrivetrain.controllerToChassisSpeeds(controller), target);
-    }
-    
-    /**
-     * @param controller Controller to get strafe input from
-     * @param target
-     * @return
-     */
-    public Command otterShootOnTheSwimControllerC(OCXboxController controller, Supplier<Optional<Translation2d>> target) {
-        return otterShootOnTheSwimC(OCDrivetrain.controllerToChassisSpeeds(controller), target);
+    public Optional<Translation2d> getTarget() {
+        var trl = drivetrain.getGlobalPoseEstimate().getTranslation();
+        if (FieldUtil.isInTrenchZone(trl) /* || FieldUtil.isBehindHub(trl) */) { //TODO: Enable behindHubT
+            return Optional.empty();
+        }
+        if (FieldUtil.isInAllianceZone(trl)) {
+            return Optional.of(FieldUtil.kHubTrl);
+        }
+        return Optional.of(drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
     }
 
     /**
@@ -118,7 +98,7 @@ public class Superstructure extends SubsystemBase{
      * @return
      */
     public Command otterShootStationaryC(Supplier<ChassisSpeeds> speeds) {
-        return otterShootStationaryC(speeds, drivetrain.getTarget());
+        return otterShootStationaryC(speeds, () -> getTarget());
     } 
 
     /**
@@ -126,7 +106,7 @@ public class Superstructure extends SubsystemBase{
      * @return
      */
     public Command otterShootOnTheSwimC(Supplier<ChassisSpeeds> speeds) {
-        return otterShootOnTheSwimC(speeds, drivetrain.getTarget());
+        return otterShootOnTheSwimC(speeds, () -> getTarget());
     } 
 
     /**
@@ -141,7 +121,7 @@ public class Superstructure extends SubsystemBase{
                 shootStationaryBaseC(speeds, target),
                 autoIndexForShooting(hasTarget)
             )
-        ).finallyDo(()-> setDoneShooting(hasTarget)).withName("Otter Shoot Stationary");
+        ).withName("Otter Shoot Stationary");
     }
 
     /**
@@ -156,7 +136,7 @@ public class Superstructure extends SubsystemBase{
                 shootOnTheSwimBaseC(speeds, target, hasTarget),
                 autoIndexForShooting(hasTarget)
             )
-        ).finallyDo(()-> setDoneShooting(hasTarget)).withName("Otter Shoot on the Swim");
+        ).withName("Otter Shoot on the Swim");
     }
 
     public Command shootStationaryBaseC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target){
@@ -172,7 +152,7 @@ public class Superstructure extends SubsystemBase{
 
                     shooter.setState(state);
                 }
-                drivetrain.driveFacingOptionalTarget(speeds, target);
+                drivetrain.driveFacingOptionalTarget(speeds.get(), target.get());
             },
             drivetrain, shooter
         ).withName("shootStationaryBaseC()");
@@ -182,7 +162,7 @@ public class Superstructure extends SubsystemBase{
         return Commands.run(
             () -> {
                 if (hasTarget.negate().getAsBoolean()) {
-                    shooter.setIdleC();
+                    shooter.setIdle();
                 }
                 else{
                     var currSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getState().Pose.getRotation());
@@ -200,82 +180,29 @@ public class Superstructure extends SubsystemBase{
 
                     shooter.setState(state);
                 }
-                drivetrain.driveFacingOptionalTargetSlowBrake(speeds.get(), target);
+                drivetrain.driveFacingOptionalTargetBrake(speeds.get(), target.get());
             },
             drivetrain, shooter
         ).withName("shootOnTheSwimBaseC()");
     }
-    
-    /**
-     * @param speeds Field relative chassis speeds
-     * @return
-     */
-    public Command otterShootEndControllerC(OCXboxController controller) {
-        return either(
-            otterShootEndC(OCDrivetrain.controllerToChassisSpeeds(controller)),
-            otterShootEndC(()-> new ChassisSpeeds()), 
-            RobotModeTriggers.autonomous().negate()
-        );
-    }
-
-    /**
-     * @param speeds Field relative chassis speeds
-     * @return
-     */
-    public Command otterShootEndC(Supplier<ChassisSpeeds> speeds) {
-        return otterShootStationaryC(speeds, drivetrain.getTarget());
-    } 
-
-    /**
-     * @param speeds Field relative chassis speeds 
-     * @param target 
-     * @return
-     */
-    public Command otterShootEndC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
-        Trigger hasTarget = new Trigger(()-> target.get().isEmpty()).negate();
-        return parallel(
-            Commands.run(
-                () -> {
-                    if (hasTarget.negate().getAsBoolean()) {
-                        shooter.setIdleC();
-                    }
-                    else {
-                        Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target.get().get());
-                        Shooter.State state = Shotmap.getState(distance);
-
-                        shooter.setState(state);
-                    }
-                },
-                shooter
-            ),
-            drivetrain.driveFacingOptionalTargetC(speeds, target),
-            feeder.feedC()
-        ).until(hasTarget.negate()).withTimeout(0.2).finallyDo(()->resetDoneShooting()).withName("Otter Shoot End");
-    }
 
     public Command autoIndexForShooting(Trigger hasTarget){
-        return repeatingSequence(
-            parallel(
-                waitUntil(hasTarget.debounce(0.2)),
-                waitSeconds(0.7).until(()-> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.facingTargetT().getAsBoolean())
-            ),
-            runOnce(()->wasFeeding = true),
-            parallel(
+        return sequence(
+            waitUntil(readyToShoot), // wait for all ready parameters
+            parallel( // proxy indexing and agitation
                 fourBar.setReadyToOscillateC(true),
-                indexC().asProxy()
-            ).until(hasTarget.negate()).finallyDo(()-> fourBar.setReadyToOscillate(false))
-        );
+                indexC().asProxy().until(readyToShoot.negate())
+            ).finallyDo(()-> fourBar.setReadyToOscillate(false))
+        ).repeatedly();
     }
 
-    private void setDoneShooting(Trigger hasTarget){
-        if (wasFeeding && hasTarget.getAsBoolean()) {
-            doneShooting = true;
-            wasFeeding = false;
-        }
-    }
-
-    private void resetDoneShooting(){
-        doneShooting = false;
+    public void log() {
+        var trl = drivetrain.getGlobalPoseEstimate().getTranslation();
+        SmartDashboard.putBoolean("1) Drivetrain/In Trench Zone", FieldUtil.isInTrenchZone(trl));
+        SmartDashboard.putBoolean("1) Drivetrain/In Alliance Zone", FieldUtil.isInAllianceZone(trl));
+        SmartDashboard.putBoolean("1) Drivetrain/In Neutral Zone", FieldUtil.isInNeutralZone(trl));
+        SmartDashboard.putBoolean("1) Drivetrain/In BehindHub Zone", FieldUtil.isInBehindHubZone(trl));
+        SmartDashboard.putBoolean("1) Drivetrain/Ready to Shoot", readyToShoot.getAsBoolean());
     }
 
     // public static class ShootOnTheSwim {
