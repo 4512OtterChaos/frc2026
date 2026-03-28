@@ -79,11 +79,11 @@ public class RobotContainer {
     }
 
     public void configureDefaultCommands() {
-        intake.setDefaultCommand(intake.setVoltageC(0));
-        fourBar.setDefaultCommand(fourBar.setCurrentC(Amps.of(0)));
+        intake.setDefaultCommand(intake.setVoltageC(0).withName("Default"));
+        fourBar.setDefaultCommand(fourBar.setCurrentC(Amps.of(0)).withName("Default"));
         fourBar.doneOscillatingT().whileTrue(fourBar.extendC().finallyDo(()->fourBar.resetDoneOscillating()).withName("Extend(Done Oscillating)"));
-        spindexer.setDefaultCommand(spindexer.setVoltageC(0));
-        feeder.setDefaultCommand(feeder.setVelocityC(RPM.of(0)));
+        spindexer.setDefaultCommand(spindexer.setVoltageC(0).withName("Default"));
+        feeder.setDefaultCommand(feeder.setVelocityC(RPM.of(0)).withName("Default"));
         shooter.setDefaultCommand(shooter.setIdleC());
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.

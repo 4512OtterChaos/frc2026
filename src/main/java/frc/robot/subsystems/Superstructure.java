@@ -33,6 +33,8 @@ public class Superstructure extends SubsystemBase{
     private Shooter shooter;
     private Climber climber;
 
+    public final Trigger readyToShoot;
+
     public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter, Climber climber) {
         this.drivetrain = drivetrain;
         this.intake = intake;
@@ -41,6 +43,8 @@ public class Superstructure extends SubsystemBase{
         this.feeder = feeder;
         this.shooter = shooter;
         this.climber = climber;
+
+        readyToShoot = shooter.isUpToSpeed.and(shooter.isAtAngle).and(drivetrain.isFacingTarget);
     }
 
     // public Command passiveSpindexC() {
@@ -60,7 +64,7 @@ public class Superstructure extends SubsystemBase{
                     intake.setVoltageInC().asProxy()
                 )
             )
-        );
+        ).withName("IndexC");
     }
 
     /**
@@ -158,7 +162,7 @@ public class Superstructure extends SubsystemBase{
         return Commands.run(
             () -> {
                 if (hasTarget.negate().getAsBoolean()) {
-                    shooter.setIdleC();
+                    shooter.setIdle();
                 }
                 else{
                     var currSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getState().Pose.getRotation());
@@ -183,16 +187,13 @@ public class Superstructure extends SubsystemBase{
     }
 
     public Command autoIndexForShooting(Trigger hasTarget){
-        return repeatingSequence(
-            parallel(
-                waitUntil(hasTarget.debounce(0.2)),
-                waitSeconds(0.7).until(()-> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.isFacingTarget.getAsBoolean())
-            ),
-            parallel(
+        return sequence(
+            waitUntil(readyToShoot), // wait for all ready parameters
+            parallel( // proxy indexing and agitation
                 fourBar.setReadyToOscillateC(true),
-                indexC().asProxy()
-            ).until(hasTarget.negate()).finallyDo(()-> fourBar.setReadyToOscillate(false))
-        );
+                indexC().asProxy().until(readyToShoot.negate())
+            ).finallyDo(()-> fourBar.setReadyToOscillate(false))
+        ).repeatedly();
     }
 
     public void log() {
@@ -201,6 +202,7 @@ public class Superstructure extends SubsystemBase{
         SmartDashboard.putBoolean("1) Drivetrain/In Alliance Zone", FieldUtil.isInAllianceZone(trl));
         SmartDashboard.putBoolean("1) Drivetrain/In Neutral Zone", FieldUtil.isInNeutralZone(trl));
         SmartDashboard.putBoolean("1) Drivetrain/In BehindHub Zone", FieldUtil.isInBehindHubZone(trl));
+        SmartDashboard.putBoolean("1) Drivetrain/Ready to Shoot", readyToShoot.getAsBoolean());
     }
 
     // public static class ShootOnTheSwim {

@@ -17,6 +17,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -38,6 +39,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.OCTrigger;
 
 public class Shooter extends SubsystemBase {
     private TalonFX fwLeftMotor = new TalonFX(kLeftMotorID);
@@ -48,8 +50,25 @@ public class Shooter extends SubsystemBase {
     private AngularVelocity targetVelocity = RPM.of(0); // flywheel
     private Angle targetAngle = kHoodMinAngle; //hood
 
-    private Trigger upToSpeed = new Trigger(() -> upToSpeed()).debounce(flywheelDebounceTime.get());
-    private Trigger atAngle = new Trigger(() -> atAngle()).debounce(hoodDebounceTime.get());
+    public final Trigger isIdle = new Trigger(() -> targetVelocity.isNear(kFlywheelIdleVelocity, 0.01) && targetAngle.isNear(kHoodMinAngle, 0.01));
+    public final Trigger isUpToSpeed = OCTrigger.debounce(
+        OCTrigger.debounce(
+            new Trigger(() -> getFlywheelVelocity().isNear(targetVelocity, velocityTolerance.get())).and(isIdle.negate()),
+            () -> flywheelDebounceTime.in(Seconds),
+            DebounceType.kRising
+        ),
+        () -> flywheelDebounceTime.in(Seconds) * 2,
+        DebounceType.kFalling
+    );
+    public final Trigger isAtAngle = OCTrigger.debounce(
+        OCTrigger.debounce(
+            new Trigger(() -> getHoodAngle().isNear(targetAngle, angleTolerance.get())).and(isIdle.negate()),
+            () -> hoodDebounceTime.in(Seconds),
+            DebounceType.kRising
+        ),
+        () -> hoodDebounceTime.in(Seconds) * 2,
+        DebounceType.kFalling
+    );
 
     private final StatusSignal<Angle> fwPositionStatus = fwLeftMotor.getPosition();
     private final StatusSignal<AngularVelocity> fwVelocityStatus = fwLeftMotor.getVelocity();
@@ -151,14 +170,6 @@ public class Shooter extends SubsystemBase {
         targetAngle = angle;
     }
 
-    private boolean atAngle() {
-        return Math.abs(targetAngle.in(Degrees) - getHoodAngle().in(Degrees)) < angleTolerance.in(Degrees);
-    }
-
-    public Trigger atAngleT() {
-        return atAngle;
-    }
-
     // FLYWHEEL
     public Angle getFlywheelAngle() {
        return fwPositionStatus.getValue();
@@ -186,14 +197,6 @@ public class Shooter extends SubsystemBase {
 
     public void setVelocity(AngularVelocity velocity) {
         targetVelocity = velocity;
-    }
-
-    private boolean upToSpeed() {
-        return Math.abs(targetVelocity.in(RPM) - getFlywheelVelocity().in(RPM)) < velocityTolerance.in(RPM); 
-    }
-
-    public Trigger upToSpeedT() {
-        return upToSpeed;
     }
     
     //OVERALL
@@ -265,14 +268,6 @@ public class Shooter extends SubsystemBase {
 
         int hash = hashCode();
 
-        if (flywheelDebounceTime.hasChanged(hash)){
-            upToSpeed = new Trigger(() -> upToSpeed()).debounce(flywheelDebounceTime.get());
-        }
-
-        if(hoodDebounceTime.hasChanged(hash)){
-            atAngle = new Trigger(() -> atAngle()).debounce(hoodDebounceTime.get());
-        }
-
         if (hoodkP.hasChanged(hash) || hoodkI.hasChanged(hash) || hoodkD.hasChanged(hash) || hoodkG.hasChanged(hash) || hoodkS.hasChanged(hash) || hoodkV.hasChanged(hash) || hoodkA.hasChanged(hash) || flywheelkP.hasChanged(hash) || flywheelkI.hasChanged(hash) || flywheelkD.hasChanged(hash) || flywheelkS.hasChanged(hash) || flywheelkV.hasChanged(hash) || flywheelkA.hasChanged(hash)) {
             kHoodConfig.Slot0.kP = hoodkP.get();
             kHoodConfig.Slot0.kI = hoodkI.get();
@@ -305,13 +300,13 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("4) Shooter/Target Hood Angle", targetAngle.in(Degrees));
         SmartDashboard.putNumber("4) Shooter/Hood/Voltage", getHoodVoltage().in(Volts));
         SmartDashboard.putNumber("4) Shooter/Hood/Current", getHoodCurrent().in(Amps));
-        SmartDashboard.putBoolean("4) Shooter/At Angle", atAngleT().getAsBoolean());
+        SmartDashboard.putBoolean("4) Shooter/At Angle", isAtAngle.getAsBoolean());
 
         SmartDashboard.putNumber("4) Shooter/Flywheel RPM", getFlywheelVelocity().in(RPM));
         SmartDashboard.putNumber("4) Shooter/Target Flywheel RPM", targetVelocity.in(RPM));
         SmartDashboard.putNumber("4) Shooter/Flywheel/Voltage", getFlywheelVoltage().in(Volts));
         SmartDashboard.putNumber("4) Shooter/Flywheel/Current", getFlywheelCurrent().in(Amps));
-        SmartDashboard.putBoolean("4) Shooter/Up to speed", upToSpeedT().getAsBoolean());    
+        SmartDashboard.putBoolean("4) Shooter/Up to speed", isUpToSpeed.getAsBoolean());    
 
         // ##### Component Logs
 
