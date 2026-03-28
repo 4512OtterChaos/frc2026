@@ -36,12 +36,12 @@
         "y": 3.450333333333333
       },
       "prevControl": {
-        "x": 7.8120111111111115,
-        "y": 3.200333333333333
+        "x": 7.881873160931143,
+        "y": 3.2102931408760216
       },
       "nextControl": {
-        "x": 7.8120111111111115,
-        "y": 3.700333333333333
+        "x": 7.7265763195435095,
+        "y": 3.7438801711840233
       },
       "isLocked": false,
       "linkedName": "Bottom Sweep Middle"
@@ -52,12 +52,12 @@
         "y": 0.702399999999999
       },
       "prevControl": {
-        "x": 7.8947788873038505,
-        "y": 0.9620684736091312
+        "x": 7.584251069900143,
+        "y": 0.9879457917261072
       },
       "nextControl": {
-        "x": 5.68386339583709,
-        "y": 0.6282543362474858
+        "x": 5.688188321183544,
+        "y": 0.6037762086379718
       },
       "isLocked": false,
       "linkedName": "Bottom Sweep End"
@@ -130,12 +130,6 @@
     {
       "name": "Lower Fourbar",
       "waypointRelativePos": 0.2561247216035545,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "Shoot",
-      "waypointRelativePos": 4.0,
       "endWaypointRelativePos": null,
       "command": null
     }

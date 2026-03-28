@@ -1,0 +1,150 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.930057061340941,
+        "y": 5.658801711840229
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.4993580599144067,
+        "y": 5.6846790299572065
+      },
+      "isLocked": false,
+      "linkedName": "Top Bump Shoot"
+    },
+    {
+      "anchor": {
+        "x": 5.928102710413694,
+        "y": 5.387089871611984
+      },
+      "prevControl": {
+        "x": 5.737929085871253,
+        "y": 5.2248123545974865
+      },
+      "nextControl": {
+        "x": 6.696578566428232,
+        "y": 6.042839869013954
+      },
+      "isLocked": false,
+      "linkedName": "Top Bump Approach"
+    },
+    {
+      "anchor": {
+        "x": 7.700699001426534,
+        "y": 6.344550641940086
+      },
+      "prevControl": {
+        "x": 6.717360912981454,
+        "y": 6.978544935805991
+      },
+      "nextControl": {
+        "x": 8.089797291613737,
+        "y": 6.093684639056232
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.794992867332382,
+        "y": 4.571954350927247
+      },
+      "prevControl": {
+        "x": 8.488258811905052,
+        "y": 4.249427504341979
+      },
+      "nextControl": {
+        "x": 6.251569186875892,
+        "y": 4.675463623395149
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.928102710413694,
+        "y": 5.387089871611984
+      },
+      "prevControl": {
+        "x": 6.173530670470755,
+        "y": 5.2965192582025695
+      },
+      "nextControl": {
+        "x": 5.182521134354783,
+        "y": 5.662232853180643
+      },
+      "isLocked": false,
+      "linkedName": "Top Bump Approach"
+    },
+    {
+      "anchor": {
+        "x": 1.930057061340941,
+        "y": 5.658801711840229
+      },
+      "prevControl": {
+        "x": 2.4346647646219677,
+        "y": 5.671740370898718
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Top Bump Shoot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.34,
+      "rotationDegrees": 50.82763380540437
+    },
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 53.14210666348598
+    },
+    {
+      "waypointRelativePos": 1.8781378366043,
+      "rotationDegrees": -45.8912581686923
+    },
+    {
+      "waypointRelativePos": 2.626654495664074,
+      "rotationDegrees": -152.08841230366804
+    },
+    {
+      "waypointRelativePos": 3.5851209493382035,
+      "rotationDegrees": 127.92820075156175
+    },
+    {
+      "waypointRelativePos": 4.0,
+      "rotationDegrees": 146.305919665708
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": 4.0,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 141.9112271190247
+  },
+  "reversed": false,
+  "folder": "Top Double Cycle",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 141.9112271190247
+  },
+  "useDefaultConstraints": true
+}

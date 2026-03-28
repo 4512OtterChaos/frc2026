@@ -36,44 +36,44 @@
         "y": 4.921298145506419
       },
       "prevControl": {
-        "x": 8.186336281074993,
-        "y": 5.208283038059834
+        "x": 8.208075077260954,
+        "y": 5.195887837525447
       },
       "nextControl": {
-        "x": 7.868901569186878,
-        "y": 4.597831669044221
+        "x": 7.6101283880171176,
+        "y": 4.235549215406561
       },
       "isLocked": false,
       "linkedName": "Top Sweep Middle"
     },
     {
       "anchor": {
-        "x": 5.798716119828815,
-        "y": 7.41845934379458
+        "x": 5.928102710413694,
+        "y": 5.387089871611984
       },
       "prevControl": {
-        "x": 7.3384165477888725,
-        "y": 7.35376604850214
+        "x": 6.482683352699867,
+        "y": 5.24844471104044
       },
       "nextControl": {
-        "x": 5.212981724336786,
-        "y": 7.4430700326808
+        "x": 5.685567085377361,
+        "y": 5.447723777871068
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Top Bump Approach"
     },
     {
       "anchor": {
-        "x": 2.2923395149786017,
-        "y": 7.198502139800285
+        "x": 1.930057061340941,
+        "y": 5.658801711840229
       },
       "prevControl": {
-        "x": 3.651133333333333,
-        "y": 7.445555555555555
+        "x": 2.939272467902996,
+        "y": 5.529415121255351
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Top Trench Shoot"
+      "linkedName": "Top Bump Shoot"
     }
   ],
   "rotationTargets": [
@@ -83,19 +83,15 @@
     },
     {
       "waypointRelativePos": 1.1387494294842486,
-      "rotationDegrees": -90.0
+      "rotationDegrees": -81.41585480240403
     },
     {
       "waypointRelativePos": 2.0,
-      "rotationDegrees": -90.0
+      "rotationDegrees": -74.47588900324585
     },
     {
-      "waypointRelativePos": 2.842063174730106,
-      "rotationDegrees": 180.0
-    },
-    {
-      "waypointRelativePos": 3.75,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 3.0,
+      "rotationDegrees": 138.38189165342607
     },
     {
       "waypointRelativePos": 4.0,
@@ -128,7 +124,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 127.56859202882747
+    "rotation": 141.9112271190247
   },
   "reversed": false,
   "folder": "Top Double Cycle",

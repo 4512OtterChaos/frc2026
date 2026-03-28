@@ -5,13 +5,19 @@ import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.util.RobotConstants.*;
 
+import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Supplier;
+
+import org.json.simple.parser.ParseException;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FileVersionException;
 
 import choreo.auto.AutoChooser;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -79,7 +85,7 @@ public class AutoOptions {
             .onTrue(superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).withTimeout(4));
 
         // NamedCommands.registerCommand("Intake", intake.setVoltageInC().asProxy());
-        // NamedCommands.registerCommand("Shoot", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).withTimeout(4).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
+        NamedCommands.registerCommand("Shoot", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).withTimeout(4).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
         // NamedCommands.registerCommand("Lower Fourbar", fourBar.extendC().asProxy());
     }
 
@@ -92,7 +98,11 @@ public class AutoOptions {
     }
 
     public void addOptions() {
-        autoChooser.addCmd("New and super cool", 
+        autoChooser.addCmd("Right Bump Cycles", ()->{
+            return new PathPlannerAuto("Top Bump Cycles", true);
+        });
+        // autoChooser.addCmd("Right Bump Cycles", Autos.RightBumpCycles.get());
+        autoChooser.addCmd("Shoot Preloads", 
             ()->sequence(
                 runOnce(()-> drivetrain.resetPose(new Pose2d(Meters.of(4.5), FieldUtil.kFieldWidth.div(2), Rotation2d.k180deg)), drivetrain),
                 drivetrain.driveC(()-> new ChassisSpeeds(-1, 0, 0), false).withTimeout(2.25),
@@ -103,6 +113,10 @@ public class AutoOptions {
         autoChooser.addCmd("Right Double Cycle", ()->sequence(
             // fourBar.extendC().withTimeout(1),
             AutoBuilder.buildAuto("Bottom Double Cycle")
+        ));
+        autoChooser.addCmd("Left Bump Cycles", ()->sequence(
+            // fourBar.extendC().withTimeout(1),
+            AutoBuilder.buildAuto("Top Bump Cycles")
         ));
         autoChooser.addCmd("Left Double Cycle", ()->sequence(
             // fourBar.extendC().withTimeout(1),
@@ -135,4 +149,56 @@ public class AutoOptions {
     public void log() {
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
+
+    // public enum Autos{
+    //     LeftBumpCycles(()->{
+    //         try {
+    //             return sequence(
+
+    //                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("Top Bump Cycles 1-2")),
+    //                 NamedCommands.getCommand("Shoot"),
+    //                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("Top Bump Cycles 2-2")),
+    //                 NamedCommands.getCommand("Shoot")
+    //             );
+    //         } catch (FileVersionException | IOException | ParseException e) {
+    //             System.out.println("BAD AUTO");
+    //             e.printStackTrace();
+    //         }
+    //         return Commands.none();
+    //     })/*,
+    //     RightBumpCycles(()->{
+    //         try {
+    //             return sequence(
+    //                 drivetrain.resetPose(pose),
+    //                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("Top Bump Cycles 1-2").mirrorPath().getAllPathPoints().get(0).),
+    //                 NamedCommands.getCommand("Shoot"),
+    //                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("Top Bump Cycles 2-2").mirrorPath())
+    //             );
+    //         } catch (FileVersionException | IOException | ParseException e) {
+    //             System.out.println("BAD AUTO");
+    //             e.printStackTrace();
+    //         }
+    //         return Commands.none();
+    //     })*/;
+
+    //     private Supplier<Command> auto;
+
+    //     private Autos(Supplier<Command> auto){
+    //         this.auto = auto;
+    //     }
+
+    //     public Supplier<Command> get(){
+    //         return auto;
+    //     }
+
+    //     public Command getInitPose(PathPlannerPath path){
+      
+    //   if (mirror) {
+    //     path0 = path0.mirrorPath();
+    //   }
+    //   if (AutoBuilder.isHolonomic()) {
+    //     this.startingPose =
+    //         new Pose2d(path0.getPoint(0).position, path0.getIdealStartingState().rotation());
+    //     }
+    // }
 }
