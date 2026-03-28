@@ -38,6 +38,7 @@ import frc.robot.util.FuelPhysicsSim;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.OCXboxController;
 import frc.robot.util.RobotConstants;
+import frc.robot.util.TunableNumber;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -60,9 +61,9 @@ public class RobotContainer {
 
     private final AutoOptions autos = new AutoOptions(drivetrain, intake, shooter, spindexer, fourBar, null, feeder, superstructure);
 
-    // TunableNumber feederVoltage = new TunableNumber("test/feederVoltage", 8);
-    // TunableNumber flywheelVelocity = new TunableNumber("test/flywheelVelocity", 2800);
-    // TunableNumber hoodAngle = new TunableNumber("test/hoodAngle", 26);
+    TunableNumber feederVoltage = new TunableNumber("test/feederVoltage", 8);
+    TunableNumber flywheelVelocity = new TunableNumber("test/flywheelVelocity", 2800);
+    TunableNumber hoodAngle = new TunableNumber("test/hoodAngle", 26);
 
     public RobotContainer() {
         configureDefaultCommands();
@@ -122,11 +123,11 @@ public class RobotContainer {
         ));
 
         fourBar.readyToOscillateT().and(driver.leftTrigger().negate()).whileTrue(fourBar.oscillateC());
-        driver.y().whileTrue(fourBar.retractC()); 
+        driver.y().whileTrue(superstructure.fourbarRetractC()); 
         driver.a().whileTrue(fourBar.extendC()); 
 
         
-        // driver.povUp().whileTrue(run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get())))); //Testing command
+        driver.povUp().whileTrue(run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get())))); //Testing command
 
         // driver.povUp().whileTrue(climber.setMaxHeightC()); //TODO: Re-enable
         // driver.povDown().whileTrue(climber.setMinHeightC()); //TODO: Re-enable
@@ -181,9 +182,9 @@ public class RobotContainer {
     }
 
     public void changeTunable() {
-        // feederVoltage.poll();
-        // hoodAngle.poll();
-        // flywheelVelocity.poll();
+        feederVoltage.poll();
+        hoodAngle.poll();
+        flywheelVelocity.poll();
     }
 
     //----- Simulation

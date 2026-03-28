@@ -175,7 +175,7 @@ public class Superstructure extends SubsystemBase{
                 drivetrain.driveFacingOptionalTarget(speeds, target);
             },
             drivetrain, shooter
-        );
+        ).withName("shootStationaryBaseC()");
     }
 
     public Command shootOnTheSwimBaseC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target, Trigger hasTarget){
@@ -203,7 +203,7 @@ public class Superstructure extends SubsystemBase{
                 drivetrain.driveFacingOptionalTargetSlowBrake(speeds.get(), target);
             },
             drivetrain, shooter
-        );
+        ).withName("shootOnTheSwimBaseC()");
     }
     
     /**

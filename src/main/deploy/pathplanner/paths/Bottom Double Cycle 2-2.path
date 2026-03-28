@@ -118,7 +118,20 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": 4.0,
+      "command": null
+    },
+    {
+      "name": "Shoot",
+      "waypointRelativePos": 4.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -135,7 +148,7 @@
   "folder": "Bottom Double Cycle",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -128.08877288097534
+    "rotation": -128.089
   },
   "useDefaultConstraints": true
 }

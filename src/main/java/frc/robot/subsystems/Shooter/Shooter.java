@@ -180,10 +180,6 @@ public class Shooter extends SubsystemBase {
         return fwStatorStatus.getValue();
     }
 
-    // public Command setFlywheelVoltage() {
-    //     return run(()-> fwLeftMotor.setVoltage(6));
-    // }
-
     public void setVelocity(AngularVelocity velocity) {
         targetVelocity = velocity;
     }
@@ -211,15 +207,15 @@ public class Shooter extends SubsystemBase {
     }
     
     public Command setIdleC(){
-        return setStateC(kHoodMinAngle, kFlywheelIdleVelocity);
+        return setStateC(kHoodMinAngle, kFlywheelIdleVelocity).withName("Set Idle");
     }
 
     public Command setStateC(State state) {
-        return run(() -> setStateC(state.getAngle(), state.getVelocity()));
+        return setStateC(state.getAngle(), state.getVelocity());
     }    
     
     public Command setStateC(Angle angle, AngularVelocity velocity) {
-        return run(() -> setState(angle, velocity));
+        return run(() -> setState(angle, velocity)).withName("Shoot: " + angle.in(Degrees) + " degrees, " + "Shoot: " + velocity.in(RPM) + " RPM");
     }  
 
     /** positive angular velocity = backspin */

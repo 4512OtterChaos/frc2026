@@ -122,15 +122,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Lower Fourbar",
+      "name": "Intake",
       "waypointRelativePos": 0,
-      "endWaypointRelativePos": 1.5211581291759464,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Lower Fourbar"
-        }
-      }
+      "endWaypointRelativePos": 4.0,
+      "command": null
+    },
+    {
+      "name": "Lower Fourbar",
+      "waypointRelativePos": 0.2561247216035545,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Shoot",
+      "waypointRelativePos": 4.0,
+      "endWaypointRelativePos": null,
+      "command": null
     }
   ],
   "globalConstraints": {

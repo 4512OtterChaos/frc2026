@@ -10,6 +10,8 @@ import java.util.Optional;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.events.EventTrigger;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import choreo.auto.AutoChooser;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -68,12 +70,17 @@ public class AutoOptions {
     }
 
     private void addNamedCommands() {
-        NamedCommands.registerCommand("Intake", intake.setVoltageInC().asProxy());
-        NamedCommands.registerCommand("Shoot", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).withTimeout(3).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
-        NamedCommands.registerCommand("Wait", Commands.waitSeconds(1));
-        // NamedCommands.registerCommand("Climber Up", climber.setMaxHeightC()); 
-        // NamedCommands.registerCommand("Climber Down", climber.setMinHeightC());
-        NamedCommands.registerCommand("Lower Fourbar", Commands.none() /*fourBar.setCurrentOutC().finallyDo(()->fourBar.setCurrent(Amps.of(0)))*/);
+        new EventTrigger("Intake")
+            .onTrue(intake.setVoltageInC())
+            .onFalse(intake.setVoltageC(0));
+        new EventTrigger("Lower Fourbar")
+            .onTrue(fourBar.extendC());
+        new EventTrigger("Shoot")
+            .onTrue(superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).withTimeout(4));
+
+        // NamedCommands.registerCommand("Intake", intake.setVoltageInC().asProxy());
+        // NamedCommands.registerCommand("Shoot", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).withTimeout(4).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
+        // NamedCommands.registerCommand("Lower Fourbar", fourBar.extendC().asProxy());
     }
 
     public void periodic() {
@@ -94,12 +101,16 @@ public class AutoOptions {
                 superstructure.otterShootStationaryC(()->new ChassisSpeeds())
         ));
         autoChooser.addCmd("Right Double Cycle", ()->sequence(
-            fourBar.extendC().withTimeout(1),
+            // fourBar.extendC().withTimeout(1),
             AutoBuilder.buildAuto("Bottom Double Cycle")
         ));
         autoChooser.addCmd("Left Double Cycle", ()->sequence(
-            fourBar.extendC().withTimeout(1),
+            // fourBar.extendC().withTimeout(1),
             AutoBuilder.buildAuto("Top Double Cycle")
+        ));
+        autoChooser.addCmd("000 Test", ()->sequence(
+            // fourBar.extendC().withTimeout(1),
+            AutoBuilder.buildAuto("Test")
         ));
 
         //Individual autos

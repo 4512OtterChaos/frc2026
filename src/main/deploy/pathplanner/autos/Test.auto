@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom Double Cycle 1-2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Bottom Double Cycle 2-2"
+            "pathName": "Test"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Double Cycles",
+  "folder": null,
   "choreoAuto": false
 }
