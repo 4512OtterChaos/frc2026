@@ -148,7 +148,7 @@ public class Superstructure extends SubsystemBase{
 
                     shooter.setState(state);
                 }
-                drivetrain.driveFacingOptionalTarget(speeds, target);
+                drivetrain.driveFacingOptionalTarget(speeds.get(), target.get());
             },
             drivetrain, shooter
         );
@@ -176,7 +176,7 @@ public class Superstructure extends SubsystemBase{
 
                     shooter.setState(state);
                 }
-                drivetrain.driveFacingOptionalTargetSlowBrake(speeds.get(), target);
+                drivetrain.driveFacingOptionalTargetBrake(speeds.get(), target.get());
             },
             drivetrain, shooter
         );
@@ -186,7 +186,7 @@ public class Superstructure extends SubsystemBase{
         return repeatingSequence(
             parallel(
                 waitUntil(hasTarget.debounce(0.2)),
-                waitSeconds(0.7).until(()-> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.isFacingTargetT().getAsBoolean())
+                waitSeconds(0.7).until(()-> shooter.upToSpeedT().getAsBoolean() && shooter.atAngleT().getAsBoolean() && drivetrain.isFacingTargetAngleT().getAsBoolean())
             ),
             parallel(
                 fourBar.setReadyToOscillateC(true),

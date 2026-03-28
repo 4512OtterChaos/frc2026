@@ -49,7 +49,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
             angularAccel.get());
 
     public final SwerveDriveLimiter kSOTMLimiter = new SwerveDriveLimiter(
-            MetersPerSecond.of(getSOTMDriveSpeed()),
+            getSOTMDriveSpeed(),
             sotmLinearAccel.get(),
             sotmLinearDecel.get(),
             getTurnSpeed(),
@@ -77,11 +77,16 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     private final StructPublisher<Pose2d> estimatedPosePub = NetworkTableInstance.getDefault()
             .getStructTopic("Swerve/Estimated Pose", Pose2d.struct).publish();
 
+    private final ChassisSpeeds kSpeedsZero = new ChassisSpeeds();
     public ChassisSpeeds lastTargetSpeeds = new ChassisSpeeds();
     public Angle targetRotation = Degrees.of(0);
+    private double lastTargetTime = Timer.getFPGATimestamp();
     public AngularVelocity targetOmega = DegreesPerSecond.of(0);
 
-    private double lastFacingTime = Timer.getFPGATimestamp();
+    private double lastBrakeTime = Timer.getFPGATimestamp();
+
+    private Angle lockAngle = Degrees.of(0);
+    private double lastUnlockedTime = Timer.getFPGATimestamp();
 
     private Trigger isRotationTolerance = new Trigger(()-> {
         return getGlobalPoseEstimate().getRotation().getMeasure().isNear(targetRotation, rotationTolerance.get());
@@ -91,7 +96,12 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     private Trigger isOmegaTolerance = new Trigger(()-> {
         return RadiansPerSecond.of(getState().Speeds.omegaRadiansPerSecond).isNear(targetOmega, omegaTolerance.get());
     });
-    private Trigger facingTarget = isFacingTarget();
+
+    public final Trigger isBraking = new Trigger(() -> Timer.getFPGATimestamp() - lastBrakeTime < 0.04);
+
+    public final Trigger turningToFaceTarget = new Trigger(()-> Timer.getFPGATimestamp() - lastTargetTime < 0.04);
+
+    private Trigger isFacingTarget = isFacingTarget();
     // private Trigger driving = new Trigger(()-> driving())
     //             .debounce(brakeDebounceSeconds.get());
 
@@ -122,8 +132,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         return RadiansPerSecond.of(turnSpeedRatio.get() * MaxAngularRate);
     }
 
-    public double getSOTMDriveSpeed() {
-        return sotmDriveSpeedRatio.get() * MaxSpeed;
+    public LinearVelocity getSOTMDriveSpeed() {
+        return MetersPerSecond.of(sotmDriveSpeedRatio.get() * MaxSpeed);
     }
 
     public Pose2d getGlobalPoseEstimate() {
@@ -140,45 +150,26 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         return newSpeeds;
     }
 
-    public void drive(ChassisSpeeds chassisSpeeds, boolean lockAngle) {
-        ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(chassisSpeeds, lastTargetSpeeds, //why do we call it last target speeds
-                Robot.kDefaultPeriod);
-        lastTargetSpeeds = targetSpeeds;
-        double now = Timer.getFPGATimestamp();
-        if(lockAngle && chassisSpeeds.omegaRadiansPerSecond == 0 && now - lastFacingTime > 0.25){
-            driveFacingAngle(chassisSpeeds, targetRotation);
-        }
-        else {
-            if (chassisSpeeds.omegaRadiansPerSecond != 0){
-                lastFacingTime = now;
-            }
-            targetRotation = Degrees.of(getState().Pose.getRotation().getDegrees());
-            setControl(
-                drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
-                .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                .withRotationalRate(targetSpeeds.omegaRadiansPerSecond)
-            );
-        }
+    public void drive(ChassisSpeeds targetSpeeds) {
+        setControl(
+            drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
+            .withVelocityY(targetSpeeds.vyMetersPerSecond)
+            .withRotationalRate(targetSpeeds.omegaRadiansPerSecond)
+        );
     }
 
-    public void driveSlow(ChassisSpeeds chassisSpeeds, boolean lockAngle) {
-        ChassisSpeeds targetSpeeds = kSOTMLimiter.calculate(chassisSpeeds, lastTargetSpeeds, //why do we call it last target speeds
-                Robot.kDefaultPeriod);
-        lastTargetSpeeds = targetSpeeds;
+    public void driveWithLock(ChassisSpeeds targetSpeeds) {
         double now = Timer.getFPGATimestamp();
-        if(lockAngle && chassisSpeeds.omegaRadiansPerSecond == 0 && now - lastFacingTime > 0.25){
-            driveFacingAngleSlow(chassisSpeeds, targetRotation);
+        boolean stationary = targetSpeeds.equals(kSpeedsZero);
+        if (stationary && now - lastUnlockedTime > 0.25) {
+            driveFacingAngle(targetSpeeds, lockAngle);
         }
         else {
-            if (chassisSpeeds.omegaRadiansPerSecond != 0){
-                lastFacingTime = now;
+            if (!stationary){
+                lastUnlockedTime = now;
             }
-            targetRotation = Degrees.of(getState().Pose.getRotation().getDegrees());
-            setControl(
-                drive.withVelocityX(targetSpeeds.vxMetersPerSecond)
-                .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                .withRotationalRate(targetSpeeds.omegaRadiansPerSecond)
-            );
+            lockAngle = Degrees.of(getState().Pose.getRotation().getDegrees());
+            drive(targetSpeeds);
         }
     }
 
@@ -191,63 +182,30 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public Command driveC(Supplier<ChassisSpeeds> chassisSpeeds, boolean lockAngle) {
-        return run(()-> drive(chassisSpeeds.get(), lockAngle));
+        return run(()-> {
+            if (lockAngle) {
+                driveWithLock(chassisSpeeds.get());
+            }
+            else {
+                drive(chassisSpeeds.get());
+            }
+        });
     }
 
     public Command driveFacingTargetC(Supplier<ChassisSpeeds> speeds, Supplier<Translation2d> target) {
         return run(() -> driveFacingTarget(speeds.get(), target.get()));
     }
 
-    public void driveFacingTargetSlowBrake(ChassisSpeeds speeds, Translation2d target) {
-        if (speeds.equals(new ChassisSpeeds()) && isFacingTargetT().getAsBoolean()) {
-            brake();
-        }
-        else{
-            driveFacingTargetSlow(speeds, target);
-        }
-    } 
-
-    public void driveFacingTargetSlow(ChassisSpeeds speeds, Translation2d target) {
-        targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
-        driveFacingAngleSlow(speeds, targetRotation);
-    }
-
-    public void driveFacingOptionalTargetSlowBrake(ChassisSpeeds speeds, Supplier<Optional<Translation2d>> target) {
-        if (speeds.equals(new ChassisSpeeds()) && isFacingTargetT().getAsBoolean()) {
-            brake();
-        }
-        else{
-            driveFacingOptionalTargetSlow(speeds, target);
-        }
-    }
-
-    public void driveFacingOptionalTargetSlow(ChassisSpeeds speeds, Supplier<Optional<Translation2d>> target) {
-        if(target.get().isEmpty()) {
-            driveSlow(speeds, false);
-        }
-        else {
-            driveFacingTargetSlow(speeds, target.get().get());
-        }
-    }
-
-    public void driveFacingAngleSlow(ChassisSpeeds speeds, Angle target) {
-        ChassisSpeeds targetSpeeds = kSOTMLimiter.calculate(speeds, lastTargetSpeeds, Robot.kDefaultPeriod);
-        lastTargetSpeeds = targetSpeeds;
-        setControl(
-            face.withVelocityX(targetSpeeds.vxMetersPerSecond)
-                    .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(offsetTargetAngle(target))
-        );
-    }
-
     public void driveFacingTarget(ChassisSpeeds speeds, Translation2d target) {
+        lastTargetTime = Timer.getFPGATimestamp();
+        // remove rotation input
+        var targetSpeeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 0);
         targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
-        driveFacingAngle(speeds, targetRotation);
+        // TODO: add target omega
+        driveFacingAngle(targetSpeeds, targetRotation);
     } 
 
-    public void driveFacingAngle(ChassisSpeeds speeds, Angle target) {
-        ChassisSpeeds targetSpeeds = kStandardLimiter.calculate(speeds, lastTargetSpeeds, Robot.kDefaultPeriod);
-        lastTargetSpeeds = targetSpeeds;
+    public void driveFacingAngle(ChassisSpeeds targetSpeeds, Angle target) {
         setControl(
             face.withVelocityX(targetSpeeds.vxMetersPerSecond)
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
@@ -256,25 +214,35 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public Command driveFacingOptionalTargetC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
-        return run(()->driveFacingOptionalTarget(speeds, target));
+        return run(()->driveFacingOptionalTarget(speeds.get(), target.get()));
     }
 
-    public void driveFacingOptionalTarget(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
-        if(target.get().isEmpty()) {
-            drive(speeds.get(), false);
+    public void driveFacingOptionalTarget(ChassisSpeeds speeds, Optional<Translation2d> target) {
+        if(target.isEmpty()) {
+            drive(speeds);
         }
         else {
-            driveFacingTarget(speeds.get(), target.get().get());
+            driveFacingTarget(speeds, target.get());
+        }
+    }
+
+    public void driveFacingOptionalTargetBrake(ChassisSpeeds speeds, Optional<Translation2d> target) {
+        boolean stationary = Math.abs(speeds.vxMetersPerSecond) < 0.01 && Math.abs(speeds.vyMetersPerSecond) < 0.01;
+        if (stationary && isFacingTarget.getAsBoolean()) {
+            brake();
+        }
+        else {
+            driveFacingOptionalTarget(speeds, target);
         }
     }
 
     private Trigger isFacingTarget() {
         // TODO: omega tolerance
-        return OCTrigger.debounce(isRotationTolerance, () -> rotationDebounceTime.in(Seconds), DebounceType.kBoth);
+        return turningToFaceTarget.or(isBraking).and(OCTrigger.debounce(isRotationTolerance, () -> rotationDebounceTime.in(Seconds), DebounceType.kBoth));
     }
 
-    public Trigger isFacingTargetT() {
-        return facingTarget;
+    public Trigger isFacingTargetAngleT() {
+        return isFacingTarget;
     }
 
     public Command brakeC(){
@@ -282,6 +250,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public void brake() {
+        lastBrakeTime = Timer.getFPGATimestamp();
         setControl(brake);
     }
 
@@ -292,7 +261,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     // public boolean driving() {
-    //     return lastTargetSpeeds.equals(new ChassisSpeeds());
+    //     return lastTargetSpeeds.equals(kSpeedsZero);
     // }
 
     // public Trigger drivingT() {
@@ -421,7 +390,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         // SOTM limiter
         if (sotmDriveSpeedRatio.hasChanged(hash) || turnSpeedRatio.hasChanged(hash) || sotmLinearAccel.hasChanged(hash)
                 || sotmLinearDecel.hasChanged(hash) || angularAccel.hasChanged(hash) || angularDecel.hasChanged(hash)) {
-            kSOTMLimiter.linearTopSpeed = MetersPerSecond.of(getSOTMDriveSpeed());
+            kSOTMLimiter.linearTopSpeed = getSOTMDriveSpeed();
             kSOTMLimiter.angularTopSpeed = getTurnSpeed();
             kSOTMLimiter.linearAcceleration = sotmLinearAccel.get();
             kSOTMLimiter.linearDeceleration = sotmLinearDecel.get();
@@ -430,12 +399,15 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         }
 
         if (rotationDebounceTime.hasChanged(hash)) {
-            facingTarget = isFacingTarget();
+            isFacingTarget = isFacingTarget();
         }
     }
 
     private void log() {
-        SmartDashboard.putBoolean("1) Drivetrain/Facing Target Angle", isFacingTargetT().getAsBoolean());
+        SmartDashboard.putNumber("1) Drivetrain/Target Angle Deg", targetRotation.in(Degrees));
+        SmartDashboard.putBoolean("1) Drivetrain/Facing Target Angle", isFacingTarget.getAsBoolean());
+        SmartDashboard.putBoolean("1) Drivetrain/Turning To Face Target", turningToFaceTarget.getAsBoolean());
+        SmartDashboard.putBoolean("1) Drivetrain/Is Braking", isBraking.getAsBoolean());
         var state = getState();
         if (state != null && state.Pose != null) {
             Rotation2d targetAngle = Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), FieldUtil.kHubTrl);
