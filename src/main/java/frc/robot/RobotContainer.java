@@ -66,9 +66,8 @@ public class RobotContainer {
 
     private final AutoOptions autos = new AutoOptions(drivetrain, intake, shooter, spindexer, fourBar, null, feeder, superstructure);
 
-    TunableNumber feederVoltage = new TunableNumber("test/feederVoltage", 8);
-    TunableNumber flywheelVelocity = new TunableNumber("test/flywheelVelocity", 2800);
-    TunableNumber hoodAngle = new TunableNumber("test/hoodAngle", 26);
+    TunableNumber flywheelVelocity = new TunableNumber("test/flywheelVelocity", 3200);
+    TunableNumber hoodAngle = new TunableNumber("test/hoodAngle", 24);
 
     public RobotContainer() {
         configureDefaultCommands();
@@ -198,7 +197,6 @@ public class RobotContainer {
     }
 
     public void changeTunable() {
-        feederVoltage.poll();
         hoodAngle.poll();
         flywheelVelocity.poll();
     }
