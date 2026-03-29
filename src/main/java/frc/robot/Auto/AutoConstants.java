@@ -21,9 +21,9 @@ public class AutoConstants {
     public static final double kThetaVelocityTolerance = Units.degreesToRadians(10);
 
     // The max speed used here is for ensuring rotating while translating doesnt command more speed than is possible
-    public static final PPHolonomicDriveController kPathConfig = new PPHolonomicDriveController( //TODO: tune later >:(
-        new PIDConstants(3, 0, 0),
-        new PIDConstants(3, 0, 0)
+    public static final PPHolonomicDriveController kPathConfig = new PPHolonomicDriveController(
+        new PIDConstants(3.5, 0, 0),
+        new PIDConstants(4, 0, 0)
     );
 
     RobotConfig robotConfig = new RobotConfig(kRobotWeight, kMOI, kModuleConfig, FL, FR, BL, BR);
