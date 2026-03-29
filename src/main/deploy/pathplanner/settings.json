@@ -3,10 +3,8 @@
   "robotLength": 0.824,
   "holonomicMode": true,
   "pathFolders": [
-    "Bottom Double Cycle",
     "Bottom Outpost",
     "Bottom Shoot Climb",
-    "Ferry",
     "Top Depot Climb",
     "Top Double Cycle",
     "Top Outpost",

@@ -26,7 +26,7 @@ public class RobotConstants {
     public static final Distance kWheelRad = Meters.of(TunerConstants.BackLeft.WheelRadius);
     public static final LinearVelocity kMaxDriveVelocity = TunerConstants.kSpeedAt12Volts;
     public static DCMotor driveMotor = DCMotor.getKrakenX60(1).withReduction(TunerConstants.BackLeft.DriveMotorGearRatio);
-    public static final ModuleConfig kModuleConfig = new ModuleConfig(kWheelRad, kMaxDriveVelocity, 1, driveMotor, Amps.of(60), 1);
+    public static final ModuleConfig kModuleConfig = new ModuleConfig(kWheelRad, kMaxDriveVelocity, 1, driveMotor, Amps.of(65), 1);
     
     // Module Offsets
     public static final Translation2d FL = new Translation2d(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY);
