@@ -64,8 +64,8 @@ public class Superstructure extends SubsystemBase{
             sequence(
                 waitSeconds(0.1),
                 parallel(
-                    spindexer.spindexC(),
-                    intake.setVoltageInC().asProxy()
+                    spindexer.spindexC()
+                    // intake.setVoltageInC().asProxy()
                 )
             )
         ).withName("IndexC");

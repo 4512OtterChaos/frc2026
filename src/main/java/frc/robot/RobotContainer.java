@@ -130,7 +130,7 @@ public class RobotContainer {
                 feeder.reverseC()
         ));
 
-        fourBar.readyToOscillateT().and(driver.leftTrigger().negate()).whileTrue(fourBar.oscillateC());
+        fourBar.readyToOscillateT().and(driver.leftTrigger().negate()).whileTrue(fourBar.oscillateC().deadlineFor(intake.setVoltageInC()));
         driver.y().whileTrue(superstructure.fourbarRetractC()); 
         driver.a().whileTrue(fourBar.extendC()); 
 
