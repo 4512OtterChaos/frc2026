@@ -42,19 +42,19 @@ import frc.robot.util.OCTrigger;
 public class OCDrivetrain extends CommandSwerveDrivetrain {
     public final SwerveDriveLimiter kStandardLimiter = new SwerveDriveLimiter(
             getDriveSpeed(),
-            linearAccel.get(),
-            linearDecel.get(),
+            kLinearAccel,
+            kLinearDecel,
             getTurnSpeed(),
-            angularAccel.get(),
-            angularAccel.get());
+            kAngularAccel,
+            kAngularAccel);
 
     public final SwerveDriveLimiter kSOTMLimiter = new SwerveDriveLimiter(
             getSOTMDriveSpeed(),
             sotmLinearAccel.get(),
             sotmLinearDecel.get(),
             getTurnSpeed(),
-            angularAccel.get(),
-            angularAccel.get());
+            kAngularAccel,
+            kAngularAccel);
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -89,12 +89,12 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     private double lastUnlockedTime = Timer.getFPGATimestamp();
 
     private Trigger isRotationTolerance = new Trigger(()-> {
-        return getGlobalPoseEstimate().getRotation().getMeasure().isNear(targetRotation, rotationTolerance.get());
+        return getGlobalPoseEstimate().getRotation().getMeasure().isNear(targetRotation, kRotationTolerance);
     });
     // TODO: to use this, we need to supply the target omega
     // (derived from the target translation and target chassis speeds while facing target)
     private Trigger isOmegaTolerance = new Trigger(()-> {
-        return RadiansPerSecond.of(getState().Speeds.omegaRadiansPerSecond).isNear(targetOmega, omegaTolerance.get());
+        return RadiansPerSecond.of(getState().Speeds.omegaRadiansPerSecond).isNear(targetOmega, kOmegaTolerance);
     });
 
     public final Trigger isBraking = new Trigger(() -> Timer.getFPGATimestamp() - lastBrakeTime < 0.04);
@@ -127,11 +127,11 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public LinearVelocity getDriveSpeed() {
-        return MetersPerSecond.of(driveSpeedRatio.get() * MaxSpeed);
+        return MetersPerSecond.of(kDriveSpeedRatio * MaxSpeed);
     }
 
     public AngularVelocity getTurnSpeed() {
-        return RadiansPerSecond.of(turnSpeedRatio.get() * MaxAngularRate);
+        return RadiansPerSecond.of(kTurnSpeedRatio * MaxAngularRate);
     }
 
     public LinearVelocity getSOTMDriveSpeed() {
@@ -354,12 +354,12 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public void changeTunable() {
-        driveSpeedRatio.poll();
-        turnSpeedRatio.poll();
-        linearAccel.poll();
-        linearDecel.poll();
-        angularAccel.poll();
-        angularDecel.poll();
+        // driveSpeedRatio.poll();
+        // turnSpeedRatio.poll();
+        // linearAccel.poll();
+        // linearDecel.poll();
+        // angularAccel.poll();
+        // angularDecel.poll();
         sotmDriveSpeedRatio.poll();
 
         sotmLinearAccel.poll();
@@ -369,26 +369,26 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
         int hash = hashCode();
 
-        // Standard limiter
-        if (driveSpeedRatio.hasChanged(hash) || turnSpeedRatio.hasChanged(hash) || linearAccel.hasChanged(hash)
-                || linearDecel.hasChanged(hash) || angularAccel.hasChanged(hash) || angularDecel.hasChanged(hash)) {
-            kStandardLimiter.linearTopSpeed = getDriveSpeed();
-            kStandardLimiter.angularTopSpeed = getTurnSpeed();
-            kStandardLimiter.linearAcceleration = linearAccel.get();
-            kStandardLimiter.linearDeceleration = linearDecel.get();
-            kStandardLimiter.angularAcceleration = angularAccel.get();
-            kStandardLimiter.angularDeceleration = angularDecel.get();
-        }
+        // // Standard limiter
+        // if (driveSpeedRatio.hasChanged(hash) || turnSpeedRatio.hasChanged(hash) || linearAccel.hasChanged(hash)
+        //         || linearDecel.hasChanged(hash) || angularAccel.hasChanged(hash) || angularDecel.hasChanged(hash)) {
+        //     kStandardLimiter.linearTopSpeed = getDriveSpeed();
+        //     kStandardLimiter.angularTopSpeed = getTurnSpeed();
+        //     kStandardLimiter.linearAcceleration = linearAccel.get();
+        //     kStandardLimiter.linearDeceleration = linearDecel.get();
+        //     kStandardLimiter.angularAcceleration = angularAccel.get();
+        //     kStandardLimiter.angularDeceleration = angularDecel.get();
+        // }
         
         // SOTM limiter
-        if (sotmDriveSpeedRatio.hasChanged(hash) || turnSpeedRatio.hasChanged(hash) || sotmLinearAccel.hasChanged(hash)
-                || sotmLinearDecel.hasChanged(hash) || angularAccel.hasChanged(hash) || angularDecel.hasChanged(hash)) {
+        if (sotmDriveSpeedRatio.hasChanged(hash) /*|| turnSpeedRatio.hasChanged(hash)*/ || sotmLinearAccel.hasChanged(hash)
+                || sotmLinearDecel.hasChanged(hash) /*|| angularAccel.hasChanged(hash) || angularDecel.hasChanged(hash)*/) {
             kSOTMLimiter.linearTopSpeed = getSOTMDriveSpeed();
             kSOTMLimiter.angularTopSpeed = getTurnSpeed();
             kSOTMLimiter.linearAcceleration = sotmLinearAccel.get();
             kSOTMLimiter.linearDeceleration = sotmLinearDecel.get();
-            kSOTMLimiter.angularAcceleration = angularAccel.get();
-            kSOTMLimiter.angularDeceleration = angularDecel.get();
+            // kSOTMLimiter.angularAcceleration = angularAccel.get();
+            // kSOTMLimiter.angularDeceleration = angularDecel.get();
         }
     }
 

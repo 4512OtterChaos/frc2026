@@ -42,8 +42,8 @@ public class IntakeConstants {
     // public static final double kFourBarVoltageIn = 2; //TODO: Tune
     // public static final double kFourBarVoltageOut = -2; //TODO: Tune
 
-    public static final TunableNumber intakeVoltageIn = new TunableNumber("2) Intake/Roller/Voltage In", kIntakeVoltageIn);
-    public static final TunableNumber intakeVoltageOut = new TunableNumber("2) Intake/Roller/Voltage Out", kIntakeVoltageOut);
+    // public static final TunableNumber intakeVoltageIn = new TunableNumber("2) Intake/Roller/Voltage In", kIntakeVoltageIn);
+    // public static final TunableNumber intakeVoltageOut = new TunableNumber("2) Intake/Roller/Voltage Out", kIntakeVoltageOut);
     // public static final TunableNumber fourBarVoltageIn = new TunableNumber("2) Intake/Four Bar/Voltage In", kFourBarVoltageIn);
     // public static final TunableNumber fourBarVoltageOut = new TunableNumber("2) Intake/Four Bar/Voltage Out", kFourBarVoltageOut);
 

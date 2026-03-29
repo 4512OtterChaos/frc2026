@@ -83,7 +83,7 @@ public class Spindexer extends SubsystemBase {
     }
 
     public Command reverseC(){
-        return run(()->setVoltage(spindexerReverseVoltage.get())).withName("Reverse");
+        return run(()->setVoltage(kSpindexerReverseVoltage)).withName("Reverse");
     }
 
     public Command spindexC(){

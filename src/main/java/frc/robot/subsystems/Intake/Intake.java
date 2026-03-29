@@ -85,11 +85,11 @@ public class Intake extends SubsystemBase{
     }
 
     public Command setVoltageInC(){
-        return run(()->setVoltage(intakeVoltageIn.get())).withName("Voltage In");
+        return run(()->setVoltage(kIntakeVoltageIn)).withName("Voltage In");
     }
 
     public Command setVoltageOutC(){
-        return run(()->setVoltage(intakeVoltageOut.get())).withName("Voltage Out");
+        return run(()->setVoltage(kIntakeVoltageOut)).withName("Voltage Out");
     }
 
     public Command setIsIntakingC(boolean isTrue){
@@ -97,8 +97,8 @@ public class Intake extends SubsystemBase{
     }
 
     public void changeTunable(){
-        intakeVoltageIn.poll();
-        intakeVoltageOut.poll();
+        // intakeVoltageIn.poll();
+        // intakeVoltageOut.poll();
     }
 
     public double wrapAngle(){

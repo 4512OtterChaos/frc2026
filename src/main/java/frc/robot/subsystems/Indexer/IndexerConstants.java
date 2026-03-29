@@ -34,10 +34,10 @@ public class IndexerConstants {
     public static final TunableNumber feederVoltage = new TunableNumber("3) Indexer/Feeder/Voltage", kFeederVoltage);
     
     public static final double kSpindexerReverseVoltage = -3;
-    public static final double kFeederReverseVoltage = -4;
+//     public static final double kFeederReverseVoltage = -4;
 
-    public static final TunableNumber spindexerReverseVoltage = new TunableNumber("3) Indexer/Spindexer/Reverse Voltage", kSpindexerReverseVoltage);
-    public static final TunableNumber feederReverseVoltage = new TunableNumber("3) Indexer/Feeder/Reverse Voltage", kFeederReverseVoltage);
+//     public static final TunableNumber spindexerReverseVoltage = new TunableNumber("3) Indexer/Spindexer/Reverse Voltage", kSpindexerReverseVoltage);
+//     public static final TunableNumber feederReverseVoltage = new TunableNumber("3) Indexer/Feeder/Reverse Voltage", kFeederReverseVoltage);
 
 //     public static final double kFeedSlowVoltage = 2;// TODO: Tune
 //     public static final double kSpindexSlowVoltage = 2;// TODO: Tune
@@ -48,17 +48,17 @@ public class IndexerConstants {
 //             kSpindexSlowVoltage);
 
     public static final AngularVelocity kFeederVelocity = RPM.of(1600);
-    public static final TunableAngularVelocity feederVelocity = new TunableAngularVelocity("3) Indexer/Feeder/Velocity", kFeederVelocity);
+//     public static final TunableAngularVelocity feederVelocity = new TunableAngularVelocity("3) Indexer/Feeder/Velocity", kFeederVelocity);
 
     public static final AngularVelocity kFeederReverseVelocity = RPM.of(-750);
-    public static final TunableAngularVelocity feederReverseVelocity = new TunableAngularVelocity("3) Indexer/Feeder/Reverse Velocity", kFeederReverseVelocity);
+//     public static final TunableAngularVelocity feederReverseVelocity = new TunableAngularVelocity("3) Indexer/Feeder/Reverse Velocity", kFeederReverseVelocity);
 
 
     public static final AngularVelocity kFeederVelocityTolerance = RPM.of(100);
-    public static final TunableAngularVelocity feederVelocityTolerance = new TunableAngularVelocity("3) Indexer/Feeder/Velocity", kFeederVelocityTolerance);
+//     public static final TunableAngularVelocity feederVelocityTolerance = new TunableAngularVelocity("3) Indexer/Feeder/Velocity", kFeederVelocityTolerance);
 
     public static final double kFeederDebounceTime = 0.2;
-    public static final TunableNumber feederDebounceTime = new TunableNumber("3) Indexer/Feeder/Velocity Debounce", kFeederDebounceTime);
+//     public static final TunableNumber feederDebounceTime = new TunableNumber("3) Indexer/Feeder/Velocity Debounce", kFeederDebounceTime);
     
     public static final MomentOfInertia kSpindexerMomentOfInertia = PoundSquareInches.of(4.9077);
     public static final MomentOfInertia kFeederMomentOfInertia = PoundSquareInches.of(0.654939);
@@ -104,17 +104,17 @@ public class IndexerConstants {
         control.kA = 0;
     }
 
-    public static final TunableNumber feederkP = new TunableNumber("3) Indexer/Feeder/PID/P",
-            kFeederConfig.Slot0.kP);
-    public static final TunableNumber feederkI = new TunableNumber("3) Indexer/Feeder/PID/I",
-            kFeederConfig.Slot0.kI);
-    public static final TunableNumber feederkD = new TunableNumber("3) Indexer/Feeder/PID/D",
-            kFeederConfig.Slot0.kD);
+//     public static final TunableNumber feederkP = new TunableNumber("3) Indexer/Feeder/PID/P",
+//             kFeederConfig.Slot0.kP);
+//     public static final TunableNumber feederkI = new TunableNumber("3) Indexer/Feeder/PID/I",
+//             kFeederConfig.Slot0.kI);
+//     public static final TunableNumber feederkD = new TunableNumber("3) Indexer/Feeder/PID/D",
+//             kFeederConfig.Slot0.kD);
 
-    public static final TunableNumber feederkS = new TunableNumber("3) Indexer/Feeder/Feed Forward/S",
-            kFeederConfig.Slot0.kS);
-    public static final TunableNumber feederkV = new TunableNumber("3) Indexer/Feeder/Feed Forward/V",
-            kFeederConfig.Slot0.kV);
-    public static final TunableNumber feederkA = new TunableNumber("3) Indexer/Feeder/Feed Forward/A",
-            kFeederConfig.Slot0.kA);
+//     public static final TunableNumber feederkS = new TunableNumber("3) Indexer/Feeder/Feed Forward/S",
+//             kFeederConfig.Slot0.kS);
+//     public static final TunableNumber feederkV = new TunableNumber("3) Indexer/Feeder/Feed Forward/V",
+//             kFeederConfig.Slot0.kV);
+//     public static final TunableNumber feederkA = new TunableNumber("3) Indexer/Feeder/Feed Forward/A",
+//             kFeederConfig.Slot0.kA);
 }

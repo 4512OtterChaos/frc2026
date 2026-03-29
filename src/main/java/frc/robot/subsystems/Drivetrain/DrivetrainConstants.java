@@ -22,8 +22,8 @@ public class DrivetrainConstants {
     public static final double kDriveSpeedRatio = 0.9;
     public static final double kTurnSpeedRatio = 0.5;
 
-    public static final TunableNumber driveSpeedRatio = new TunableNumber("1) Drivetrain/Standard/Drive Speed", kDriveSpeedRatio);
-    public static final TunableNumber turnSpeedRatio = new TunableNumber("1) Drivetrain/Standard/Turn Speed", kTurnSpeedRatio);
+    // public static final TunableNumber driveSpeedRatio = new TunableNumber("1) Drivetrain/Standard/Drive Speed", kDriveSpeedRatio);
+    // public static final TunableNumber turnSpeedRatio = new TunableNumber("1) Drivetrain/Standard/Turn Speed", kTurnSpeedRatio);
 
     // Normal driving acceleration limits
     public static final LinearAcceleration kLinearAccel = FeetPerSecondPerSecond.of(40);
@@ -31,10 +31,10 @@ public class DrivetrainConstants {
     public static final AngularAcceleration kAngularAccel = RotationsPerSecondPerSecond.of(6);
     public static final AngularAcceleration kAngularDecel = RotationsPerSecondPerSecond.of(10);
 
-    public static final TunableLinearAcceleration linearAccel = new TunableLinearAcceleration("1) Drivetrain/Linear Acceleration", kLinearAccel);
-    public static final TunableLinearAcceleration linearDecel = new TunableLinearAcceleration("1) Drivetrain/Linear Deceleration", kLinearDecel);
-    public static final TunableAngularAcceleration angularAccel = new TunableAngularAcceleration("1) Drivetrain/Angular Acceleration", kAngularAccel);
-    public static final TunableAngularAcceleration angularDecel = new TunableAngularAcceleration("1) Drivetrain/Angular Deceleration", kAngularDecel);
+    // public static final TunableLinearAcceleration linearAccel = new TunableLinearAcceleration("1) Drivetrain/Linear Acceleration", kLinearAccel);
+    // public static final TunableLinearAcceleration linearDecel = new TunableLinearAcceleration("1) Drivetrain/Linear Deceleration", kLinearDecel);
+    // public static final TunableAngularAcceleration angularAccel = new TunableAngularAcceleration("1) Drivetrain/Angular Acceleration", kAngularAccel);
+    // public static final TunableAngularAcceleration angularDecel = new TunableAngularAcceleration("1) Drivetrain/Angular Deceleration", kAngularDecel);
 
     public static final double kSOTMDriveSpeedRatio = 0.2;
 
@@ -47,10 +47,10 @@ public class DrivetrainConstants {
     public static final TunableLinearAcceleration sotmLinearDecel = new TunableLinearAcceleration("1) Drivetrain/SOTM/Linear Deceleration", kSOTMLinearDecel);
     
     public static final Angle kRotationTolerance = Degrees.of(4);
-    public static final TunableAngle rotationTolerance = new TunableAngle("1) Drivetrain/Rotation Tolerance", kRotationTolerance);
+    // public static final TunableAngle rotationTolerance = new TunableAngle("1) Drivetrain/Rotation Tolerance", kRotationTolerance);
 
     public static final AngularVelocity kOmegaTolerance = DegreesPerSecond.of(5);
-    public static final TunableAngularVelocity omegaTolerance = new TunableAngularVelocity("1) Drivetrain/Omega Tolerance", kOmegaTolerance);
+    // public static final TunableAngularVelocity omegaTolerance = new TunableAngularVelocity("1) Drivetrain/Omega Tolerance", kOmegaTolerance);
 
     public static final Time kRotationDebounceTime = Seconds.of(0.3);
     public static final TunableTime rotationDebounceTime = new TunableTime("1) Drivetrain/Rotation Debounce", kRotationDebounceTime);

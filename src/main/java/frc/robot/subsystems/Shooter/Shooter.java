@@ -243,12 +243,12 @@ public class Shooter extends SubsystemBase {
         hoodDebounceTime.poll();
         angleTolerance.poll();
         hoodkP.poll();
-        hoodkI.poll();
-        hoodkD.poll();
-        hoodkG.poll();
-        hoodkS.poll();
-        hoodkV.poll();
-        hoodkA.poll();
+        // hoodkI.poll();
+        // hoodkD.poll();
+        // hoodkG.poll();
+        // hoodkS.poll();
+        // hoodkV.poll();
+        // hoodkA.poll();
         hoodCruiseVelocity.poll();
         hoodAcceleration.poll();
 
@@ -256,30 +256,30 @@ public class Shooter extends SubsystemBase {
         flywheelDebounceTime.poll();
         velocityTolerance.poll();
         flywheelkP.poll();
-        flywheelkI.poll();
-        flywheelkD.poll();
-        flywheelkS.poll();
+        // flywheelkI.poll();
+        // flywheelkD.poll();
+        // flywheelkS.poll();
         flywheelkV.poll();
-        flywheelkA.poll();
+        // flywheelkA.poll();
 
         int hash = hashCode();
 
-        if (hoodkP.hasChanged(hash) || hoodkI.hasChanged(hash) || hoodkD.hasChanged(hash) || hoodkG.hasChanged(hash) || hoodkS.hasChanged(hash) || hoodkV.hasChanged(hash) || hoodkA.hasChanged(hash) || flywheelkP.hasChanged(hash) || flywheelkI.hasChanged(hash) || flywheelkD.hasChanged(hash) || flywheelkS.hasChanged(hash) || flywheelkV.hasChanged(hash) || flywheelkA.hasChanged(hash)) {
+        if (hoodkP.hasChanged(hash) /*|| hoodkI.hasChanged(hash) || hoodkD.hasChanged(hash) || hoodkG.hasChanged(hash) || hoodkS.hasChanged(hash) || hoodkV.hasChanged(hash) || hoodkA.hasChanged(hash)*/ || flywheelkP.hasChanged(hash) /*|| flywheelkI.hasChanged(hash) || flywheelkD.hasChanged(hash) || flywheelkS.hasChanged(hash)*/ || flywheelkV.hasChanged(hash) /*|| flywheelkA.hasChanged(hash)*/) {
             kHoodConfig.Slot0.kP = hoodkP.get();
-            kHoodConfig.Slot0.kI = hoodkI.get();
-            kHoodConfig.Slot0.kD = hoodkD.get();
-            kHoodConfig.Slot0.kG = hoodkG.get();
-            kHoodConfig.Slot0.kS = hoodkS.get();
-            kHoodConfig.Slot0.kV = hoodkV.get();
-            kHoodConfig.Slot0.kA = hoodkA.get();
+            // kHoodConfig.Slot0.kI = hoodkI.get();
+            // kHoodConfig.Slot0.kD = hoodkD.get();
+            // kHoodConfig.Slot0.kG = hoodkG.get();
+            // kHoodConfig.Slot0.kS = hoodkS.get();
+            // kHoodConfig.Slot0.kV = hoodkV.get();
+            // kHoodConfig.Slot0.kA = hoodkA.get();
             hMotor.getConfigurator().apply(kHoodConfig.Slot0);
 
             kFlywheelConfig.Slot0.kP = flywheelkP.get();
-            kFlywheelConfig.Slot0.kI = flywheelkI.get();
-            kFlywheelConfig.Slot0.kD = flywheelkD.get();
-            kFlywheelConfig.Slot0.kS = flywheelkS.get();
+            // kFlywheelConfig.Slot0.kI = flywheelkI.get();
+            // kFlywheelConfig.Slot0.kD = flywheelkD.get();
+            // kFlywheelConfig.Slot0.kS = flywheelkS.get();
             kFlywheelConfig.Slot0.kV = flywheelkV.get();
-            kFlywheelConfig.Slot0.kA = flywheelkA.get();
+            // kFlywheelConfig.Slot0.kA = flywheelkA.get();
             fwLeftMotor.getConfigurator().apply(kFlywheelConfig.Slot0);
         }
 
@@ -419,7 +419,7 @@ public class Shooter extends SubsystemBase {
             } else if (t >= 1) {
                 return endValue;
             } else {
-                return new State( //TODO: might need to convert to absolute values
+                return new State(
                     Degrees.of(MathUtil.interpolate(this.getAngle().in(Degrees), endValue.getAngle().in(Degrees), t)),                
                     RPM.of(MathUtil.interpolate(this.getVelocity().in(RPM), endValue.getVelocity().in(RPM), t)),
                     Seconds.of(MathUtil.interpolate(this.getTof().in(Seconds), endValue.getTof().in(Seconds), t))

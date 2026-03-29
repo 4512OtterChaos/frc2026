@@ -110,17 +110,17 @@ public final class ShooterConstants {
 
     public static final TunableNumber flywheelkP = new TunableNumber("4) Shooter/Flywheel/PID/P",
             kFlywheelConfig.Slot0.kP);
-    public static final TunableNumber flywheelkI = new TunableNumber("4) Shooter/Flywheel/PID/I",
-            kFlywheelConfig.Slot0.kI);
-    public static final TunableNumber flywheelkD = new TunableNumber("4) Shooter/Flywheel/PID/D",
-            kFlywheelConfig.Slot0.kD);
+//     public static final TunableNumber flywheelkI = new TunableNumber("4) Shooter/Flywheel/PID/I",
+//             kFlywheelConfig.Slot0.kI);
+//     public static final TunableNumber flywheelkD = new TunableNumber("4) Shooter/Flywheel/PID/D",
+//             kFlywheelConfig.Slot0.kD);
 
-    public static final TunableNumber flywheelkS = new TunableNumber("4) Shooter/Flywheel/Feed Forward/S",
-            kFlywheelConfig.Slot0.kS);
+//     public static final TunableNumber flywheelkS = new TunableNumber("4) Shooter/Flywheel/Feed Forward/S",
+//             kFlywheelConfig.Slot0.kS);
     public static final TunableNumber flywheelkV = new TunableNumber("4) Shooter/Flywheel/Feed Forward/V",
             kFlywheelConfig.Slot0.kV);
-    public static final TunableNumber flywheelkA = new TunableNumber("4) Shooter/Flywheel/Feed Forward/A",
-            kFlywheelConfig.Slot0.kA);
+//     public static final TunableNumber flywheelkA = new TunableNumber("4) Shooter/Flywheel/Feed Forward/A",
+//             kFlywheelConfig.Slot0.kA);
 
     
     
@@ -153,13 +153,13 @@ public final class ShooterConstants {
     }
 
     public static final TunableNumber hoodkP = new TunableNumber("4) Shooter/Hood/PID/P", kHoodConfig.Slot0.kP);
-    public static final TunableNumber hoodkI = new TunableNumber("4) Shooter/Hood/PID/I", kHoodConfig.Slot0.kI);
-    public static final TunableNumber hoodkD = new TunableNumber("4) Shooter/Hood/PID/D", kHoodConfig.Slot0.kD);
+//     public static final TunableNumber hoodkI = new TunableNumber("4) Shooter/Hood/PID/I", kHoodConfig.Slot0.kI);
+//     public static final TunableNumber hoodkD = new TunableNumber("4) Shooter/Hood/PID/D", kHoodConfig.Slot0.kD);
 
-    public static final TunableNumber hoodkG = new TunableNumber("4) Shooter/Hood/Feed Forward/G", kHoodConfig.Slot0.kG);
-    public static final TunableNumber hoodkS = new TunableNumber("4) Shooter/Hood/Feed Forward/S", kHoodConfig.Slot0.kS);
-    public static final TunableNumber hoodkV = new TunableNumber("4) Shooter/Hood/Feed Forward/V", kHoodConfig.Slot0.kV);
-    public static final TunableNumber hoodkA = new TunableNumber("4) Shooter/Hood/Feed Forward/A", kHoodConfig.Slot0.kA);
+//     public static final TunableNumber hoodkG = new TunableNumber("4) Shooter/Hood/Feed Forward/G", kHoodConfig.Slot0.kG);
+//     public static final TunableNumber hoodkS = new TunableNumber("4) Shooter/Hood/Feed Forward/S", kHoodConfig.Slot0.kS);
+//     public static final TunableNumber hoodkV = new TunableNumber("4) Shooter/Hood/Feed Forward/V", kHoodConfig.Slot0.kV);
+//     public static final TunableNumber hoodkA = new TunableNumber("4) Shooter/Hood/Feed Forward/A", kHoodConfig.Slot0.kA);
 
     public static final TunableNumber hoodCruiseVelocity = new TunableNumber("4) Shooter/Hood/MotionMagic/Cruise Velocity",
             kHoodConfig.MotionMagic.MotionMagicCruiseVelocity);

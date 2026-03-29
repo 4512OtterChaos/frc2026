@@ -36,7 +36,7 @@ public class Feeder extends SubsystemBase{
     private final StatusSignal<Current> statorStatus = motor.getStatorCurrent();
     
     private AngularVelocity targetVelocity = RPM.of(0);
-    private Trigger upToSpeed = new Trigger(() -> upToSpeed()).debounce(feederDebounceTime.get());
+    private Trigger upToSpeed = new Trigger(() -> upToSpeed()).debounce(kFeederDebounceTime);
 
     private final VelocityVoltage velocityrequest = new VelocityVoltage(0);
 
@@ -113,7 +113,7 @@ public class Feeder extends SubsystemBase{
     }
 
     public Command reverseC(){
-        return run(()->setVelocity(feederReverseVelocity.get())).withName("Reverse");
+        return run(()->setVelocity(kFeederReverseVelocity)).withName("Reverse");
     }
 
     public Command feedC(){
@@ -121,11 +121,11 @@ public class Feeder extends SubsystemBase{
     }
 
     public void feed() {
-        setVelocity(feederVelocity.get());
+        setVelocity(kFeederVelocity);
     }
 
     private boolean upToSpeed() {
-        return Math.abs(targetVelocity.in(RPM) - getVelocity().in(RPM)) < feederVelocityTolerance.in(RPM); 
+        return Math.abs(targetVelocity.in(RPM) - getVelocity().in(RPM)) < kFeederVelocityTolerance.in(RPM); 
     }
 
     public Trigger upToSpeedT() {
