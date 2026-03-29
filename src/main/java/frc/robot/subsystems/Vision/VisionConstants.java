@@ -37,12 +37,12 @@ public class VisionConstants {
     }
     
     // The standard deviations of our vision estimated poses, which affect correction rate
-    public static final double kSingletagBaseTrustTrlStdDevs = 1;
-    public static final double kSingletagBaseTrustRotStdDevs = 15;
+    public static final double kSingletagBaseTrustTrlStdDevs = 5;
+    public static final double kSingletagBaseTrustRotStdDevs = 30;
     public static final double kMultitagBaseTrustTrlStdDevs = 0.5;
     public static final double kMultitagBaseTrustRotStdDevs = 2;
     /** Lower values reduce trust when estimate is far from visible tags */
-    public static final double kDistanceTrustScale = 9;
+    public static final double kDistanceTrustScale = 8;
     /** Lower values reduce trust as robot rotates faster */
     public static final double kRotSpeedTrustScale = 0.5;
 }
