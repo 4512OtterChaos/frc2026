@@ -202,8 +202,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         lastTargetTime = Timer.getFPGATimestamp();
         // remove rotation input
         var targetSpeeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 0);
-        // targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
-        targetRotation = Degrees.of(target.minus(getGlobalPoseEstimate().getTranslation()).getAngle().plus(Rotation2d.k180deg).getDegrees());
+        targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
+        // targetRotation = Degrees.of(target.minus(getGlobalPoseEstimate().getTranslation()).getAngle().plus(Rotation2d.k180deg).getDegrees());
         // TODO: add target omega
         driveFacingAngle(targetSpeeds, targetRotation);
     } 

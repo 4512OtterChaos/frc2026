@@ -50,8 +50,9 @@ public final class ShooterConstants {
 
     // Transform from robot center to fuel exit
     public static final Transform3d kRobotToFuelExitTrf3d = new Transform3d(
-        Inches.of(-6.5),
-        Inches.of(5.5),
+        // Inches.of(-6.5),
+        Inches.of(0),
+        Inches.of(2),
         Inches.of(19),
         new Rotation3d(0, 0, Math.PI)); // face backwards
     public static final Transform2d kRobotToFuelExitTrf2d = new Transform2d(
