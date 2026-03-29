@@ -115,7 +115,7 @@ public class RobotContainer {
         driver.rightTrigger().whileTrue(superstructure.otterShootOnTheSwimC(() -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kSOTMLimiter)));
         driver.leftBumper().whileTrue(superstructure.otterShootStationaryC(() -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kSOTMLimiter)));
         driver.rightBumper().whileTrue(parallel(
-            run(()-> shooter.setState(Degrees.of(5), RPM.of(2200))), 
+            run(()-> shooter.setState(Degrees.of(24), RPM.of(3200))), 
             sequence(
                 waitSeconds(0.6),
                 superstructure.indexC()
