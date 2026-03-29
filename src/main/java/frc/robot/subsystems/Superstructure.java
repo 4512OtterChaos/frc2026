@@ -184,7 +184,8 @@ public class Superstructure extends SubsystemBase{
 
                     shooter.setState(state);
                 }
-                drivetrain.driveFacingOptionalTargetBrake(speeds.get(), target.get());
+                // drivetrain.driveFacingOptionalTargetBrake(speeds.get(), target.get());
+                drivetrain.driveFacingOptionalTarget(speeds.get(), target.get());
             },
             drivetrain, shooter
         ).withName("shootOnTheSwimBaseC()");

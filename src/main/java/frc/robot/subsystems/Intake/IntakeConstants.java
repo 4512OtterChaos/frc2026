@@ -16,7 +16,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
-import frc.robot.util.TunableNumber;
 import frc.robot.util.TunableUnits.TunableCurrent;
 
 public class IntakeConstants {

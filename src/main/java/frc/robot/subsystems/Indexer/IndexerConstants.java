@@ -15,7 +15,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.robot.util.TunableNumber;
-import frc.robot.util.TunableUnits.TunableAngularVelocity;
 
 public class IndexerConstants {
     public static final int kSpindexerID = 31;

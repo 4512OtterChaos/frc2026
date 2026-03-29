@@ -62,7 +62,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     private final SwerveRequest.RobotCentric driveautos = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.FieldCentricFacingAngle face = new SwerveRequest.FieldCentricFacingAngle()
-            .withRotationalDeadband(MaxAngularRate * 0.02) // Add a 10% deadband
+            .withRotationalDeadband(MaxAngularRate * 0.001) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
             .withHeadingPID(7, 0, 0);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -202,7 +202,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         lastTargetTime = Timer.getFPGATimestamp();
         // remove rotation input
         var targetSpeeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 0);
-        targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
+        // targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
+        targetRotation = Degrees.of(target.minus(getGlobalPoseEstimate().getTranslation()).getAngle().plus(Rotation2d.k180deg).getDegrees());
         // TODO: add target omega
         driveFacingAngle(targetSpeeds, targetRotation);
     } 
