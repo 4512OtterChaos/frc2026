@@ -98,9 +98,6 @@ public class AutoOptions {
     }
 
     public void addOptions() {
-        autoChooser.addCmd("Right Bump Cycles", ()->{
-            return new PathPlannerAuto("Top Bump Cycles", true);
-        });
         // autoChooser.addCmd("Right Bump Cycles", Autos.RightBumpCycles.get());
         autoChooser.addCmd("Shoot Preloads", 
             ()->sequence(
@@ -110,34 +107,22 @@ public class AutoOptions {
                 waitSeconds(5),
                 superstructure.otterShootStationaryC(()->new ChassisSpeeds())
         ));
-        autoChooser.addCmd("Right Double Cycle", ()->sequence(
-            // fourBar.extendC().withTimeout(1),
-            AutoBuilder.buildAuto("Bottom Double Cycle")
-        ));
-        autoChooser.addCmd("Left Bump Cycles", ()->sequence(
-            // fourBar.extendC().withTimeout(1),
-            AutoBuilder.buildAuto("Top Bump Cycles")
-        ));
-        autoChooser.addCmd("Left Double Cycle", ()->sequence(
-            // fourBar.extendC().withTimeout(1),
-            AutoBuilder.buildAuto("Top Double Cycle")
-        ));
-        autoChooser.addCmd("000 Test", ()->sequence(
-            // fourBar.extendC().withTimeout(1),
-            AutoBuilder.buildAuto("Test")
-        ));
+        autoChooser.addCmd("Left Bump Cycles", ()-> AutoBuilder.buildAuto("Top Bump Cycles"));
+        autoChooser.addCmd("Right Bump Cycles", ()-> new PathPlannerAuto("Top Bump Cycles", true));
+        autoChooser.addCmd("Left Double Cycle", ()-> AutoBuilder.buildAuto("Top Double Cycle"));
+        autoChooser.addCmd("Right Double Cycle", ()-> new PathPlannerAuto("Top Double Cycle", true));
 
         //Individual autos
-        autoChooser.addCmd("Right Shoot Climb", ()-> AutoBuilder.buildAuto("Top Shoot Climb"));
-        autoChooser.addCmd("Left Shoot Climb", ()-> AutoBuilder.buildAuto("Bottom Shoot Climb"));
-        autoChooser.addCmd("Right Depot Climb", ()-> AutoBuilder.buildAuto("Top Depot Climb"));
+        // autoChooser.addCmd("Right Shoot Climb", ()-> AutoBuilder.buildAuto("Top Shoot Climb"));
+        // autoChooser.addCmd("Left Shoot Climb", ()-> AutoBuilder.buildAuto("Bottom Shoot Climb"));
+        // autoChooser.addCmd("Right Depot Climb", ()-> AutoBuilder.buildAuto("Top Depot Climb"));
         // autoChooser.addCmd("Right Double Cycle", ()-> AutoBuilder.buildAuto("Top Double Cycle"));
-        autoChooser.addCmd("Left Outpost", ()-> AutoBuilder.buildAuto("Bottom Outpost"));
-        autoChooser.addCmd("Right Outpost", ()-> AutoBuilder.buildAuto("Top Outpost"));
+        // autoChooser.addCmd("Left Outpost", ()-> AutoBuilder.buildAuto("Bottom Outpost"));
+        // autoChooser.addCmd("Right Outpost", ()-> AutoBuilder.buildAuto("Top Outpost"));
 
-        //Combined autos
-        autoChooser.addCmd("Right Combo", ()-> AutoBuilder.buildAuto("Top Combo")); // TODO: climber is turned off btw
-        autoChooser.addCmd("Left Combo", ()-> AutoBuilder.buildAuto("Bottom Combo")); // TODO: climber is turned off btw
+        // //Combined autos
+        // autoChooser.addCmd("Right Combo", ()-> AutoBuilder.buildAuto("Top Combo")); // TODO: climber is turned off btw
+        // autoChooser.addCmd("Left Combo", ()-> AutoBuilder.buildAuto("Bottom Combo")); // TODO: climber is turned off btw
 
 
     }
