@@ -35,6 +35,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.util.TunableNumber;
 
@@ -114,6 +115,7 @@ public class Vision {
                 );
             });
         }
+        log();
     }
 
     /**
@@ -313,6 +315,11 @@ public class Vision {
             multitagBaseTrustStdDevs = VecBuilder.fill(
                     multitagBaseTrustTrlStdDevs.get(), multitagBaseTrustTrlStdDevs.get(), multitagBaseTrustRotStdDevs.get());
         }
+    }
+
+    public void log() {
+        SmartDashboard.putBoolean("photonvision/Left Camera Status", cameraLeft.isConnected());
+        SmartDashboard.putBoolean("photonvision/Right Camera Status", cameraRight.isConnected());
     }
 
     // ----- Simulation
