@@ -79,6 +79,7 @@ public class AutoOptions {
 
         // NamedCommands.registerCommand("Intake", intake.setVoltageInC().asProxy());
         NamedCommands.registerCommand("Shoot", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).withTimeout(4).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
+        // NamedCommands.registerCommand("Shoot", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).until(shooter.emptyHopperT()).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);})); // TODO: test
         NamedCommands.registerCommand("Shoot Forever", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
         // NamedCommands.registerCommand("Lower Fourbar", fourBar.extendC().asProxy());
     }

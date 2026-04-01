@@ -153,7 +153,6 @@ public class RobotContainer {
                 superstructure.indexC()
             )
         ));
-
         // driver.povUp().whileTrue(climber.setMaxHeightC()); //TODO: Re-enable
         // driver.povDown().whileTrue(climber.setMinHeightC()); //TODO: Re-enable
     }
@@ -165,7 +164,7 @@ public class RobotContainer {
     public void periodic() {
         vision.periodic();
         autos.periodic();
-        // shooter.in
+        shooter.emptyHopper = shooter.emptyHopperDetectionT(driver.rightTrigger().or(driver.rightBumper())).getAsBoolean();
         log();
         changeTunable();
 
@@ -201,6 +200,7 @@ public class RobotContainer {
             DriverStation.getAlliance().orElse(Alliance.Blue) == HubShiftUtil.getFirstActiveAlliance());
 
         superstructure.log();
+
     }
 
     public void changeTunable() {
@@ -251,6 +251,7 @@ public class RobotContainer {
  * shooter turn off delay
  * fix drive snap to angle
  * readd/test auto brake mode
+ * Make emptyHopperT always check
  * ________________________________________________________________________________________________________________________
  * 
  * NOLAN'S TODO:

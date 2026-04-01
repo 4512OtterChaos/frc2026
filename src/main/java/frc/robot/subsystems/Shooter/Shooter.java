@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Shooter;
 
+import java.util.function.BooleanSupplier;
+
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
@@ -46,6 +48,9 @@ public class Shooter extends SubsystemBase {
     private TalonFX fwRightMotor = new TalonFX(kRightMotorID);
 
     private TalonFX hMotor = new TalonFX(kHoodMotorID);
+
+    private final Trigger ballsExiting = new Trigger(()-> ballsExiting()).debounce(emptyHopperDebounce.in(Seconds));
+    public boolean emptyHopper = false;
 
     private AngularVelocity targetVelocity = RPM.of(0); // flywheel
     private Angle targetAngle = kHoodMinAngle; //hood
@@ -221,6 +226,21 @@ public class Shooter extends SubsystemBase {
         return run(() -> setState(angle, velocity)).withName("Shoot: " + angle.in(Degrees) + " degrees, " + "Shoot: " + velocity.in(RPM) + " RPM");
     }  
 
+    public boolean ballsExiting() {
+        return getFlywheelCurrent().in(Amps) > 70; // TODO: tune
+    }
+
+    public Trigger ballsExitingT() {
+        return ballsExiting;
+    }
+
+    public Trigger emptyHopperDetectionT(BooleanSupplier shooting) {
+        return ballsExitingT().negate().and(shooting);
+    }
+    public Trigger emptyHopperT() {
+        return new Trigger(()-> emptyHopper);
+    }
+
     /** positive angular velocity = backspin */
     public Pair<LinearVelocity, AngularVelocity> getFuelExitVelSpin() {
         double flywheelRPS = getFlywheelVelocity().in(RotationsPerSecond);
@@ -261,6 +281,7 @@ public class Shooter extends SubsystemBase {
         // flywheelkS.poll();
         flywheelkV.poll();
         // flywheelkA.poll();
+        // ballExitDebounce.poll();
 
         int hash = hashCode();
 
@@ -302,8 +323,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("4) Shooter/Target Flywheel RPM", targetVelocity.in(RPM));
         SmartDashboard.putNumber("4) Shooter/Flywheel/Voltage", getFlywheelVoltage().in(Volts));
         SmartDashboard.putNumber("4) Shooter/Flywheel/Current", getFlywheelCurrent().in(Amps));
-        SmartDashboard.putBoolean("4) Shooter/Up to speed", isUpToSpeed.getAsBoolean());    
-
+        SmartDashboard.putBoolean("4) Shooter/Up to speed", isUpToSpeed.getAsBoolean()); 
         // ##### Component Logs
 
         // SmartDashboard.putNumber("4) Shooter/Hood/Angle", getHoodAngle().in(Degrees));

@@ -84,7 +84,10 @@ public final class ShooterConstants {
     public static final TunableAngle angleTolerance = new TunableAngle("4) Shooter/Hood/Degrees Tolerance", kAngleTolerance);
 
     public static final Time kSOTMLatency = Seconds.of(0.1);
-    public static final TunableTime SOTMLatency = new TunableTime("4) Latency", kSOTMLatency);
+    public static final TunableTime SOTMLatency = new TunableTime("4) Latency", kSOTMLatency);    
+    
+    public static final Time kBallExitDebounce = Seconds.of(1);
+    public static final TunableTime emptyHopperDebounce = new TunableTime("4) Empty Hopper Debounce", kSOTMLatency);
 
     public static final TalonFXConfiguration kFlywheelConfig = new TalonFXConfiguration();
     static {
