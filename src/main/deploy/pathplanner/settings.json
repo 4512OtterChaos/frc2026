@@ -3,8 +3,9 @@
   "robotLength": 0.824,
   "holonomicMode": true,
   "pathFolders": [
-    "Middle Depot",
     "Faster Top Bump Cycles",
+    "Middle Depot",
+    "Faster Faster Top Bump Cycles",
     "Top Bump Cycles",
     "Top Double Cycle"
   ],

@@ -105,6 +105,8 @@ public class AutoOptions {
         autoChooser.addCmd("Right Bump Cycles", ()-> new PathPlannerAuto("Top Bump Cycles", true));
         autoChooser.addCmd("Faster Left Bump Cycles", ()-> AutoBuilder.buildAuto("Faster Top Bump Cycles"));
         autoChooser.addCmd("Faster Right Bump Cycles", ()-> new PathPlannerAuto("Faster Top Bump Cycles", true));
+        autoChooser.addCmd("Faster Faster Left Bump Cycles", ()-> AutoBuilder.buildAuto("Faster Faster Top Bump Cycles"));
+        autoChooser.addCmd("Faster Faster Right Bump Cycles", ()-> new PathPlannerAuto("Faster Faster Top Bump Cycles", true));
         autoChooser.addCmd("Left Double Cycle", ()-> AutoBuilder.buildAuto("Top Double Cycle"));
         autoChooser.addCmd("Right Double Cycle", ()-> new PathPlannerAuto("Top Double Cycle", true));
         autoChooser.addCmd("Middle Depot", ()-> AutoBuilder.buildAuto("Middle Depot"));
