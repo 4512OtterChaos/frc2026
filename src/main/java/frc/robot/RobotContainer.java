@@ -61,7 +61,7 @@ public class RobotContainer {
     // private final Climber climber = new Climber(); //TODO: Re-enable
     private final Vision vision = new Vision();
 
-    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, shooter, null); // TODO: turn off climber when testing
+    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, shooter, null);
     private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, fourBar, spindexer, feeder, shooter, null);
 
     private final AutoOptions autos = new AutoOptions(drivetrain, intake, shooter, spindexer, fourBar, null, feeder, superstructure);
@@ -71,9 +71,8 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureDefaultCommands();
-        configureGeneralBindings();
+        configureTriggersAndGeneralBindings();
         configureDriverBindings();
-        configureOperatorBindings();
 
         DataLogManager.start();
     }
@@ -81,19 +80,26 @@ public class RobotContainer {
     public void configureDefaultCommands() {
         intake.setDefaultCommand(intake.setVoltageC(0).withName("Default"));
         fourBar.setDefaultCommand(fourBar.setCurrentC(Amps.of(0)).withName("Default"));
-        fourBar.doneOscillatingT().whileTrue(fourBar.extendC().finallyDo(()->fourBar.resetDoneOscillating()).withName("Extend(Done Oscillating)"));
         spindexer.setDefaultCommand(spindexer.setVoltageC(0).withName("Default"));
         feeder.setDefaultCommand(feeder.setVelocityC(RPM.of(0)).withName("Default"));
         shooter.setDefaultCommand(shooter.setIdleC());
+    }
+
+    private void configureTriggersAndGeneralBindings() {
+        drivetrain.registerTelemetry(logger::telemeterize);
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
-    }
 
-    private void configureGeneralBindings() {
-        drivetrain.registerTelemetry(logger::telemeterize);
+        //FourBar oscillates when we are ready to as long as we aren't intaking
+        fourBar.readyToOscillateT().and(intake.isIntakingT.negate()).whileTrue(fourBar.oscillateC());
+        //Fourbar returns to extended position when not oscillating
+        fourBar.doneOscillatingT().whileTrue(fourBar.extendC().finallyDo(()->fourBar.resetDoneOscillating()).withName("Extend(Done Oscillating)"));
+
+        //Run intake while intaking and indexing
+        intake.isIntakingT.or(superstructure.isIndexingT).or(fourBar.readyToOscillateT()).whileTrue(intake.setVoltageInC());
         
         // Setup HubShiftUtil
         RobotModeTriggers.teleop().onTrue(runOnce(HubShiftUtil::initialize));
@@ -103,6 +109,7 @@ public class RobotContainer {
 
 
     private void configureDriverBindings() {
+        // #### Drivetrain Bindings
         drivetrain.setDefaultCommand(drivetrain.driveC(
             () -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kStandardLimiter),
             false // rotation lock
@@ -110,6 +117,7 @@ public class RobotContainer {
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.b().whileTrue(drivetrain.brakeC());
 
+        // #### Shooter Bindings
         // superstructure.doneShootingT.whileTrue(superstructure.otterShootEndControllerC(driver));
         driver.rightTrigger().whileTrue(superstructure.otterShootOnTheSwimC(() -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kSOTMLimiter)));
         driver.leftBumper().whileTrue(superstructure.otterShootStationaryC(() -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kSOTMLimiter)));
@@ -121,7 +129,10 @@ public class RobotContainer {
             )
         ));
 
-        driver.leftTrigger().whileTrue(intake.setVoltageInC());
+        // #### Intake/Indexer Bindings
+        driver.leftTrigger()
+            .onTrue(intake.setIsIntakingC(true))
+            .onFalse(intake.setIsIntakingC(false));
         driver.x().whileTrue(intake.setVoltageOutC());
         driver.povLeft().whileTrue(
             parallel(
@@ -129,26 +140,22 @@ public class RobotContainer {
                 feeder.reverseC()
         ));
 
-        fourBar.readyToOscillateT().and(driver.leftTrigger().negate()).whileTrue(fourBar.oscillateC().deadlineFor(intake.setVoltageInC()));
+        // #### FourBar Bindings
         driver.y().whileTrue(superstructure.fourbarRetractC()); 
         driver.a().whileTrue(fourBar.extendC()); 
 
         
+        // #### Test Bindings
         driver.povUp().whileTrue(parallel(
             run(()->shooter.setState(Degrees.of(hoodAngle.get()), RPM.of(flywheelVelocity.get()))),
             sequence(
                 waitSeconds(0.6),
                 superstructure.indexC()
             )
-        )); //Testing command
+        ));
 
         // driver.povUp().whileTrue(climber.setMaxHeightC()); //TODO: Re-enable
         // driver.povDown().whileTrue(climber.setMinHeightC()); //TODO: Re-enable
-    }
-
-    private void configureOperatorBindings() {
-        // operator.y().onTrue(run(() -> Shotmap.setPresetState(Shotmap.nearH-p.backCorner)));
-
     }
 
     public Command getAutonomousCommand() {
@@ -240,12 +247,10 @@ public class RobotContainer {
 }
 /*
  * TODO:
- * tune autos (do they do everything right?)
+ * tune autos / make better ones
  * shooter turn off delay
- * consider fourbar raising a lil while not intaking
  * fix drive snap to angle
- * mirror autos
- * merge shoot commands/use shoot on the moves with agitation amd other stuff
+ * readd/test auto brake mode
  * ________________________________________________________________________________________________________________________
  * 
  * NOLAN'S TODO:

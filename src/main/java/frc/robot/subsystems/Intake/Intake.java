@@ -93,7 +93,7 @@ public class Intake extends SubsystemBase{
     }
 
     public Command setIsIntakingC(boolean isTrue){
-        return Commands.runOnce(null);
+        return Commands.runOnce(()->isIntaking = isTrue);
     }
 
     public void changeTunable(){

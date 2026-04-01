@@ -70,8 +70,8 @@ public class AutoOptions {
 
     private void addNamedCommands() {
         new EventTrigger("Intake")
-            .onTrue(intake.setVoltageInC())
-            .onFalse(intake.setVoltageC(0));
+            .onTrue(intake.setIsIntakingC(true))
+            .onFalse(intake.setIsIntakingC(false));
         new EventTrigger("Lower Fourbar")
             .onTrue(fourBar.extendC());
         new EventTrigger("Shoot")

@@ -36,7 +36,7 @@ public class Superstructure extends SubsystemBase{
     public final Trigger readyToShoot;
 
     private boolean isIndexing = false;
-    public final Trigger isShootingT = new Trigger(()-> isIndexing);
+    public final Trigger isIndexingT = new Trigger(()-> isIndexing);
 
     public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter, Climber climber) {
         this.drivetrain = drivetrain;
