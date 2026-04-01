@@ -3,18 +3,13 @@
   "robotLength": 0.824,
   "holonomicMode": true,
   "pathFolders": [
-    "Bottom Outpost",
-    "Bottom Shoot Climb",
-    "Top Depot Climb",
-    "Top Double Cycle",
-    "Top Outpost",
-    "Top Shoot Climb",
-    "Transitions"
+    "Middle Depot",
+    "Faster Top Bump Cycles",
+    "Top Bump Cycles",
+    "Top Double Cycle"
   ],
   "autoFolders": [
-    "Combos",
-    "Double Cycles",
-    "Climb Autos"
+    "Double Cycles"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
