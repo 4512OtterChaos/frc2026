@@ -28,7 +28,7 @@
         "y": 6.508541665231721
       },
       "isLocked": false,
-      "linkedName": "Top Sweep Start"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -44,7 +44,7 @@
         "y": 4.235549215406561
       },
       "isLocked": false,
-      "linkedName": "Top Sweep Middle"
+      "linkedName": null
     },
     {
       "anchor": {

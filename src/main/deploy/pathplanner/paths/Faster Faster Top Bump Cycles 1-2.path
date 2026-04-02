@@ -16,35 +16,35 @@
     },
     {
       "anchor": {
-        "x": 7.623067047075606,
-        "y": 6.887974322396576
+        "x": 6.878579545454546,
+        "y": 6.53440340909091
       },
       "prevControl": {
-        "x": 7.390171184022824,
-        "y": 7.573723252496433
+        "x": 6.530724431818183,
+        "y": 6.908025568181818
       },
       "nextControl": {
-        "x": 7.751930968376878,
-        "y": 6.508541665231721
+        "x": 7.165213191619225,
+        "y": 6.226537640988106
       },
       "isLocked": false,
-      "linkedName": "Top Sweep Start"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.03710413694722,
-        "y": 4.921298145506419
+        "x": 7.690241477272728,
+        "y": 5.1300994318181825
       },
       "prevControl": {
-        "x": 8.208075077260954,
-        "y": 5.195887837525447
+        "x": 7.861212417586463,
+        "y": 5.404689123837211
       },
       "nextControl": {
-        "x": 7.6101283880171176,
-        "y": 4.235549215406561
+        "x": 7.263265728342627,
+        "y": 4.444350501718325
       },
       "isLocked": false,
-      "linkedName": "Top Sweep Middle"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -60,7 +60,7 @@
         "y": 5.266582551052236
       },
       "isLocked": false,
-      "linkedName": "Top Bump Approach"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -83,15 +83,15 @@
     },
     {
       "waypointRelativePos": 1.1387494294842486,
-      "rotationDegrees": -81.41585480240403
+      "rotationDegrees": -32.28235469508908
     },
     {
-      "waypointRelativePos": 2.0,
-      "rotationDegrees": -74.47588900324585
+      "waypointRelativePos": 2.437243267914189,
+      "rotationDegrees": 166.1860153030674
     },
     {
       "waypointRelativePos": 3.0,
-      "rotationDegrees": 138.38189165342607
+      "rotationDegrees": 141.91
     },
     {
       "waypointRelativePos": 4.0,
