@@ -37,6 +37,9 @@ public class DrivetrainConstants {
 
     public static final TunableNumber sotmDriveSpeedRatio = new TunableNumber("1) Drivetrain/SOTM/Drive Speed", kSOTMDriveSpeedRatio);
 
+    public static final Time kSOTMLatency = Seconds.of(0.1);
+    public static final TunableTime SOTMLatency = new TunableTime("1) Drivetrain/SOTM/Latency", kSOTMLatency);    
+
     public static final LinearAcceleration kSOTMLinearAccel = FeetPerSecondPerSecond.of(15);
     public static final LinearAcceleration kSOTMLinearDecel = FeetPerSecondPerSecond.of(20);
 

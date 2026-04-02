@@ -23,6 +23,8 @@ import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
+import frc.robot.util.OCTrigger;
+import frc.robot.util.RobotConstants;
 
 public class Superstructure extends SubsystemBase{
     private OCDrivetrain drivetrain;
@@ -38,6 +40,8 @@ public class Superstructure extends SubsystemBase{
     private boolean isIndexing = false;
     public final Trigger isIndexingT = new Trigger(()-> isIndexing);
 
+    public final Trigger emptyHopperDetectionT;
+
     public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter, Climber climber) {
         this.drivetrain = drivetrain;
         this.intake = intake;
@@ -49,6 +53,11 @@ public class Superstructure extends SubsystemBase{
 
         // readyToShoot = shooter.isUpToSpeed.and(shooter.isAtAngle).and(drivetrain.isFacingTarget);
         readyToShoot = drivetrain.isFacingTarget;
+
+        emptyHopperDetectionT = shooter.fuelExiting.negate().and(OCTrigger.debounce(
+            shooter.isIdle.negate().and(isIndexingT), 
+            ()->RobotConstants.emptyHopperDebounce.in(Seconds))
+        );
     }
 
     // public Command passiveSpindexC() {

@@ -1,7 +1,5 @@
 package frc.robot.subsystems.Shooter;
 
-import java.util.function.BooleanSupplier;
-
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
@@ -42,15 +40,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.OCTrigger;
+import frc.robot.util.RobotConstants;
 
 public class Shooter extends SubsystemBase {
     private TalonFX fwLeftMotor = new TalonFX(kLeftMotorID);
     private TalonFX fwRightMotor = new TalonFX(kRightMotorID);
 
     private TalonFX hMotor = new TalonFX(kHoodMotorID);
-
-    private final Trigger ballsExiting = new Trigger(()-> ballsExiting()).debounce(emptyHopperDebounce.in(Seconds));
-    public boolean emptyHopper = false;
 
     private AngularVelocity targetVelocity = RPM.of(0); // flywheel
     private Angle targetAngle = kHoodMinAngle; //hood
@@ -73,6 +69,11 @@ public class Shooter extends SubsystemBase {
         ),
         () -> hoodDebounceTime.in(Seconds) * 2,
         DebounceType.kFalling
+    );
+
+    public final Trigger fuelExiting = OCTrigger.debounce( //TODO: falling edge only?
+        new Trigger(()-> fuelShot()),
+        ()-> RobotConstants.emptyHopperDebounce.in(Seconds)
     );
 
     private final StatusSignal<Angle> fwPositionStatus = fwLeftMotor.getPosition();
@@ -223,22 +224,11 @@ public class Shooter extends SubsystemBase {
     }    
     
     public Command setStateC(Angle angle, AngularVelocity velocity) {
-        return run(() -> setState(angle, velocity)).withName("Shoot: " + angle.in(Degrees) + " degrees, " + "Shoot: " + velocity.in(RPM) + " RPM");
+        return run(() -> setState(angle, velocity)).withName("Shoot: " + angle.in(Degrees) + " degrees, " + velocity.in(RPM) + " RPM");
     }  
 
-    public boolean ballsExiting() {
+    public boolean fuelShot() {
         return getFlywheelCurrent().in(Amps) > 70; // TODO: tune
-    }
-
-    public Trigger ballsExitingT() {
-        return ballsExiting;
-    }
-
-    public Trigger emptyHopperDetectionT(BooleanSupplier shooting) {
-        return ballsExitingT().negate().and(shooting);
-    }
-    public Trigger emptyHopperT() {
-        return new Trigger(()-> emptyHopper);
     }
 
     /** positive angular velocity = backspin */
@@ -281,7 +271,7 @@ public class Shooter extends SubsystemBase {
         // flywheelkS.poll();
         flywheelkV.poll();
         // flywheelkA.poll();
-        // ballExitDebounce.poll();
+        // fuelExitDebounce.poll();
 
         int hash = hashCode();
 

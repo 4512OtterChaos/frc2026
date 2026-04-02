@@ -164,7 +164,6 @@ public class RobotContainer {
     public void periodic() {
         vision.periodic();
         autos.periodic();
-        shooter.emptyHopper = shooter.emptyHopperDetectionT(driver.rightTrigger().or(driver.rightBumper())).getAsBoolean();
         log();
         changeTunable();
 
@@ -198,7 +197,7 @@ public class RobotContainer {
         SmartDashboard.putBoolean(
             "Match Dashboard/Shifts/Active First?",
             DriverStation.getAlliance().orElse(Alliance.Blue) == HubShiftUtil.getFirstActiveAlliance());
-
+        
         superstructure.log();
 
     }
@@ -250,10 +249,6 @@ public class RobotContainer {
  * tune autos / make better ones
  * shooter turn off delay
  * fix drive snap to angle
- * readd/test auto brake mode
+ * re-add/test auto brake mode
  * Make emptyHopperT always check
- * ________________________________________________________________________________________________________________________
- * 
- * NOLAN'S TODO:
- * shooter fuel counter from current sensing. Debounce last shot time timeout for auto detecting empty hopper
  */

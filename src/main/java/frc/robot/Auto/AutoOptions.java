@@ -78,7 +78,7 @@ public class AutoOptions {
             .onTrue(superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).withTimeout(4));
 
         // NamedCommands.registerCommand("Intake", intake.setVoltageInC().asProxy());
-        NamedCommands.registerCommand("Shoot", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).withTimeout(4).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
+        NamedCommands.registerCommand("Shoot", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).until(superstructure.emptyHopperDetectionT).withTimeout(4).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
         // NamedCommands.registerCommand("Shoot", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).until(shooter.emptyHopperT()).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);})); // TODO: test
         NamedCommands.registerCommand("Shoot Forever", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
         // NamedCommands.registerCommand("Lower Fourbar", fourBar.extendC().asProxy());
@@ -93,7 +93,6 @@ public class AutoOptions {
     }
 
     public void addOptions() {
-        // autoChooser.addCmd("Right Bump Cycles", Autos.RightBumpCycles.get());
         autoChooser.addCmd("Shoot Preloads", 
             ()->sequence(
                 runOnce(()-> drivetrain.resetPose(new Pose2d(Meters.of(4.5), FieldUtil.kFieldWidth.div(2), Rotation2d.k180deg)), drivetrain),
@@ -111,20 +110,6 @@ public class AutoOptions {
         autoChooser.addCmd("Left Double Cycle", ()-> AutoBuilder.buildAuto("Top Double Cycle"));
         autoChooser.addCmd("Right Double Cycle", ()-> new PathPlannerAuto("Top Double Cycle", true));
         autoChooser.addCmd("Middle Depot", ()-> AutoBuilder.buildAuto("Middle Depot"));
-
-        //Individual autos
-        // autoChooser.addCmd("Right Shoot Climb", ()-> AutoBuilder.buildAuto("Top Shoot Climb"));
-        // autoChooser.addCmd("Left Shoot Climb", ()-> AutoBuilder.buildAuto("Bottom Shoot Climb"));
-        // autoChooser.addCmd("Right Depot Climb", ()-> AutoBuilder.buildAuto("Top Depot Climb"));
-        // autoChooser.addCmd("Right Double Cycle", ()-> AutoBuilder.buildAuto("Top Double Cycle"));
-        // autoChooser.addCmd("Left Outpost", ()-> AutoBuilder.buildAuto("Bottom Outpost"));
-        // autoChooser.addCmd("Right Outpost", ()-> AutoBuilder.buildAuto("Top Outpost"));
-
-        // //Combined autos
-        // autoChooser.addCmd("Right Combo", ()-> AutoBuilder.buildAuto("Top Combo")); // TODO: climber is turned off btw
-        // autoChooser.addCmd("Left Combo", ()-> AutoBuilder.buildAuto("Bottom Combo")); // TODO: climber is turned off btw
-
-
     }
 
     public Command getAuto() {
@@ -134,56 +119,4 @@ public class AutoOptions {
     public void log() {
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
-
-    // public enum Autos{
-    //     LeftBumpCycles(()->{
-    //         try {
-    //             return sequence(
-
-    //                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("Top Bump Cycles 1-2")),
-    //                 NamedCommands.getCommand("Shoot"),
-    //                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("Top Bump Cycles 2-2")),
-    //                 NamedCommands.getCommand("Shoot")
-    //             );
-    //         } catch (FileVersionException | IOException | ParseException e) {
-    //             System.out.println("BAD AUTO");
-    //             e.printStackTrace();
-    //         }
-    //         return Commands.none();
-    //     })/*,
-    //     RightBumpCycles(()->{
-    //         try {
-    //             return sequence(
-    //                 drivetrain.resetPose(pose),
-    //                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("Top Bump Cycles 1-2").mirrorPath().getAllPathPoints().get(0).),
-    //                 NamedCommands.getCommand("Shoot"),
-    //                 AutoBuilder.followPath(PathPlannerPath.fromPathFile("Top Bump Cycles 2-2").mirrorPath())
-    //             );
-    //         } catch (FileVersionException | IOException | ParseException e) {
-    //             System.out.println("BAD AUTO");
-    //             e.printStackTrace();
-    //         }
-    //         return Commands.none();
-    //     })*/;
-
-    //     private Supplier<Command> auto;
-
-    //     private Autos(Supplier<Command> auto){
-    //         this.auto = auto;
-    //     }
-
-    //     public Supplier<Command> get(){
-    //         return auto;
-    //     }
-
-    //     public Command getInitPose(PathPlannerPath path){
-      
-    //   if (mirror) {
-    //     path0 = path0.mirrorPath();
-    //   }
-    //   if (AutoBuilder.isHolonomic()) {
-    //     this.startingPose =
-    //         new Pose2d(path0.getPoint(0).position, path0.getIdealStartingState().rotation());
-    //     }
-    // }
 }
