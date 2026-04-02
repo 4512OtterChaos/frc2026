@@ -40,7 +40,7 @@ public class Superstructure extends SubsystemBase{
     private boolean isIndexing = false;
     public final Trigger isIndexingT = new Trigger(()-> isIndexing);
 
-    public final Trigger emptyHopperDetectionT;
+    public final Trigger hopperEmptyT;
 
     public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter, Climber climber) {
         this.drivetrain = drivetrain;
@@ -54,7 +54,7 @@ public class Superstructure extends SubsystemBase{
         // readyToShoot = shooter.isUpToSpeed.and(shooter.isAtAngle).and(drivetrain.isFacingTarget);
         readyToShoot = drivetrain.isFacingTarget;
 
-        emptyHopperDetectionT = shooter.fuelExiting.negate().and(OCTrigger.debounce(
+        hopperEmptyT = shooter.fuelExiting.negate().and(OCTrigger.debounce(
             shooter.isIdle.negate().and(isIndexingT), 
             ()->RobotConstants.emptyHopperDebounce.in(Seconds))
         );
@@ -220,7 +220,8 @@ public class Superstructure extends SubsystemBase{
         SmartDashboard.putBoolean("1) Drivetrain/In Alliance Zone", FieldUtil.isInAllianceZone(trl));
         SmartDashboard.putBoolean("1) Drivetrain/In Neutral Zone", FieldUtil.isInNeutralZone(trl));
         SmartDashboard.putBoolean("1) Drivetrain/In BehindHub Zone", FieldUtil.isInBehindHubZone(trl));
-        SmartDashboard.putBoolean("1) Drivetrain/Ready to Shoot", readyToShoot.getAsBoolean());
+        SmartDashboard.putBoolean("9) Superstructure/Ready to Shoot", readyToShoot.getAsBoolean());
+        SmartDashboard.putBoolean("9) Superstructure/Hopper Empty", hopperEmptyT.getAsBoolean());
     }
 
     // public static class ShootOnTheSwim {

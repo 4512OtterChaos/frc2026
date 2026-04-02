@@ -83,6 +83,10 @@ public final class ShooterConstants {
     public static final TunableAngularVelocity velocityTolerance = new TunableAngularVelocity("4) Shooter/Flywheel/RPM Tolerance", kVelocityTolerance);
     public static final TunableAngle angleTolerance = new TunableAngle("4) Shooter/Hood/Degrees Tolerance", kAngleTolerance);
 
+    public static final Time kFuelExitDebounce = Seconds.of(0.5);
+    public static final TunableTime fuelExitDebounce = new TunableTime("4) Shooter/Empty Hopper Debounce", kFuelExitDebounce);
+    
+
     public static final TalonFXConfiguration kFlywheelConfig = new TalonFXConfiguration();
     static {
         FeedbackConfigs feedback = kFlywheelConfig.Feedback;

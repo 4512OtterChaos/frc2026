@@ -250,5 +250,4 @@ public class RobotContainer {
  * shooter turn off delay
  * fix drive snap to angle
  * re-add/test auto brake mode
- * Make emptyHopperT always check
  */

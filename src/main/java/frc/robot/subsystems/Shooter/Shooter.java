@@ -73,7 +73,7 @@ public class Shooter extends SubsystemBase {
 
     public final Trigger fuelExiting = OCTrigger.debounce( //TODO: falling edge only?
         new Trigger(()-> fuelShot()),
-        ()-> RobotConstants.emptyHopperDebounce.in(Seconds)
+        ()-> ShooterConstants.kFuelExitDebounce.in(Seconds)
     );
 
     private final StatusSignal<Angle> fwPositionStatus = fwLeftMotor.getPosition();
