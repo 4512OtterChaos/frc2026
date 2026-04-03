@@ -10,29 +10,32 @@ import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.util.RobotConstants.*;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
+
+import org.json.simple.parser.ParseException;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.events.EventTrigger;
-import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPoint;
-import com.pathplanner.lib.path.Waypoint;
 
 import choreo.auto.AutoChooser;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
@@ -56,7 +59,18 @@ public class AutoOptions {
 
     private boolean autosSetup = false;
     RobotConfig robotConfig = new RobotConfig(kRobotWeight, kMOI, kModuleConfig, FL, FR, BL, BR);
-    PathConstraints constraints = new PathConstraints(MetersPerSecond.of(3.5), MetersPerSecondPerSecond.of(4.5), DegreesPerSecond.of(540), DegreesPerSecondPerSecond.of(720), Volts.of(12)); //TODO: Use units class
+    PathConstraints constraints = new PathConstraints(
+        MetersPerSecond.of(3.5), 
+        MetersPerSecondPerSecond.of(4.5), 
+        DegreesPerSecond.of(540), 
+        DegreesPerSecondPerSecond.of(720), 
+        Volts.of(12)
+    );
+
+    List<PathPlannerPath> currentPaths = new ArrayList<>();
+    int pathNumber = 0;
+
+    // List<Trigger> pathTriggers = new ArrayList<>();
 
     public AutoOptions(OCDrivetrain drivetrain, Intake intake, Shooter shooter, Spindexer spindexer,
                        FourBar fourBar, Climber climber, Feeder feeder, Superstructure superstructure) {
@@ -96,8 +110,10 @@ public class AutoOptions {
             .onFalse(intake.setIsIntakingC(false));
         new EventTrigger("Lower Fourbar")
             .onTrue(fourBar.extendC());
-        new EventTrigger("Shoot")
-            .onTrue(superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).withTimeout(4));
+        // new EventTrigger("Shoot")
+        //     .onTrue(superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).withTimeout(4));
+        new EventTrigger("Error Correct")
+            .onTrue(pathfindToPathEnd());
 
         // NamedCommands.registerCommand("Intake", intake.setVoltageInC().asProxy());
         NamedCommands.registerCommand("Shoot", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).until(superstructure.hopperEmptyT).withTimeout(4).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
@@ -115,29 +131,89 @@ public class AutoOptions {
                 superstructure.otterShootStationaryC(()->new ChassisSpeeds())
             )
         );
-        autoChooser.addCmd("Left Bump Cycles", ()-> AutoBuilder.buildAuto("Top Bump Cycles"));
-        autoChooser.addCmd("Right Bump Cycles", ()-> new PathPlannerAuto("Top Bump Cycles", true));
-        autoChooser.addCmd("Faster Left Bump Cycles", ()-> AutoBuilder.buildAuto("Faster Top Bump Cycles"));
-        autoChooser.addCmd("Faster Right Bump Cycles", ()-> new PathPlannerAuto("Faster Top Bump Cycles", true));
-        autoChooser.addCmd("Faster Faster Left Bump Cycles", ()-> AutoBuilder.buildAuto("Faster Faster Top Bump Cycles"));
-        autoChooser.addCmd("Faster Faster Right Bump Cycles", ()-> new PathPlannerAuto("Faster Faster Top Bump Cycles", true));
-        autoChooser.addCmd("Left Double Cycle", ()-> AutoBuilder.buildAuto("Top Double Cycle"));
-        autoChooser.addCmd("Right Double Cycle", ()-> new PathPlannerAuto("Top Double Cycle", true));
-        autoChooser.addCmd("Middle Depot", ()-> AutoBuilder.buildAuto("Middle Depot"));
-        autoChooser.addCmd("TEST", ()-> );
+        autoChooser.addCmd("Left Bump Cycles", buildAuto("Top Bump Cycles"));
+        autoChooser.addCmd("Right Bump Cycles", buildAuto("Top Bump Cycles", true));
+        autoChooser.addCmd("Faster Left Bump Cycles", buildAuto("Faster Top Bump Cycles"));
+        autoChooser.addCmd("Faster Right Bump Cycles", buildAuto("Faster Top Bump Cycles", true));
+        autoChooser.addCmd("Faster Faster Left Bump Cycles", buildAuto("Faster Faster Top Bump Cycles"));
+        autoChooser.addCmd("Faster Faster Right Bump Cycles", buildAuto("Faster Faster Top Bump Cycles", true));
+        autoChooser.addCmd("Left Double Cycle", buildAuto("Top Double Cycle"));
+        autoChooser.addCmd("Right Double Cycle", buildAuto("Top Double Cycle", true));
+        autoChooser.addCmd("Middle Depot", buildAuto("Middle Depot"));
     }
+
+    private Supplier<Command> buildAuto(String name){
+        return buildAuto(name, false);
+    }
+
+    private Supplier<Command> buildAuto(String name, boolean mirror){
+        return ()->{
+            PathPlannerAuto auto = new PathPlannerAuto(name, mirror);
+
+            try {
+                currentPaths = PathPlannerAuto.getPathGroupFromAutoFile(name);
+                pathNumber = 0;
+            } catch (IOException | ParseException e) {
+                System.out.println("Failed to find auto paths!");
+                e.printStackTrace();
+            }
+
+            // pathTriggers = new ArrayList<>();
+            // for (int i = 0; i < currentPaths.size(); i++) {
+            //     pathTriggers.add(auto.activePath(currentPaths.get(i).name));
+            // }
+            
+            return auto;
+        };
+    }
+
+    public Optional<PathPlannerPath> getCurrentPath(){
+        if (currentPaths.size() <= pathNumber){
+            return Optional.empty();
+        }
+        return Optional.of(currentPaths.get(pathNumber));
+    }
+
+    // public Optional<PathPlannerPath> getCurrentPath(){
+    //     for(int i = 0; i < pathTriggers.size(); i++){
+    //         if (pathTriggers.get(i).getAsBoolean()) {
+    //             return Optional.of(currentPaths.get(i));
+    //         }
+    //     }
+    //     for(int i = 0; i < pathTriggers.size(); i++){
+    //         System.out.println(pathTriggers.get(i).getAsBoolean());
+    //     }
+    //     return Optional.empty();
+    // }
 
     public Command pathfindToPose(Pose2d pose) {
         return AutoBuilder.pathfindToPose(pose, constraints);
     }
 
-    public Command pathfindToPathEnd(PathPlannerPath path) {
-        Supplier<PathPoint> test = ()->{
-            var pathPoints = path.getAllPathPoints();
-            var lastPoint = pathPoints.get(0);
-            return lastPoint;
-        };
-        return pathfindToPose(test.get().position);
+    public Command pathfindToPathEnd() {
+        Set<Subsystem> requirements = new HashSet<Subsystem>();
+        requirements.add(drivetrain);
+        
+        return defer(()-> {
+            Optional<PathPlannerPath> optionalPath = getCurrentPath();
+
+            if (optionalPath.isEmpty()){
+                for (int i = 0; i < 7; i++){ //TODO: REMOVE
+                    System.out.println("none");
+                }
+                return none();
+            }
+            else {
+                PathPlannerPath path = optionalPath.get();
+                var pathPoints = path.getAllPathPoints();
+                var translation = pathPoints.get(pathPoints.size() - 1).position;
+                var rotation = path.getGoalEndState().rotation();
+
+                pathNumber++;
+
+                return pathfindToPose(new Pose2d(translation, rotation));
+            }
+        }, requirements);
     }
 
     // public Command pathfindToPose(Pose2d pose) {
