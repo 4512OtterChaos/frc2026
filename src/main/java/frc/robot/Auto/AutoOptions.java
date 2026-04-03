@@ -1,21 +1,34 @@
 package frc.robot.Auto;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.util.RobotConstants.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.events.EventTrigger;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPoint;
+import com.pathplanner.lib.path.Waypoint;
 
 import choreo.auto.AutoChooser;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,6 +56,7 @@ public class AutoOptions {
 
     private boolean autosSetup = false;
     RobotConfig robotConfig = new RobotConfig(kRobotWeight, kMOI, kModuleConfig, FL, FR, BL, BR);
+    PathConstraints constraints = new PathConstraints(MetersPerSecond.of(3.5), MetersPerSecondPerSecond.of(4.5), DegreesPerSecond.of(540), DegreesPerSecondPerSecond.of(720), Volts.of(12)); //TODO: Use units class
 
     public AutoOptions(OCDrivetrain drivetrain, Intake intake, Shooter shooter, Spindexer spindexer,
                        FourBar fourBar, Climber climber, Feeder feeder, Superstructure superstructure) {
@@ -68,6 +82,14 @@ public class AutoOptions {
         addNamedCommands();
     }
 
+    public void periodic() {
+        if (!autosSetup && !DriverStation.getAlliance().isEmpty()) {
+            addOptions();
+            log();
+            autosSetup = true;
+        }
+    }
+
     private void addNamedCommands() {
         new EventTrigger("Intake")
             .onTrue(intake.setIsIntakingC(true))
@@ -79,17 +101,8 @@ public class AutoOptions {
 
         // NamedCommands.registerCommand("Intake", intake.setVoltageInC().asProxy());
         NamedCommands.registerCommand("Shoot", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).until(superstructure.hopperEmptyT).withTimeout(4).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
-        // NamedCommands.registerCommand("Shoot", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).until(shooter.emptyHopperT()).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);})); // TODO: test
         NamedCommands.registerCommand("Shoot Forever", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
         // NamedCommands.registerCommand("Lower Fourbar", fourBar.extendC().asProxy());
-    }
-
-    public void periodic() {
-        if (!autosSetup && !DriverStation.getAlliance().isEmpty()) {
-            addOptions();
-            log();
-            autosSetup = true;
-        }
     }
 
     public void addOptions() {
@@ -100,7 +113,8 @@ public class AutoOptions {
                 drivetrain.driveC(()-> new ChassisSpeeds(0, 0, 0), false).withTimeout(.5),
                 waitSeconds(5),
                 superstructure.otterShootStationaryC(()->new ChassisSpeeds())
-        ));
+            )
+        );
         autoChooser.addCmd("Left Bump Cycles", ()-> AutoBuilder.buildAuto("Top Bump Cycles"));
         autoChooser.addCmd("Right Bump Cycles", ()-> new PathPlannerAuto("Top Bump Cycles", true));
         autoChooser.addCmd("Faster Left Bump Cycles", ()-> AutoBuilder.buildAuto("Faster Top Bump Cycles"));
@@ -110,7 +124,39 @@ public class AutoOptions {
         autoChooser.addCmd("Left Double Cycle", ()-> AutoBuilder.buildAuto("Top Double Cycle"));
         autoChooser.addCmd("Right Double Cycle", ()-> new PathPlannerAuto("Top Double Cycle", true));
         autoChooser.addCmd("Middle Depot", ()-> AutoBuilder.buildAuto("Middle Depot"));
+        autoChooser.addCmd("TEST", ()-> );
     }
+
+    public Command pathfindToPose(Pose2d pose) {
+        return AutoBuilder.pathfindToPose(pose, constraints);
+    }
+
+    public Command pathfindToPathEnd(PathPlannerPath path) {
+        Supplier<PathPoint> test = ()->{
+            var pathPoints = path.getAllPathPoints();
+            var lastPoint = pathPoints.get(0);
+            return lastPoint;
+        };
+        return pathfindToPose(test.get().position);
+    }
+
+    // public Command pathfindToPose(Pose2d pose) {
+    //     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+    //         drivetrain.getGlobalPoseEstimate(),
+    //         pose
+    //     );
+
+        
+    //     // Create the path using the waypoints created above
+    //     PathPlannerPath path = new PathPlannerPath(
+    //         waypoints,
+    //         constraints,
+    //         null, // The ideal starting state, this is only relevant for pre-planned paths, so can be null for on-the-fly paths.
+    //         new GoalEndState(0, pose.getRotation())
+    //     );
+
+    //     return AutoBuilder.followPath(path);
+    // }
 
     public Command getAuto() {
         return Optional.ofNullable(autoChooser.selectedCommand()).orElse(none());
