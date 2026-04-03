@@ -32,6 +32,7 @@ import com.pathplanner.lib.util.FileVersionException;
 import choreo.auto.AutoChooser;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.util.struct.parser.ParseException;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -62,7 +63,7 @@ public class AutoOptions {
     private boolean autosSetup = false;
     RobotConfig robotConfig = new RobotConfig(kRobotWeight, kMOI, kModuleConfig, FL, FR, BL, BR);
     PathConstraints constraints = new PathConstraints(MetersPerSecond.of(3.5), MetersPerSecondPerSecond.of(4.5), DegreesPerSecond.of(540), DegreesPerSecondPerSecond.of(720), Volts.of(12)); //TODO: Use units class
-    private PathPlannerPath currentPath = null;
+    private Optional<PathPlannerPath> currentPath = Optional.empty();
 
     private List<PathPlannerPath> topBumpCyclesPaths;
     private List<PathPlannerPath> fasterTopBumpCyclesPaths;
@@ -85,7 +86,16 @@ public class AutoOptions {
         () -> drivetrain.getGlobalPoseEstimate(),
         (pose) -> drivetrain.resetPose(pose),
         () -> drivetrain.getState().Speeds,
-        (chassisSpeeds) -> drivetrain.driveAutos(chassisSpeeds),
+        (chassisSpeeds) -> {
+            Translation2d correction = getPathCorrection();
+            ChassisSpeeds correctedDriving = new ChassisSpeeds(
+            chassisSpeeds.vxMetersPerSecond +correction.getX(),
+            chassisSpeeds.vyMetersPerSecond + correction.getY(),
+            chassisSpeeds.omegaRadiansPerSecond
+            );
+            // drivetrain.driveC(corrected);
+            drivetrain.driveAutos(correctedDriving);
+        },
         AutoConstants.kPathConfig,
         robotConfig,
         () -> false,
@@ -146,7 +156,6 @@ public class AutoOptions {
             topDoubleCyclePaths = List.of(PathPlannerPath.fromPathFile("Top Double Cycle 1-2"), PathPlannerPath.fromPathFile("Top Double Cycle 2-2"));
             middleDepotPaths = List.of(PathPlannerPath.fromPathFile("Middle Depot 1-2"), PathPlannerPath.fromPathFile("Middle Depot 2-2"));
         } catch (IOException | org.json.simple.parser.ParseException | FileVersionException e) {
-            e.printStackTrace();
             topBumpCyclesPaths = List.of();
             fasterTopBumpCyclesPaths = List.of();
             fasterFasterTopBumpCyclesPaths = List.of();
@@ -178,117 +187,128 @@ public class AutoOptions {
         return pathfindToPose(new Pose2d(test.get().position, test.get().rotationTarget.rotation()));
     }
 
-    public Command followPathTracked(PathPlannerPath path) {
+    public Command followPathTracked(Optional<PathPlannerPath> path) {
         return Commands.sequence(
             Commands.runOnce(() -> currentPath = path),
-            AutoBuilder.followPath(path)
+            AutoBuilder.followPath(path.get())
         );
     }
-
-    // private PathPlannerPath loadPath(String name) {
-    //     try {
-    //         return PathPlannerPath.fromPathFile(name);
-    //     } catch (IOException | org.json.simple.parser.ParseException e) {
-    //         e.printStackTrace();
-    //         return null;
-    //     }
-    // }
-
-    // public Command pathErrorCorrection(PathPlannerPath path){
-    //     Pose2d robotPose = drivetrain.getGlobalPoseEstimate();
-
-    //     var pathPoints = path.getAllPathPoints();
-
-    //     double distanceError = robotPose.getTranslation().getDistance(targetPoint.position);
-
-    //     Trigger robotOffPathT = OCTrigger.debounce(
-    //     new Trigger(()-> false), 
-    //     emptyHopperDebounce
-    //     );
-
-    //     PathPoint closest = path.getAllPathPoints().stream().min((a, b) -> Double.compare(
-    //     robotPose.getTranslation().getDistance(a.position),
-    //     robotPose.getTranslation().getDistance(b.position)
-    //     )).orElse(path.getAllPathPoints().get(0));
-
-    //     return runOnce(()-> {Commands.none();}).finallyDo(()-> pathfindToPathEnd(path));
-    // }
     
-    public Command pathErrorCorrection() {
-        return Commands.defer(() -> {
-            double tolerance = 0.5;
+    // public Command pathErrorCorrection() {
+    //     return Commands.defer(() -> {
+    //         double tolerance = 0.5;
 
-            Pose2d robotPose = drivetrain.getGlobalPoseEstimate();
-            List<PathPoint> pathPoints = currentPath.getAllPathPoints();
+    //         if (currentPath.isEmpty()) {return Commands.none();}
 
-            if (pathPoints.isEmpty() || currentPath == null) {
-                return Commands.none();
-            }
+    //         Pose2d robotPose = drivetrain.getGlobalPoseEstimate();
+    //         List<PathPoint> pathPoints = currentPath.get().getAllPathPoints();
 
-            PathPoint closestPoint = pathPoints.stream().min((a, b) -> Double.compare(
-                    robotPose.getTranslation().getDistance(a.position),
-                    robotPose.getTranslation().getDistance(b.position)
-                )).orElse(pathPoints.get(0));
+    //         if (pathPoints.isEmpty()) {
+    //             return Commands.none();
+    //         }
 
-            double error = robotPose.getTranslation().getDistance(closestPoint.position);
+    //         PathPoint closestPoint = pathPoints.stream().min((a, b) -> Double.compare(
+    //                 robotPose.getTranslation().getDistance(a.position),
+    //                 robotPose.getTranslation().getDistance(b.position)
+    //             )).orElse(pathPoints.get(0));
 
-            Rotation2d targetRotation = closestPoint.rotationTarget != null
-                ? closestPoint.rotationTarget.rotation()
-                : robotPose.getRotation();
+    //         double error = robotPose.getTranslation().getDistance(closestPoint.position);
 
-            if (error > tolerance) {
-                System.out.println("BAD BAD BAD BADDDDD error: " +error);
+    //         Rotation2d targetRotation = closestPoint.rotationTarget != null
+    //             ? closestPoint.rotationTarget.rotation()
+    //             : robotPose.getRotation();
 
-                Pose2d targetPose = new Pose2d(
-                    closestPoint.position,
-                    targetRotation
-                );
-                return AutoBuilder.pathfindToPose(targetPose, constraints);
-            }
+    //         if (error > tolerance) {
+    //             System.out.println("BAD BAD BAD BADDDDD error: " +error);
 
-            return Commands.none();
+    //             Pose2d targetPose = new Pose2d(
+    //                 closestPoint.position,
+    //                 targetRotation
+    //             );
+    //             return AutoBuilder.pathfindToPose(targetPose, constraints);
+    //         }
 
-        }, Set.of(drivetrain));
+    //         return Commands.none();
+
+    //     }, Set.of(drivetrain));
+    // }
+
+    public Translation2d getPathCorrection() {
+        if (currentPath.isEmpty()) return new Translation2d();
+        Pose2d robotPose = drivetrain.getGlobalPoseEstimate();
+        List<PathPoint> points = currentPath.get().getAllPathPoints();
+
+        if (points.isEmpty()) {
+            return new Translation2d();
+        }
+
+        PathPoint closestPoint = points.stream()
+            .min((a, b) -> Double.compare(
+                robotPose.getTranslation().getDistance(a.position), robotPose.getTranslation().getDistance(b.position)
+            ))
+            .orElse(points.get(0));
+
+        Translation2d errorDifference =
+            closestPoint.position.minus(robotPose.getTranslation());
+
+        double tuning = 1.5; // TODO: tune and make it a tuneable number maybe
+
+        return errorDifference.times(tuning);
     }
 
     /**
-     * @param order 0 for path, 1 for shoot command
+     * @param order 0 for path, 1 for shoot command, 2 for infinite shoot yea its dumb system
      * @param shoot for shoot command
      * @param paths paths in order
      * @return Command
      */
     public Command correctedAutoCommand(String order, List<PathPlannerPath> paths) {
-        Command shoot = superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).withTimeout(4);
         List<Command> sequence = new ArrayList<>();
 
-        var pathPointer = 0;
+        var orderPointer = 0;
         // var commandPointer = 0;
         
         for (char c : order.toCharArray()) {
-            if (c == 0) {
-                if (pathPointer >= paths.size()) continue;
-
-                PathPlannerPath path = paths.get(pathPointer + 1);
-                sequence.add(followPathTracked(path));
-            }
-            else if (c == 1) {
-                // if (commandPointer >= shoot.size()) continue;
-                sequence.add(shoot);
+            switch (c) {
+                case '0' -> {
+                    if (orderPointer >= paths.size()) continue;
+                    PathPlannerPath path = paths.get(orderPointer);
+                    orderPointer++;
+                    sequence.add(followPathTracked(Optional.of(path)));
+                }
+                case '1' -> // if (commandPointer >= shoot.size()) continue;
+                    sequence.add(superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).withTimeout(4));
+                case '2' -> // if (commandPointer >= shoot.size()) continue;
+                    sequence.add(superstructure.otterShootStationaryC(()-> new ChassisSpeeds()));
+                default -> {}
             }
         }
 
         Command everythingSequence = Commands.sequence(sequence.toArray(new Command[0]));
 
 
-        Command correctingBadPath = Commands.sequence(
-            waitSeconds(0.5), // TODO: maybe tune wait time
-            Commands.repeatingSequence(pathErrorCorrection())
-        );
+        // Command correctingBadPath = Commands.sequence(
+        //     waitSeconds(0.5), // TODO: maybe tune wait time
+        //     Commands.repeatingSequence(pathErrorCorrection())
+        // );
 
-        return Commands.parallel(
-            everythingSequence,
-            correctingBadPath
-        );
+        // return Commands.sequence(everythingSequence).raceWith(
+        //     Commands.sequence(
+        //         waitSeconds(0.5),
+        //         Commands.repeatingSequence(
+        //             Commands.defer(
+        //                 ()-> Commands.either(
+        //                     pathErrorCorrection(),
+        //                     Commands.none(),
+        //                     () -> shouldCorrect()
+        //                 ),
+        //                 Set.of(drivetrain)
+        //             )
+        //         )
+        //     )
+        // );
+
+        return Commands.sequence(everythingSequence);
     }
 
     // public Command pathfindToPose(Pose2d pose) {
