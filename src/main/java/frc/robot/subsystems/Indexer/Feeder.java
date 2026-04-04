@@ -26,9 +26,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class Feeder extends SubsystemBase{
     private final TalonFX motor = new TalonFX(kFeederID);
 
-    // private final DigitalInput bottomSensor = new DigitalInput(0);
-    // private final DigitalInput topSensor = new DigitalInput(1);
-
     private final StatusSignal<Angle> positionStatus = motor.getPosition();
     private final StatusSignal<AngularVelocity> velocityStatus = motor.getVelocity();
     private final StatusSignal<Voltage> voltageStatus = motor.getMotorVoltage();
@@ -83,26 +80,6 @@ public class Feeder extends SubsystemBase{
         return statorStatus.getValue();
     }
 
-    public void setVoltage(double voltage){
-        motor.setVoltage(voltage);
-    }
-
-    // public Command setVoltageC(double voltage){
-    //     return run(()-> setVoltage(voltage)).withName("Set Voltage: " + voltage);    
-    // }
-
-    // public Command reverseC(){
-    //     return run(()->setVoltage(feederReverseVoltage.get())).withName("Reverse");
-    // }
-
-    // public Command feedC(){
-    //     return run(()->setVoltage(feederVoltage.get())).withName("Feed");
-    // }
-
-    // public void feed() {
-    //     setVoltage(feederVoltage.get());
-    // }
-
     public void setVelocity(AngularVelocity velocity){
         targetVelocity = velocity;
     }
@@ -131,25 +108,8 @@ public class Feeder extends SubsystemBase{
         return upToSpeed;
     }
 
-    // public Command passiveIndexC(){
-    //     return Commands.either(
-    //         setVoltageC(feedSlowVoltage.get()),
-    //         setVoltageC(0),
-    //         ()-> !topSensorT().getAsBoolean() && bottomSensorT().getAsBoolean()
-    //     ).withName("Passively Index");
-    // }
-
-    // public Trigger bottomSensorT(){ // same as topSensorT
-    //     return new Trigger(()-> bottomSensor.get());
-    // }
-
-    // public Trigger topSensorT(){ // might change to boolean to make indexC short :)
-    //     return new Trigger(()-> topSensor.get());
-    // }
-
     public void changeTunable(){
-        feederVoltage.poll();
-        // feedSlowVoltage.poll();
+        
     }
         
     public void log(){

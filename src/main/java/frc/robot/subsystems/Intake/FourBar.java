@@ -40,13 +40,6 @@ public class FourBar extends SubsystemBase {
     private boolean readyToOscillate = false;
     private boolean doneOscillating = false;
 
-    // private Angle targetAngle = fourBarMaxAngle.get();
-    // private MotionMagicVoltage mmRequest = new MotionMagicVoltage(0);
-
-    // private Voltage targetVoltage = Volts.of(0);
-
-    // private ControlMode controlMode = ControlMode.Torque;
-
     public FourBar() {
         motor.getConfigurator().apply(kFourBarConfig);
         
@@ -74,17 +67,6 @@ public class FourBar extends SubsystemBase {
                 statorStatus);
         changeTunable();
 
-        // switch (controlMode) {
-        //     case Torque:
-        //         motor.setControl(torqueRequest.withOutput(targetCurrent));
-        //         break;
-        //     case MotionMagic:
-        //         motor.setControl(mmRequest.withPosition(targetAngle));
-        //         break;
-        //     case Voltage:
-        //         motor.setVoltage(targetVoltage.in(Volts));
-        //         break;
-        // }
         motor.setControl(torqueRequest.withOutput(targetCurrent));
         log();
     }
@@ -92,10 +74,6 @@ public class FourBar extends SubsystemBase {
     public Angle getAngle() {
         return positionStatus.getValue();
     }
-
-    // public Angle getTargetAngle() {
-    //     return targetAngle;
-    // }
 
     public AngularVelocity getVelocity() {
         return velocityStatus.getValue();
@@ -179,53 +157,6 @@ public class FourBar extends SubsystemBase {
         doneOscillating = false;
     }
 
-    // public void setAngle(Angle angle) {
-    //     targetAngle = Degrees.of(MathUtil.clamp(angle.in(Degrees), fourBarMinAngle.in(Degrees), fourBarMaxAngle.in(Degrees)));
-    //     controlMode = ControlMode.MotionMagic;
-    // }
-
-    // public Command setAngleC(Angle angle) {
-    //     return run(() -> setAngle(angle));
-    // }
-
-    // public Command setMinAngleC() {
-    //     return setAngleC(fourBarMinAngle.get());
-    // }
-
-    // public Command setMaxAngleC() {
-    //     return setAngleC(fourBarMaxAngle.get());
-    // }
-
-    // public boolean atAngle(Angle angle) {
-    //     return getAngle().isNear(angle, angleTolerance.get());
-    // }
-
-    // public Trigger atAngleT(Angle angle) {
-    //     return new Trigger(() -> atAngle(angle));
-    // }
-
-    // public void setVoltage(double voltage) {
-    //     // if (getAngle().in(Degrees) >= fourBarMaxDegrees.get()) { //TODO: Re-enable?
-    //     //     voltage = MathUtil.clamp(voltage, -12, 0);
-    //     // } else if (getAngle().in(Degree) <= fourBarMinDegrees.get()) {
-    //     //     voltage = MathUtil.clamp(voltage, 0, 12);
-    //     // }
-    //     targetVoltage = Volts.of(voltage);
-    //     controlMode = ControlMode.Voltage;
-    // }
-
-    // public Command setVoltageC(double voltage) {
-    //     return runOnce(() -> setVoltage(voltage)).withName("Set Voltage: " + voltage);
-    // }
-
-    // public Command setVoltageInC() {
-    //     return setVoltageC(fourBarVoltageIn.get()).withName("Voltage In");
-    // }
-
-    // public Command setVoltageOutC() {
-    //     return setVoltageC(fourBarVoltageOut.get()).withName("Voltage Out");
-    // }
-
     public void changeTunable() {
         // fourBarMinAngle.poll();
         // fourBarMaxAngle.poll();
@@ -239,13 +170,10 @@ public class FourBar extends SubsystemBase {
 
     public void log() {
         // SmartDashboard.putNumber("2) Intake/Four Bar/Angle Degrees", getAngle().in(Degrees));
-        // SmartDashboard.putNumber("2) Intake/Four Bar/Target Angle Degrees", targetAngle.in(Degrees));
         // SmartDashboard.putNumber("2) Intake/Four Bar/RPM", getVelocity().in(RPM));
         SmartDashboard.putNumber("2) Intake/Four Bar/Voltage", getVoltage().in(Volts));
-        // SmartDashboard.putNumber("2) Intake/Four Bar/Target Voltage", targetVoltage.in(Volts));
         SmartDashboard.putNumber("2) Intake/Four Bar/Current", getCurrent().in(Amps));
         SmartDashboard.putNumber("2) Intake/Four Bar/Target Current", targetCurrent.in(Amps));
-        // SmartDashboard.putString("2) Intake/Four Bar/Control Mode", controlMode.toString());
 
         SmartDashboard.putBoolean("test", doneOscillating);
     }
@@ -275,10 +203,4 @@ public class FourBar extends SubsystemBase {
         motorSimState.setRawRotorPosition(Radians.of(fourBarSim.getAngleRads() * kFourBarGearRatio));
         motorSimState.setRotorVelocity(RadiansPerSecond.of(fourBarSim.getVelocityRadPerSec() * kFourBarGearRatio));
     }
-
-    // private enum ControlMode {
-    //     Torque,
-    //     MotionMagic,
-    //     Voltage
-    // }
 }

@@ -60,13 +60,6 @@ public class Superstructure extends SubsystemBase{
         );
     }
 
-    // public Command passiveSpindexC() {
-    //     return either(
-    //             run(()->spindexer.setVoltage(IndexerConstants.spindexSlowVoltage.get()), spindexer),
-    //             spindexer.setVoltageC(0),
-    //             feeder.topSensorT().negate()).withName("Index");
-    // }
-
     public Command indexC() {
         return parallel(
             feeder.feedC(),
