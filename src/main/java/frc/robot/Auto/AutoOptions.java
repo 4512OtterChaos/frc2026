@@ -10,19 +10,12 @@ import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.util.RobotConstants.*;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
-
-import org.json.simple.parser.ParseException;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathConstraints;
@@ -45,6 +38,7 @@ import frc.robot.subsystems.Intake.FourBar;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.util.FieldUtil;
+import frc.robot.util.OCPathPlannerAuto;
 
 public class AutoOptions {
     private final AutoChooser autoChooser = new AutoChooser();
@@ -67,8 +61,8 @@ public class AutoOptions {
         Volts.of(12)
     );
 
-    List<PathPlannerPath> currentPaths = new ArrayList<>();
-    int pathNumber = 0;
+    // List<PathPlannerPath> currentPaths = new ArrayList<>();
+    // int pathNumber = 0;
 
     // List<Trigger> pathTriggers = new ArrayList<>();
 
@@ -131,60 +125,16 @@ public class AutoOptions {
                 superstructure.otterShootStationaryC(()->new ChassisSpeeds())
             )
         );
-        autoChooser.addCmd("Left Bump Cycles", buildAuto("Top Bump Cycles"));
-        autoChooser.addCmd("Right Bump Cycles", buildAuto("Top Bump Cycles", true));
-        autoChooser.addCmd("Faster Left Bump Cycles", buildAuto("Faster Top Bump Cycles"));
-        autoChooser.addCmd("Faster Right Bump Cycles", buildAuto("Faster Top Bump Cycles", true));
-        autoChooser.addCmd("Faster Faster Left Bump Cycles", buildAuto("Faster Faster Top Bump Cycles"));
-        autoChooser.addCmd("Faster Faster Right Bump Cycles", buildAuto("Faster Faster Top Bump Cycles", true));
-        autoChooser.addCmd("Left Double Cycle", buildAuto("Top Double Cycle"));
-        autoChooser.addCmd("Right Double Cycle", buildAuto("Top Double Cycle", true));
-        autoChooser.addCmd("Middle Depot", buildAuto("Middle Depot"));
+        autoChooser.addCmd("Left Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Bump Cycles"));
+        autoChooser.addCmd("Right Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Bump Cycles", true));
+        autoChooser.addCmd("Faster Left Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Faster Top Bump Cycles"));
+        autoChooser.addCmd("Faster Right Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Faster Top Bump Cycles", true));
+        autoChooser.addCmd("Faster Faster Left Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Faster Faster Top Bump Cycles"));
+        autoChooser.addCmd("Faster Faster Right Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Faster Faster Top Bump Cycles", true));
+        autoChooser.addCmd("Left Double Cycle", ()-> OCPathPlannerAuto.buildAuto("Top Double Cycle"));
+        autoChooser.addCmd("Right Double Cycle", ()-> OCPathPlannerAuto.buildAuto("Top Double Cycle", true));
+        autoChooser.addCmd("Middle Depot", ()-> OCPathPlannerAuto.buildAuto("Middle Depot"));
     }
-
-    private Supplier<Command> buildAuto(String name){
-        return buildAuto(name, false);
-    }
-
-    private Supplier<Command> buildAuto(String name, boolean mirror){
-        return ()->{
-            PathPlannerAuto auto = new PathPlannerAuto(name, mirror);
-
-            try {
-                currentPaths = PathPlannerAuto.getPathGroupFromAutoFile(name);
-                pathNumber = 0;
-            } catch (IOException | ParseException e) {
-                System.out.println("Failed to find auto paths!");
-                e.printStackTrace();
-            }
-
-            // pathTriggers = new ArrayList<>();
-            // for (int i = 0; i < currentPaths.size(); i++) {
-            //     pathTriggers.add(auto.activePath(currentPaths.get(i).name));
-            // }
-            
-            return auto;
-        };
-    }
-
-    public Optional<PathPlannerPath> getCurrentPath(){
-        if (currentPaths.size() <= pathNumber){
-            return Optional.empty();
-        }
-        return Optional.of(currentPaths.get(pathNumber));
-    }
-
-    // public Optional<PathPlannerPath> getCurrentPath(){
-    //     for(int i = 0; i < pathTriggers.size(); i++){
-    //         if (pathTriggers.get(i).getAsBoolean()) {
-    //             return Optional.of(currentPaths.get(i));
-    //         }
-    //     }
-    //     for(int i = 0; i < pathTriggers.size(); i++){
-    //         System.out.println(pathTriggers.get(i).getAsBoolean());
-    //     }
-    //     return Optional.empty();
-    // }
 
     public Command pathfindToPose(Pose2d pose) {
         return AutoBuilder.pathfindToPose(pose, constraints);
@@ -195,7 +145,7 @@ public class AutoOptions {
         requirements.add(drivetrain);
         
         return defer(()-> {
-            Optional<PathPlannerPath> optionalPath = getCurrentPath();
+            Optional<PathPlannerPath> optionalPath = OCPathPlannerAuto.currentOrLastPath;
 
             if (optionalPath.isEmpty()){
                 for (int i = 0; i < 7; i++){ //TODO: REMOVE
@@ -209,30 +159,10 @@ public class AutoOptions {
                 var translation = pathPoints.get(pathPoints.size() - 1).position;
                 var rotation = path.getGoalEndState().rotation();
 
-                pathNumber++;
-
                 return pathfindToPose(new Pose2d(translation, rotation));
             }
         }, requirements);
     }
-
-    // public Command pathfindToPose(Pose2d pose) {
-    //     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-    //         drivetrain.getGlobalPoseEstimate(),
-    //         pose
-    //     );
-
-        
-    //     // Create the path using the waypoints created above
-    //     PathPlannerPath path = new PathPlannerPath(
-    //         waypoints,
-    //         constraints,
-    //         null, // The ideal starting state, this is only relevant for pre-planned paths, so can be null for on-the-fly paths.
-    //         new GoalEndState(0, pose.getRotation())
-    //     );
-
-    //     return AutoBuilder.followPath(path);
-    // }
 
     public Command getAuto() {
         return Optional.ofNullable(autoChooser.selectedCommand()).orElse(none());
