@@ -13,7 +13,7 @@ import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
     public static final String kCameraNameLeft = "OV9281";
-    public static final String kCameraNameRight = "OV9281_2nd";
+    public static final String kCameraNameRight = "Arducam_5MP";
     // Cam mounting pose
     public static final Transform3d kRobotToCamLeft = new Transform3d(
         new Translation3d(Units.inchesToMeters(-11.45), Units.inchesToMeters(-10.875), Units.inchesToMeters(12.75)),
