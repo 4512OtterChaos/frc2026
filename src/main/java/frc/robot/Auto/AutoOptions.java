@@ -149,7 +149,7 @@ public class AutoOptions {
             Optional<PathPlannerPath> optionalPath = OCPathPlannerAuto.currentOrLastPath;
 
             if (optionalPath.isEmpty()){
-                for (int i = 0; i < 7; i++){ //TODO: REMOVE
+                for (int i = 0; i < 67; i++){ //TODO: REMOVE
                     System.out.println("none");
                 }
                 return none();
