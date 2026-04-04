@@ -395,7 +395,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     private void log() {
-        SmartDashboard.putData("1) Drivetrain/Commands", getCurrentCommand() != null? getCurrentCommand() : Commands.none());
+        // SmartDashboard.putData("1) Drivetrain/Commands", getCurrentCommand() != null? getCurrentCommand() : Commands.none());
         SmartDashboard.putNumber("1) Drivetrain/Target Angle Deg", targetRotation.in(Degrees));
         SmartDashboard.putBoolean("1) Drivetrain/Facing Target Angle", isFacingTarget.getAsBoolean());
         SmartDashboard.putBoolean("1) Drivetrain/Turning To Face Target", turningToFaceTarget.getAsBoolean());
