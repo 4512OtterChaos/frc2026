@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
 import frc.robot.subsystems.Shooter.Shotmap;
@@ -394,6 +395,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     private void log() {
+        SmartDashboard.putData("1) Drivetrain/Commands", getCurrentCommand() != null? getCurrentCommand() : Commands.none());
         SmartDashboard.putNumber("1) Drivetrain/Target Angle Deg", targetRotation.in(Degrees));
         SmartDashboard.putBoolean("1) Drivetrain/Facing Target Angle", isFacingTarget.getAsBoolean());
         SmartDashboard.putBoolean("1) Drivetrain/Turning To Face Target", turningToFaceTarget.getAsBoolean());
