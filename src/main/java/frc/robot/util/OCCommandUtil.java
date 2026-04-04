@@ -94,10 +94,14 @@ public class OCCommandUtil {
     return Commands.sequence(
         runOnce(()-> {
             try {
-                OCPathPlannerAuto.currentOrLastPath = Optional.of(choreoPath
-                    ? PathPlannerPath.fromChoreoTrajectory(pathName)
-                    : PathPlannerPath.fromPathFile(pathName)
-                );
+                PathPlannerPath path2 =
+                    choreoPath
+                        ? PathPlannerPath.fromChoreoTrajectory(pathName)
+                        : PathPlannerPath.fromPathFile(pathName);
+                if (mirror) {
+                  path2 = path2.mirrorPath();
+                }
+                OCPathPlannerAuto.currentOrLastPath = Optional.of(path2);
             } catch (FileVersionException | IOException | ParseException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
