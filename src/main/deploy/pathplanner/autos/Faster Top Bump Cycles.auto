@@ -13,6 +13,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Error Correct Command"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Shoot"
           }
         },
@@ -20,6 +26,12 @@
           "type": "path",
           "data": {
             "pathName": "Faster Top Bump Cycles 2-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Error Correct Command"
           }
         },
         {

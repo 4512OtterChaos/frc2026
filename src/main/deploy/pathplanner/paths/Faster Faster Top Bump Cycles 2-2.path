@@ -140,12 +140,6 @@
       "waypointRelativePos": 0,
       "endWaypointRelativePos": 4.0,
       "command": null
-    },
-    {
-      "name": "Error Correct",
-      "waypointRelativePos": 5.0,
-      "endWaypointRelativePos": null,
-      "command": null
     }
   ],
   "globalConstraints": {
