@@ -1,6 +1,8 @@
 package frc.robot.subsystems.Drivetrain;
 
 import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+import static edu.wpi.first.wpilibj2.command.Commands.sequence;
 import static frc.robot.subsystems.Drivetrain.DrivetrainConstants.*;
 
 import java.util.Optional;
@@ -165,14 +167,18 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         double now = Timer.getFPGATimestamp();
         boolean stationary = targetSpeeds.equals(kSpeedsZero);
         if (stationary && now - lastUnlockedTime > 0.25) {
-            driveFacingAngle(targetSpeeds, lockAngle);
+            driveFacingGyroAngle(targetSpeeds, lockAngle);
         }
         else {
             if (!stationary){
-                lastUnlockedTime = now;
+                for (int i = 0; i < 7; i++) {
+                    // System.out.println("");
+                    lastUnlockedTime = now;
+                }
+                
             }
-            lockAngle = Degrees.of(getState().Pose.getRotation().getDegrees());
             drive(targetSpeeds);
+            lockAngle = Degrees.of(getState().Pose.getRotation().getDegrees());
         }
     }
 
@@ -185,14 +191,23 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public Command driveC(Supplier<ChassisSpeeds> chassisSpeeds, boolean lockAngle) {
-        return run(()-> {
-            if (lockAngle) {
-                driveWithLock(chassisSpeeds.get());
-            }
-            else {
-                drive(chassisSpeeds.get());
-            }
-        });
+        return sequence(
+            runOnce(()-> {
+                for (int i = 0; i < 7; i++) {
+                    System.out.println("SOMETHING OBNOXIOUS");
+                }
+                lastUnlockedTime = Timer.getFPGATimestamp();
+            }),
+            runOnce(()-> this.lockAngle = Degrees.of(getState().Pose.getRotation().getDegrees())),
+            run(()-> {
+                if (lockAngle) {
+                    driveWithLock(chassisSpeeds.get());
+                }
+                else {
+                    drive(chassisSpeeds.get());
+                }
+            })
+        );
     }
 
     public Command driveFacingTargetC(Supplier<ChassisSpeeds> speeds, Supplier<Translation2d> target) {
@@ -206,15 +221,27 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         targetRotation = Degrees.of(Shotmap.getFieldRelTargetFacingAngle(getGlobalPoseEstimate(), target).getDegrees());
         // targetRotation = Degrees.of(target.minus(getGlobalPoseEstimate().getTranslation()).getAngle().plus(Rotation2d.k180deg).getDegrees());
         // TODO: add target omega
-        driveFacingAngle(targetSpeeds, targetRotation);
+        driveFacingAdjAngle(targetSpeeds, targetRotation);
     } 
 
-    public void driveFacingAngle(ChassisSpeeds targetSpeeds, Angle target) {
+    // public void driveFacingAngle(ChassisSpeeds targetSpeeds, Angle target) {
+    //     setControl(
+    //         face.withVelocityX(targetSpeeds.vxMetersPerSecond)
+    //                 .withVelocityY(targetSpeeds.vyMetersPerSecond)
+    //                 .withTargetDirection(new Rotation2d(offsetTargetAngle(target)))
+    //     );
+    // }
+
+    public void driveFacingGyroAngle(ChassisSpeeds targetSpeeds, Angle target) {
         setControl(
             face.withVelocityX(targetSpeeds.vxMetersPerSecond)
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
-                    .withTargetDirection(offsetTargetAngle(target))
+                    .withTargetDirection(new Rotation2d(target))
         );
+    }
+
+    public void driveFacingAdjAngle(ChassisSpeeds targetSpeeds, Angle angle) {
+            driveFacingGyroAngle(targetSpeeds, offsetTargetAngle(angle));
     }
 
     public Command driveFacingOptionalTargetC(Supplier<ChassisSpeeds> speeds, Supplier<Optional<Translation2d>> target) {
@@ -249,9 +276,9 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         setControl(brake);
     }
 
-    private Rotation2d offsetTargetAngle(Angle target){
-        var adjAngle = Rotation2d.fromDegrees(target.in(Degrees));
-        var offset = getState().Pose.getRotation().minus(getGlobalPoseEstimate().getRotation());
+    private Angle offsetTargetAngle(Angle target){
+        var adjAngle = target;
+        var offset = Degrees.of(getState().Pose.getRotation().minus(getGlobalPoseEstimate().getRotation()).getDegrees());
         return adjAngle.plus(offset);
     }
 
@@ -275,6 +302,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     @Override
     public void resetPose(Pose2d pose) {
+        
         super.resetPose(pose);
         visionEstimator.resetPose(pose);
         // visionEstimator.resetTranslation(pose.getTranslation());
@@ -290,6 +318,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     public void resetRotation(Rotation2d rotation) {
         super.resetRotation(rotation);
         visionEstimator.resetRotation(rotation);
+        lockAngle = Degrees.of(rotation.getDegrees());
     }
 
     /**

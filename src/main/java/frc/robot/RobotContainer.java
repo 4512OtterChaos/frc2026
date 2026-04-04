@@ -112,7 +112,7 @@ public class RobotContainer {
         // #### Drivetrain Bindings
         drivetrain.setDefaultCommand(drivetrain.driveC(
             () -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kStandardLimiter),
-            false // rotation lock
+            true // rotation lock
         ));
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.b().whileTrue(drivetrain.brakeC());
