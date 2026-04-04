@@ -113,6 +113,7 @@ public class AutoOptions {
         NamedCommands.registerCommand("Shoot", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).until(superstructure.hopperEmptyT).withTimeout(4).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
         NamedCommands.registerCommand("Shoot Forever", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
         // NamedCommands.registerCommand("Lower Fourbar", fourBar.extendC().asProxy());
+        NamedCommands.registerCommand("Error Correct Command", pathfindToPathEnd());
     }
 
     public void addOptions() {
