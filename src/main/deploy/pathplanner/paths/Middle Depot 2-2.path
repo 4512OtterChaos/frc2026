@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1232433618105346,
+        "x": 1.1232433618105344,
         "y": 7.287346414775597
       },
       "isLocked": false,
@@ -24,8 +24,8 @@
         "y": 7.7160485021398
       },
       "nextControl": {
-        "x": 0.6577590462222886,
-        "y": 7.016789871389409
+        "x": 0.6577590462222884,
+        "y": 7.016789871389408
       },
       "isLocked": false,
       "linkedName": null
@@ -91,6 +91,12 @@
       "name": "Intake",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": 3.0,
+      "command": null
+    },
+    {
+      "name": "Error Correct",
+      "waypointRelativePos": 3.0,
+      "endWaypointRelativePos": null,
       "command": null
     }
   ],
