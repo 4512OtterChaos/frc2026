@@ -3,6 +3,8 @@ package frc.robot.subsystems.Shooter;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.Shooter.ShooterConstants.*;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
@@ -210,13 +212,23 @@ public class Shooter extends SubsystemBase {
         setAngle(angle);
         setVelocity(velocity);
     }
+
+    public void setIdle(boolean inAllianceZone){
+            if (inAllianceZone){
+                setIdle();
+            }
+            else{
+                setState(kHoodMinAngle, RPM.of(0));
+            }
+    }
     
     public void setIdle(){
         setState(kHoodMinAngle, kFlywheelIdleVelocity);
     }
     
-    public Command setIdleC(){
-        return setStateC(kHoodMinAngle, kFlywheelIdleVelocity).withName("Set Idle");
+    public Command setIdleC(BooleanSupplier inAllianceZone){
+        return run(()-> setIdle(inAllianceZone.getAsBoolean())).withName("Set Idle (While In Alliance Zone)");
+        
     }
 
     public Command setStateC(State state) {

@@ -150,7 +150,7 @@ public class Superstructure extends SubsystemBase{
         return Commands.run(
             () -> {
                 if (hasTarget.negate().getAsBoolean()) {
-                    shooter.setIdleC();
+                    shooter.setIdle(FieldUtil.isInAllianceZone(drivetrain.getGlobalPoseEstimate().getTranslation()));
                 }
                 else {
                     Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), target.get().get());
@@ -168,7 +168,7 @@ public class Superstructure extends SubsystemBase{
         return Commands.run(
             () -> {
                 if (hasTarget.negate().getAsBoolean()) {
-                    shooter.setIdle();
+                    shooter.setIdle(FieldUtil.isInAllianceZone(drivetrain.getGlobalPoseEstimate().getTranslation()));
                 }
                 else{
                     var currSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getState().Pose.getRotation());

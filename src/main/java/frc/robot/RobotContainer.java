@@ -38,6 +38,7 @@ import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.SuperstructureViz;
 import frc.robot.subsystems.Vision.Vision;
+import frc.robot.util.FieldUtil;
 import frc.robot.util.FuelPhysicsSim;
 import frc.robot.util.HubShiftUtil;
 import frc.robot.util.OCXboxController;
@@ -82,7 +83,7 @@ public class RobotContainer {
         fourBar.setDefaultCommand(fourBar.setCurrentC(Amps.of(0)).withName("Default"));
         spindexer.setDefaultCommand(spindexer.setVoltageC(0).withName("Default"));
         feeder.setDefaultCommand(feeder.setVelocityC(RPM.of(0)).withName("Default"));
-        shooter.setDefaultCommand(shooter.setIdleC());
+        shooter.setDefaultCommand(shooter.setIdleC(()-> FieldUtil.isInAllianceZone(drivetrain.getGlobalPoseEstimate().getTranslation())));
     }
 
     private void configureTriggersAndGeneralBindings() {
