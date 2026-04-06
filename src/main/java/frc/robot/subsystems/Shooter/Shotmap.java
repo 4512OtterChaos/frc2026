@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
-import edu.wpi.first.math.interpolation.Interpolator;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
@@ -21,8 +20,8 @@ public class Shotmap {
     private static InterpolatingTreeMap<Double, Shooter.State> map = 
         new InterpolatingTreeMap<Double, Shooter.State>(InverseInterpolator.forDouble(), (Shooter.State startValue, Shooter.State endValue, double t)-> startValue.interpolate(endValue, t));
 
-    private static InterpolatingTreeMap<Double, Double> map2 = 
-        new InterpolatingTreeMap<Double, Double>(InverseInterpolator.forDouble(), Interpolator.forDouble());
+    // private static InterpolatingTreeMap<Double, Double> map2 = 
+    //     new InterpolatingTreeMap<Double, Double>(InverseInterpolator.forDouble(), Interpolator.forDouble());
 
     private static Shooter.State presetState;
 
@@ -46,7 +45,7 @@ public class Shotmap {
 
     private static void addState(Distance distance, Angle angle, AngularVelocity velocity, Time tof){
         map.put(distance.in(Meters), new Shooter.State(angle, velocity, tof));
-        map2.put(distance.in(Meters)/tof.in(Seconds), distance.in(Meters));
+        // map2.put(distance.in(Meters)/tof.in(Seconds), distance.in(Meters));
         if (minTof == null || tof.in(Seconds) < minTof.in(Seconds)){
             minTof = tof;
         }
@@ -55,9 +54,9 @@ public class Shotmap {
         }
     }
 
-    public static double horizontalVelocityToEffectiveDistance(double velocity){
-        return map2.get(velocity);
-    }
+    // public static double horizontalVelocityToEffectiveDistance(double velocity){
+    //     return map2.get(velocity);
+    // }
 
     /** Get the shooter-relative fuel velocities (x and z) for the state at given distance */
     public static Translation3d getRelativeFuelVels(Angle hoodAngle, AngularVelocity flywheelVel) {
