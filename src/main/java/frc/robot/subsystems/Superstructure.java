@@ -173,15 +173,15 @@ public class Superstructure extends SubsystemBase{
                 else{
                     var currSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getState().Pose.getRotation());
                     var vel = new Translation2d(currSpeeds.vxMetersPerSecond, currSpeeds.vyMetersPerSecond);
-                    Translation2d hub = FieldUtil.kHubTrl;
                     Translation2d targetTrl = target.get().get();
+                    Translation2d adjTarget = targetTrl;
                     Shooter.State state = null;
 
                     // perform TOF recursion for several iterations to account for the change in target position as the robot moves during the shot
                     for (int i = 0; i < 5; i++) {
-                        Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), targetTrl);
+                        Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), adjTarget);
                         state = Shotmap.getState(distance);
-                        targetTrl = hub.minus(vel.times(state.getTof().times(1).in(Seconds))); //TODO Tune compensation percentage?
+                        adjTarget = targetTrl.minus(vel.times(state.getTof().times(1).in(Seconds))); //TODO Tune compensation percentage?
                     }
 
                     shooter.setState(state);
