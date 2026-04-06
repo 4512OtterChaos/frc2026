@@ -128,10 +128,10 @@ public class AutoOptions {
         );
         autoChooser.addCmd("Left Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Bump Cycles"));
         autoChooser.addCmd("Right Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Bump Cycles", true));
-        autoChooser.addCmd("Faster Left Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Faster Top Bump Cycles"));
-        autoChooser.addCmd("Faster Right Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Faster Top Bump Cycles", true));
-        autoChooser.addCmd("Faster Faster Left Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Faster Faster Top Bump Cycles"));
-        autoChooser.addCmd("Faster Faster Right Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Faster Faster Top Bump Cycles", true));
+        autoChooser.addCmd("Left Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Faster Bump Cycles"));
+        autoChooser.addCmd("Right Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Faster Bump Cycles", true));
+        autoChooser.addCmd("Left Faster Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Faster Faster Bump Cycles"));
+        autoChooser.addCmd("Right Faster Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Faster Faster Bump Cycles", true));
         autoChooser.addCmd("Left Double Cycle", ()-> OCPathPlannerAuto.buildAuto("Top Double Cycle"));
         autoChooser.addCmd("Right Double Cycle", ()-> OCPathPlannerAuto.buildAuto("Top Double Cycle", true));
         autoChooser.addCmd("Middle Depot", ()-> OCPathPlannerAuto.buildAuto("Middle Depot"));

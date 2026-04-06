@@ -3,61 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.930057061340941,
-        "y": 5.409
+        "x": 4.453095577746077,
+        "y": 7.418
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2794008559201138,
-        "y": 6.331611982881598
+        "x": 5.501126961483594,
+        "y": 7.353306704707561
       },
       "isLocked": false,
-      "linkedName": "Top Bump Shoot"
+      "linkedName": "Top Trench"
     },
     {
       "anchor": {
-        "x": 3.534450784593438,
-        "y": 7.638416547788873
+        "x": 8.05004279601248,
+        "y": 6.668017118405358
       },
       "prevControl": {
-        "x": 2.8098858773181163,
-        "y": 7.625477888730385
+        "x": 7.791269614835947,
+        "y": 7.573723252496434
       },
       "nextControl": {
-        "x": 4.405920466005536,
-        "y": 7.653978506385518
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 5.7340228245363765,
-        "y": 7.5996005706134095
-      },
-      "prevControl": {
-        "x": 5.175641324246122,
-        "y": 7.578919774306363
-      },
-      "nextControl": {
-        "x": 6.43271041369472,
-        "y": 7.625477888730385
+        "x": 8.16533086916658,
+        "y": 6.264508862377949
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.911440798858774,
-        "y": 5.231825962910129
+        "x": 7.778330955777461,
+        "y": 4.701340941512126
       },
       "prevControl": {
-        "x": 7.18315263908702,
-        "y": 5.775249643366619
+        "x": 8.45114122681883,
+        "y": 4.895420827389444
       },
       "nextControl": {
-        "x": 6.690496383395539,
-        "y": 4.789937131983662
+        "x": 7.341623600384706,
+        "y": 4.575367665918063
       },
       "isLocked": false,
       "linkedName": null
@@ -68,12 +52,12 @@
         "y": 5.409
       },
       "prevControl": {
-        "x": 5.824593437945791,
-        "y": 5.322396576319543
+        "x": 5.736347991957626,
+        "y": 5.392703621439827
       },
       "nextControl": {
-        "x": 5.232594770339371,
-        "y": 5.469154905004743
+        "x": 4.582482168330956,
+        "y": 5.4647218259629105
       },
       "isLocked": false,
       "linkedName": "Top Bump Approach New"
@@ -84,8 +68,8 @@
         "y": 5.409
       },
       "prevControl": {
-        "x": 2.9392724679029953,
-        "y": 5.412967189728959
+        "x": 2.4346647646219677,
+        "y": 5.421938659058489
       },
       "nextControl": null,
       "isLocked": false,
@@ -94,35 +78,31 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.8188041989958916,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": -55.23403553500006
     },
     {
-      "waypointRelativePos": 2.0,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 1.4732998630762228,
+      "rotationDegrees": -55.443269796092146
     },
     {
-      "waypointRelativePos": 2.4258329529895013,
-      "rotationDegrees": -64.97888334740558
+      "waypointRelativePos": 3.0,
+      "rotationDegrees": 179.49807690398328
     },
     {
-      "waypointRelativePos": 2.6175262437243347,
-      "rotationDegrees": -66.2408268786036
+      "waypointRelativePos": 3.503423094477432,
+      "rotationDegrees": 180.0
     },
     {
       "waypointRelativePos": 4.0,
-      "rotationDegrees": 180.0
-    },
-    {
-      "waypointRelativePos": 4.589228662711094,
-      "rotationDegrees": 180.0
+      "rotationDegrees": 141.91
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 3.90590200445431,
-      "maxWaypointRelativePos": 4.652004454342956,
+      "minWaypointRelativePos": 2.861358574610194,
+      "maxWaypointRelativePos": 3.551781737193756,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 3.0,
@@ -137,8 +117,14 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": 4.0,
+      "command": null
+    },
+    {
+      "name": "Lower Fourbar",
+      "waypointRelativePos": 0.2,
+      "endWaypointRelativePos": null,
       "command": null
     }
   ],
@@ -157,8 +143,8 @@
   "reversed": false,
   "folder": "Faster Faster Top Bump Cycles",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 141.9112271190247
+    "velocity": 0.0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }
