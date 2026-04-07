@@ -61,8 +61,6 @@ public class Vision {
     private Matrix<N3, N1> multitagBaseTrustStdDevs = VecBuilder.fill(kMultitagBaseTrustTrlStdDevs, kMultitagBaseTrustTrlStdDevs, kMultitagBaseTrustRotStdDevs);
     private final TunableNumber distanceTrustScale = new TunableNumber("6) Vision/distanceTrustScale", kDistanceTrustScale);
     private final TunableNumber rotSpeedTrustScale = new TunableNumber("6) Vision/rotSpeedTrustScale", kRotSpeedTrustScale);
-    
-    private final List<PhotonPipelineResult> emptyResults = List.of();
     //----- Simulation
     private PhotonCameraSim cameraSimLeft;
     private PhotonCameraSim cameraSimRight;
@@ -138,8 +136,7 @@ public class Vision {
         });
 
         // Update estimator for new right-facing camera results
-        // var rightResults = cameraRight.getAllUnreadResults();
-        var rightResults = emptyResults;
+        var rightResults = cameraRight.getAllUnreadResults();
         processResults(rightResults, estimator, kRobotToCamRight, rotSpeed).ifPresent(latestEstimate -> {
             rightEstimatePosePub.set(latestEstimate);
         });
