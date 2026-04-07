@@ -15,7 +15,6 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Indexer.*;
 import frc.robot.subsystems.Intake.FourBar;
@@ -33,7 +32,6 @@ public class Superstructure extends SubsystemBase{
     private Spindexer spindexer;
     private Feeder feeder;
     private Shooter shooter;
-    private Climber climber;
 
     public final Trigger readyToShoot;
 
@@ -42,14 +40,13 @@ public class Superstructure extends SubsystemBase{
 
     public final Trigger hopperEmptyT;
 
-    public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter, Climber climber) {
+    public Superstructure(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter) {
         this.drivetrain = drivetrain;
         this.intake = intake;
         this.fourBar = fourBar;
         this.spindexer = spindexer;
         this.feeder = feeder;
         this.shooter = shooter;
-        this.climber = climber;
 
         // readyToShoot = shooter.isUpToSpeed.and(shooter.isAtAngle).and(drivetrain.isFacingTarget);
         readyToShoot = drivetrain.isFacingTarget;

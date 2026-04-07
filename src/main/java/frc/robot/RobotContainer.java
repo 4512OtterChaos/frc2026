@@ -59,13 +59,12 @@ public class RobotContainer {
     private final Spindexer spindexer = new Spindexer();
     private final Feeder feeder = new Feeder();
     private final Shooter shooter = new Shooter();
-    // private final Climber climber = new Climber(); //TODO: Re-enable
     private final Vision vision = new Vision();
 
-    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, shooter, null);
-    private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, fourBar, spindexer, feeder, shooter, null);
+    private final Superstructure superstructure = new Superstructure(drivetrain, intake, fourBar, spindexer, feeder, shooter);
+    private final SuperstructureViz superstructureViz = new SuperstructureViz(drivetrain, intake, fourBar, spindexer, feeder, shooter);
 
-    private final AutoOptions autos = new AutoOptions(drivetrain, intake, shooter, spindexer, fourBar, null, feeder, superstructure);
+    private final AutoOptions autos = new AutoOptions(drivetrain, intake, shooter, spindexer, fourBar, feeder, superstructure);
 
     TunableNumber flywheelVelocity = new TunableNumber("test/flywheelVelocity", 3200);
     TunableNumber hoodAngle = new TunableNumber("test/hoodAngle", 24);
@@ -154,8 +153,6 @@ public class RobotContainer {
                 superstructure.indexC()
             )
         ));
-        // driver.povUp().whileTrue(climber.setMaxHeightC()); //TODO: Re-enable
-        // driver.povDown().whileTrue(climber.setMinHeightC()); //TODO: Re-enable
     }
 
     public Command getAutonomousCommand() {

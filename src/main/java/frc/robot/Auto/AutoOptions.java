@@ -10,7 +10,6 @@ import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 import static frc.robot.util.RobotConstants.*;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,7 +28,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Indexer.Feeder;
 import frc.robot.subsystems.Indexer.Spindexer;
@@ -47,7 +45,6 @@ public class AutoOptions {
     private final Spindexer spindexer;
     private final FourBar fourBar;
     private final Feeder feeder;
-    private final Climber climber;
     private final Superstructure superstructure;
 
     private boolean autosSetup = false;
@@ -59,6 +56,7 @@ public class AutoOptions {
         DegreesPerSecondPerSecond.of(720), 
         Volts.of(12)
     );
+    PathConstraints fastConstraints = new PathConstraints(
         MetersPerSecond.of(3.5), 
         MetersPerSecondPerSecond.of(4.5), 
         DegreesPerSecond.of(540), 
@@ -72,14 +70,13 @@ public class AutoOptions {
     // List<Trigger> pathTriggers = new ArrayList<>();
 
     public AutoOptions(OCDrivetrain drivetrain, Intake intake, Shooter shooter, Spindexer spindexer,
-                       FourBar fourBar, Climber climber, Feeder feeder, Superstructure superstructure) {
+                       FourBar fourBar, Feeder feeder, Superstructure superstructure) {
         this.drivetrain = drivetrain;
         this.intake = intake;
         this.shooter = shooter;
         this.spindexer = spindexer;
         this.fourBar = fourBar;
         this.feeder = feeder;
-        this.climber = climber;
         this.superstructure = superstructure;
 
         AutoBuilder.configure(

@@ -14,7 +14,6 @@ import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.IntakeConstants;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterConstants;
-import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Indexer.Feeder;
 import frc.robot.subsystems.Indexer.Spindexer;
@@ -26,7 +25,6 @@ public class SuperstructureViz extends SubsystemBase{
     private Spindexer spindexer;
     private Feeder feeder;
     private Shooter shooter;
-    private Climber climber;
 
     private final Color8Bit kWindowColor = new Color8Bit(0, 100, 150);
     private final Color8Bit kMechBaseColor = new Color8Bit(0, 0, 150);
@@ -39,14 +37,13 @@ public class SuperstructureViz extends SubsystemBase{
     private final double kDefaultFourBar1Deg = 90;
     private final double kDefaultFourBar2Deg = 90-3;
 
-    public SuperstructureViz(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter, Climber climber){
+    public SuperstructureViz(OCDrivetrain drivetrain, Intake intake, FourBar fourBar, Spindexer spindexer, Feeder feeder, Shooter shooter){
         this.drivetrain = drivetrain;
         this.intake = intake;
         this.fourBar = fourBar;
         this.spindexer = spindexer;
         this.feeder = feeder;
         this.shooter = shooter;
-        this.climber = climber;
     }
 
     Mechanism2d hoodMechWindow = new Mechanism2d(0.4, 0.6, kWindowColor);
@@ -77,56 +74,17 @@ public class SuperstructureViz extends SubsystemBase{
     private final MechanismLigament2d fourBarMech2 = fourBarMech2Base.append(
             new MechanismLigament2d("FourBar 2", IntakeConstants.kFourBar2Length.in(Meters), kDefaultFourBar2Deg, kMechWidth, kMechBaseColor));
     
-//     private final MechanismLigament2d fourBarMech1SetpointBase = fourBarMech1Root.append(
-//             new MechanismLigament2d("FourBar 1 SetpointBase", IntakeConstants.kFourBar1PivotHeight.in(Meters), 90, kSetpointWidth, kSetpointBaseColor));
-//     private final MechanismLigament2d fourBarMech1Setpoint = fourBarMech1SetpointBase.append(
-//             new MechanismLigament2d("FourBar 1 Setpoint", IntakeConstants.kFourBar1Length.in(Meters), kDefaultFourBar1Deg, kSetpointWidth, kSetpointBaseColor));
-
-//     private final MechanismLigament2d fourBarMech2SetpointBase = fourBarMech2Root.append(
-//             new MechanismLigament2d("FourBar 2 SetpointBase", IntakeConstants.kFourBar2PivotHeight.in(Meters), 90, kSetpointWidth, kSetpointBaseColor));
-//     private final MechanismLigament2d fourBarMech2Setpoint = fourBarMech2SetpointBase.append(
-//             new MechanismLigament2d("FourBar 2 Setpoint", IntakeConstants.kFourBar2Length.in(Meters), kDefaultFourBar2Deg, kSetpointWidth, kSetpointBaseColor));
-
-    Mechanism2d climberMechWindow = new Mechanism2d(.5, .6, kWindowColor);
-    MechanismRoot2d climberMechRoot = climberMechWindow.getRoot("Climber", 0.25, .1);
-
-    private MechanismLigament2d climberMechBase = climberMechRoot.append(
-            new MechanismLigament2d("Climber Base", 0.2, 90, kMechWidth+3, kMechBaseColor));
-    private MechanismLigament2d climberMech = climberMechBase.append(
-            new MechanismLigament2d("Climber", 0.0, 0, kMechWidth, kMechBaseColor));
-    
-    private final MechanismLigament2d climberSetpointBase = climberMechRoot.append(
-            new MechanismLigament2d("Climber SetpointBase", 0.2, 90, kSetpointWidth+3, kSetpointBaseColor));
-    private final MechanismLigament2d climberSetpoint = climberSetpointBase.append(
-            new MechanismLigament2d("Climber Setpoint", 0, 0, kSetpointWidth, kSetpointBaseColor));
-
-    
     @Override
     public void simulationPeriodic() {
         hoodMech.setAngle(kDefaultHoodDeg - shooter.getHoodAngle().in(Degrees));
         hoodSetpoint.setAngle(kDefaultHoodDeg - shooter.getHoodTargetAngle().in(Degrees));
 
         fourBarMech1.setAngle(kDefaultFourBar1Deg - fourBar.getAngle().in(Degrees));
-        // fourBarMech1Setpoint.setAngle(kDefaultFourBar1Deg - fourBar.getTargetAngle().in(Degrees));
 
         fourBarMech2.setAngle(kDefaultFourBar2Deg - fourBar.getAngle().in(Degrees));
-        // fourBarMech2Setpoint.setAngle(kDefaultFourBar2Deg - fourBar.getTargetAngle().in(Degrees));
-
-        // climberMech.setLength(climber.getHeightDistance().in(Meters));
-        // climberSetpoint.setLength(climber.getTargetHeight().in(Meters));
-
-
-
-        // mechArmLeft.setAngle(180 + (kDefaultArmDeg - shooterArm.getAngle().in(Degrees)));
-        // mechArmRight.setAngle(180 - (kDefaultArmDeg - shooterArm.getAngle().in(Degrees)));
-        // setpointArmLeft.setAngle(180 + (kDefaultArmDeg - ((shooterArm.getTargetVoltage().in(Volts) > 0) ? ShooterArmConstants.kInAngle.in(Degrees) : ShooterArmConstants.kOutAngle.in(Degrees))));
-        // setpointArmRight.setAngle(180 - (kDefaultArmDeg - ((shooterArm.getTargetVoltage().in(Volts) > 0) ? ShooterArmConstants.kInAngle.in(Degrees) : ShooterArmConstants.kOutAngle.in(Degrees))));
         
         SmartDashboard.putData("Hood Mech", hoodMechWindow);
 
         SmartDashboard.putData("FourBar Mech", fourBarMechWindow);
-
-        SmartDashboard.putData("Climber Mech", climberMechWindow);
-        // SmartDashboard.putData("ShooterMech", shooterMech);
     }
 }
