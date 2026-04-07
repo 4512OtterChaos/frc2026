@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "3x Faster Bump Cycles 1-2"
+            "pathName": "Middle Depot 1-2"
           }
         },
         {
@@ -25,7 +25,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "3x Faster Bump Cycles 2-2"
+            "pathName": "Slower Middle Depot 2-2"
           }
         },
         {
@@ -44,6 +44,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "Double Cycles",
+  "folder": null,
   "choreoAuto": false
 }

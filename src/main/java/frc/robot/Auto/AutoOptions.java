@@ -28,7 +28,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
@@ -54,6 +53,12 @@ public class AutoOptions {
     private boolean autosSetup = false;
     RobotConfig robotConfig = new RobotConfig(kRobotWeight, kMOI, kModuleConfig, FL, FR, BL, BR);
     PathConstraints constraints = new PathConstraints(
+        MetersPerSecond.of(2), 
+        MetersPerSecondPerSecond.of(3), 
+        DegreesPerSecond.of(540), 
+        DegreesPerSecondPerSecond.of(720), 
+        Volts.of(12)
+    );
         MetersPerSecond.of(3.5), 
         MetersPerSecondPerSecond.of(4.5), 
         DegreesPerSecond.of(540), 
@@ -126,7 +131,9 @@ public class AutoOptions {
                 superstructure.otterShootStationaryC(()->new ChassisSpeeds())
             )
         );
+        autoChooser.addCmd("Left 3x Faster Loop Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top 3x Faster Loop Bump Cycles"));
         autoChooser.addCmd("Right 3x Faster Loop Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top 3x Faster Loop Bump Cycles", true));
+        autoChooser.addCmd("Left 3x Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top 3x Faster Bump Cycles"));
         autoChooser.addCmd("Right 3x Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top 3x Faster Bump Cycles", true));
         autoChooser.addCmd("Left Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Faster Bump Cycles"));
         autoChooser.addCmd("Right Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Faster Bump Cycles", true));
@@ -141,17 +148,11 @@ public class AutoOptions {
         return AutoBuilder.pathfindToPose(pose, constraints);
     }
 
-    public Command pathfindToPathEnd() {
-        Set<Subsystem> requirements = new HashSet<Subsystem>();
-        requirements.add(drivetrain);
-        
+    public Command pathfindToPathEnd() {        
         return defer(()-> {
             Optional<PathPlannerPath> optionalPath = OCPathPlannerAuto.currentOrLastPath;
 
             if (optionalPath.isEmpty()){
-                for (int i = 0; i < 67; i++){ //TODO: REMOVE
-                    System.out.println("none");
-                }
                 return none();
             }
             else {
@@ -162,7 +163,7 @@ public class AutoOptions {
 
                 return pathfindToPose(new Pose2d(translation, rotation));
             }
-        }, requirements);
+        }, Set.of(drivetrain));
     }
 
     public Command getAuto() {
