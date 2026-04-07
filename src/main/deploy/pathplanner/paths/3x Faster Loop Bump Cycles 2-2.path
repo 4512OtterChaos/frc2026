@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.743443794579173,
-        "y": 6.428611982881598
+        "x": 2.6474555555555552,
+        "y": 6.529577777777778
       },
       "isLocked": false,
       "linkedName": "New Top Bump Shoot"
@@ -32,32 +32,48 @@
     },
     {
       "anchor": {
-        "x": 5.7340228245363765,
-        "y": 7.5996005706134095
+        "x": 5.6779777777777785,
+        "y": 7.523511111111111
       },
       "prevControl": {
-        "x": 5.101312036446404,
-        "y": 7.675830786045936
+        "x": 5.413721983144727,
+        "y": 7.697164919013614
       },
       "nextControl": {
-        "x": 6.80793152639087,
-        "y": 7.4702139800285305
+        "x": 6.360088888892993,
+        "y": 7.0752666666619435
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.794992867332382,
-        "y": 5.089500713266761
+        "x": 5.91184444445022,
+        "y": 4.639155555552975
       },
       "prevControl": {
-        "x": 7.721509511544049,
-        "y": 5.602700416160256
+        "x": 5.414877777777779,
+        "y": 5.0191888888888885
       },
       "nextControl": {
-        "x": 5.999544444444444,
-        "y": 4.6488999999999985
+        "x": 6.169153105758577,
+        "y": 4.442390108671064
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.457533333337437,
+        "y": 5.106888888884166
+      },
+      "prevControl": {
+        "x": 6.579657502629191,
+        "y": 4.781224437448153
+      },
+      "nextControl": {
+        "x": 6.369752472938292,
+        "y": 5.340971183275659
       },
       "isLocked": false,
       "linkedName": null
@@ -68,12 +84,12 @@
         "y": 5.486922222222222
       },
       "prevControl": {
-        "x": 6.007347281661119,
-        "y": 5.477950752892693
+        "x": 6.058011111115214,
+        "y": 5.467433333328611
       },
       "nextControl": {
-        "x": 5.291601914422553,
-        "y": 5.491736501436621
+        "x": 5.291733364966471,
+        "y": 5.496349474699491
       },
       "isLocked": false,
       "linkedName": "Top Bump Approach New"
@@ -102,27 +118,27 @@
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 2.4258329529895013,
-      "rotationDegrees": -44.0350253800708
+      "waypointRelativePos": 2.5742738589211385,
+      "rotationDegrees": -92.11307487708105
     },
     {
-      "waypointRelativePos": 2.672295755362847,
-      "rotationDegrees": -45.225702751769475
+      "waypointRelativePos": 2.9228215767635195,
+      "rotationDegrees": -87.67145994121435
     },
     {
-      "waypointRelativePos": 3.7494294842537808,
+      "waypointRelativePos": 5.0,
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 4.671428571428563,
+      "waypointRelativePos": 5.671428571428563,
       "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 3.90590200445431,
-      "maxWaypointRelativePos": 4.652004454342956,
+      "minWaypointRelativePos": 4.8,
+      "maxWaypointRelativePos": 5.652004454342956,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 3.0,
@@ -155,7 +171,7 @@
     "rotation": 141.9112271190247
   },
   "reversed": false,
-  "folder": "Faster Faster Top Bump Cycles",
+  "folder": "Top 3x Faster Bump Cycles",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 141.9112271190247

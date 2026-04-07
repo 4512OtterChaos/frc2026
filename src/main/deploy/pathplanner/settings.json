@@ -3,14 +3,16 @@
   "robotLength": 0.824,
   "holonomicMode": true,
   "pathFolders": [
+    "Faster Faster Top Bump Cycles",
     "Faster Top Bump Cycles",
     "Middle Depot",
-    "Faster Faster Top Bump Cycles",
     "Top Bump Cycles",
-    "Top Double Cycle"
+    "Top Double Cycle",
+    "Top 3x Faster Bump Cycles"
   ],
   "autoFolders": [
-    "Double Cycles"
+    "Double Cycles",
+    "Old Double Cycles"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

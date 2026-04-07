@@ -48,32 +48,32 @@
     },
     {
       "anchor": {
-        "x": 5.475249643366619,
-        "y": 5.409
+        "x": 5.541555555555556,
+        "y": 5.486922222222222
       },
       "prevControl": {
-        "x": 5.736347991957626,
-        "y": 5.392703621439827
+        "x": 6.009288888888891,
+        "y": 5.418711111111111
       },
       "nextControl": {
-        "x": 4.582482168330956,
-        "y": 5.4647218259629105
+        "x": 5.10565415279158,
+        "y": 5.550491176791968
       },
       "isLocked": false,
       "linkedName": "Top Bump Approach New"
     },
     {
       "anchor": {
-        "x": 1.930057061340941,
-        "y": 5.409
+        "x": 2.3941000000000003,
+        "y": 5.506
       },
       "prevControl": {
-        "x": 2.4346647646219677,
-        "y": 5.421938659058489
+        "x": 2.898707703281027,
+        "y": 5.518938659058489
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Top Bump Shoot"
+      "linkedName": "New Top Bump Shoot"
     }
   ],
   "rotationTargets": [
@@ -90,7 +90,7 @@
       "rotationDegrees": 179.49807690398328
     },
     {
-      "waypointRelativePos": 3.503423094477432,
+      "waypointRelativePos": 3.599999999999996,
       "rotationDegrees": 180.0
     },
     {

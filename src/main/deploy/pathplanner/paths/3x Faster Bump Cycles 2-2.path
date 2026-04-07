@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.743443794579173,
-        "y": 6.428611982881598
+        "x": 2.6474555555555552,
+        "y": 6.529577777777778
       },
       "isLocked": false,
       "linkedName": "New Top Bump Shoot"
@@ -36,28 +36,28 @@
         "y": 7.5996005706134095
       },
       "prevControl": {
-        "x": 5.101312036446404,
-        "y": 7.675830786045936
+        "x": 5.025100000000001,
+        "y": 7.659933333333333
       },
       "nextControl": {
-        "x": 6.80793152639087,
-        "y": 7.4702139800285305
+        "x": 6.781665609911168,
+        "y": 7.510441100220291
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.794992867332382,
-        "y": 5.089500713266761
+        "x": 6.477022222222222,
+        "y": 4.424777777777778
       },
       "prevControl": {
-        "x": 7.721509511544049,
-        "y": 5.602700416160256
+        "x": 7.5168805844911555,
+        "y": 4.486674108865214
       },
       "nextControl": {
-        "x": 5.999544444444444,
-        "y": 4.6488999999999985
+        "x": 5.65848888888889,
+        "y": 4.376055555555556
       },
       "isLocked": false,
       "linkedName": null
@@ -68,12 +68,12 @@
         "y": 5.486922222222222
       },
       "prevControl": {
-        "x": 6.007347281661119,
-        "y": 5.477950752892693
+        "x": 6.301622222222222,
+        "y": 5.418711111111111
       },
       "nextControl": {
-        "x": 5.291601914422553,
-        "y": 5.491736501436621
+        "x": 5.2925562539313145,
+        "y": 5.509268313393628
       },
       "isLocked": false,
       "linkedName": "Top Bump Approach New"
@@ -102,15 +102,15 @@
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 2.4258329529895013,
-      "rotationDegrees": -44.0350253800708
+      "waypointRelativePos": 2.257142857142794,
+      "rotationDegrees": -75.69403855593568
     },
     {
-      "waypointRelativePos": 2.672295755362847,
-      "rotationDegrees": -45.225702751769475
+      "waypointRelativePos": 2.6499999999999706,
+      "rotationDegrees": -80.75248673042663
     },
     {
-      "waypointRelativePos": 3.7494294842537808,
+      "waypointRelativePos": 3.207142857142837,
       "rotationDegrees": 180.0
     },
     {
@@ -155,7 +155,7 @@
     "rotation": 141.9112271190247
   },
   "reversed": false,
-  "folder": "Faster Faster Top Bump Cycles",
+  "folder": "Top 3x Faster Bump Cycles",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 141.9112271190247

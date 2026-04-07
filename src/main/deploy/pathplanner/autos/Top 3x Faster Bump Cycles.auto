@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Top Double Cycle 1-2"
+            "pathName": "3x Faster Bump Cycles 1-2"
           }
         },
         {
@@ -25,7 +25,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Top Double Cycle 2-2"
+            "pathName": "3x Faster Bump Cycles 2-2"
           }
         },
         {
@@ -37,13 +37,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot Forever"
+            "name": "Shoot"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Old Double Cycles",
+  "folder": "Double Cycles",
   "choreoAuto": false
 }
