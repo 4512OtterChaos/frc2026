@@ -178,7 +178,7 @@ public class Superstructure extends SubsystemBase{
                     Shooter.State state = null;
 
                     // perform TOF recursion for several iterations to account for the change in target position as the robot moves during the shot
-                    for (int i = 0; i < 5; i++) {
+                    for (int i = 0; i < 8; i++) {
                         Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), adjTarget);
                         state = Shotmap.getState(distance);
                         adjTarget = targetTrl.minus(vel.times(state.getTof().times(1).in(Seconds))); //TODO Tune compensation percentage?

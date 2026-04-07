@@ -37,10 +37,10 @@ public class Shotmap {
 
     static {
         // 4.86 
-        addState(Meters.of(2.26), Degrees.of(21), RPM.of(2800), Seconds.of(1.02));
-        addState(Meters.of(3.5), Degrees.of(24), RPM.of(3200), Seconds.of(1.22));
-        addState(Meters.of(5.57), Degrees.of(34), RPM.of(3650), Seconds.of(1.31));
         addState(Meters.of(14.00), Degrees.of(45), RPM.of(4500), Seconds.of(2));//TODO: not real tof
+        addState(Meters.of(2.26), Degrees.of(21), RPM.of(2400), Seconds.of(1.02));
+        addState(Meters.of(3.5), Degrees.of(24), RPM.of(2800), Seconds.of(1.22));
+        addState(Meters.of(5.57), Degrees.of(34), RPM.of(3350), Seconds.of(1.31));
     }
 
     private static void addState(Distance distance, Angle angle, AngularVelocity velocity, Time tof){

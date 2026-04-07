@@ -165,17 +165,13 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
 
     public void driveWithLock(ChassisSpeeds targetSpeeds) {
         double now = Timer.getFPGATimestamp();
-        boolean stationary = targetSpeeds.equals(kSpeedsZero);
+        boolean stationary = targetSpeeds.omegaRadiansPerSecond == kSpeedsZero.omegaRadiansPerSecond;
         if (stationary && now - lastUnlockedTime > 0.25) {
             driveFacingGyroAngle(targetSpeeds, lockAngle);
         }
         else {
             if (!stationary){
-                for (int i = 0; i < 7; i++) {
-                    // System.out.println("");
-                    lastUnlockedTime = now;
-                }
-                
+                lastUnlockedTime = now;
             }
             drive(targetSpeeds);
             lockAngle = Degrees.of(getState().Pose.getRotation().getDegrees());
@@ -193,9 +189,6 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     public Command driveC(Supplier<ChassisSpeeds> chassisSpeeds, boolean lockAngle) {
         return sequence(
             runOnce(()-> {
-                for (int i = 0; i < 7; i++) {
-                    System.out.println("SOMETHING OBNOXIOUS");
-                }
                 lastUnlockedTime = Timer.getFPGATimestamp();
             }),
             runOnce(()-> this.lockAngle = Degrees.of(getState().Pose.getRotation().getDegrees())),

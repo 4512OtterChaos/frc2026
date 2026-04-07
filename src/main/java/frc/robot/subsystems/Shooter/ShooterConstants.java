@@ -59,7 +59,7 @@ public final class ShooterConstants {
         kRobotToFuelExitTrf3d.getTranslation().toTranslation2d(),
         kRobotToFuelExitTrf3d.getRotation().toRotation2d()); // face backwards
 
-    public static final AngularVelocity kFlywheelIdleVelocity = RPM.of(500);
+    public static final AngularVelocity kFlywheelIdleVelocity = RPM.of(1000);
 
 //     public static final TunableAngularVelocity flywheelIdleVelocity = new TunableAngularVelocity("4) Shooter/Flywheel/Idle RPM", kFlywheelIdleVelocity);
 

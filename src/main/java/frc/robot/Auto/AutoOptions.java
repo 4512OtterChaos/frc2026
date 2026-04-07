@@ -126,8 +126,8 @@ public class AutoOptions {
                 superstructure.otterShootStationaryC(()->new ChassisSpeeds())
             )
         );
-        autoChooser.addCmd("Left Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Bump Cycles"));
-        autoChooser.addCmd("Right Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Bump Cycles", true));
+        autoChooser.addCmd("Right 3x Faster Loop Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top 3x Faster Loop Bump Cycles", true));
+        autoChooser.addCmd("Right 3x Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top 3x Faster Bump Cycles", true));
         autoChooser.addCmd("Left Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Faster Bump Cycles"));
         autoChooser.addCmd("Right Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Faster Bump Cycles", true));
         autoChooser.addCmd("Left Faster Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Faster Faster Bump Cycles"));

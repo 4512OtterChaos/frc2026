@@ -249,6 +249,5 @@ public class RobotContainer {
  * TODO:
  * tune autos / make better ones
  * shooter turn off delay
- * fix drive snap to angle
  * re-add/test auto brake mode
  */
