@@ -72,9 +72,14 @@ public class Shooter extends SubsystemBase {
         DebounceType.kFalling
     );
 
-    public final Trigger fuelExiting = OCTrigger.debounce( //TODO: falling edge only?
-        new Trigger(()-> fuelShot()),
-        ()-> ShooterConstants.kFuelExitDebounce.in(Seconds)
+    public final Trigger fuelExiting = OCTrigger.debounce(
+        OCTrigger.debounce( 
+            new Trigger(()-> fuelShot()),
+            ()-> ShooterConstants.fuelExitRisingDebounce.in(Seconds),
+            DebounceType.kRising
+        ),
+        ()-> ShooterConstants.fuelExitFallingDebounce.in(Seconds),
+        DebounceType.kFalling
     );
 
     private final StatusSignal<Angle> fwPositionStatus = fwLeftMotor.getPosition();
@@ -282,7 +287,8 @@ public class Shooter extends SubsystemBase {
         // flywheelkS.poll();
         flywheelkV.poll();
         // flywheelkA.poll();
-        // fuelExitDebounce.poll();
+        fuelExitRisingDebounce.poll();
+        fuelExitFallingDebounce.poll();
 
         int hash = hashCode();
 
@@ -325,6 +331,9 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("4) Shooter/Flywheel/Voltage", getFlywheelVoltage().in(Volts));
         SmartDashboard.putNumber("4) Shooter/Flywheel/Current", getFlywheelCurrent().in(Amps));
         SmartDashboard.putBoolean("4) Shooter/Up to speed", isUpToSpeed.getAsBoolean()); 
+        SmartDashboard.putBoolean("4) Shooter/Fuel Exiting", fuelExiting.getAsBoolean()); 
+
+
         // ##### Component Logs
 
         // SmartDashboard.putNumber("4) Shooter/Hood/Angle", getHoodAngle().in(Degrees));

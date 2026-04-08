@@ -29,7 +29,7 @@ public class RobotConstants {
     public static DCMotor driveMotor = DCMotor.getKrakenX60(1).withReduction(TunerConstants.BackLeft.DriveMotorGearRatio);
     public static final ModuleConfig kModuleConfig = new ModuleConfig(kWheelRad, kMaxDriveVelocity, 1, driveMotor, Amps.of(65), 1);
 
-    public static final Time kEmptyHopperDebounce = Seconds.of(0.75);
+    public static final Time kEmptyHopperDebounce = Seconds.of(1.25); //TODO: increase?
     public static final TunableTime emptyHopperDebounce = new TunableTime("4) Shooter/Empty Hopper Debounce", kEmptyHopperDebounce);
 
     // Module Offsets

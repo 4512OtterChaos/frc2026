@@ -128,7 +128,7 @@ public class Feeder extends SubsystemBase{
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motorSimState = motor.getSimState();
-        motorSimState.Orientation =  ChassisReference.Clockwise_Positive;//TODO: Fix, idk what it means
+        motorSimState.Orientation =  ChassisReference.Clockwise_Positive;
         motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
 
         model.setInputVoltage(motorSimState.getMotorVoltage());

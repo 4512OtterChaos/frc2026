@@ -247,4 +247,9 @@ public class RobotContainer {
  * tune autos / make better ones
  * shooter turn off delay
  * re-add/test auto brake mode
+ * 
+ * Fix shooter offset/shooting left on right side
+ * Increase SOTM Compensation
+ * Increase empty hopper activation delay (shots aren't consistent so it will activate early)
+ * Test empty hopper + fuel exiting current thresholds
  */

@@ -195,7 +195,7 @@ public class FourBar extends SubsystemBase {
         TalonFXSimState motorSimState = motor.getSimState();
         motorSimState.Orientation = ChassisReference.Clockwise_Positive;
 
-        motorSimState.setSupplyVoltage(motor.getSupplyVoltage().getValue());// TODO: Add friction? Also, idk that the voltage should be accessed like this
+        motorSimState.setSupplyVoltage(motor.getSupplyVoltage().getValue());
         fourBarSim.setInputVoltage(motorSimState.getMotorVoltage());
 
         fourBarSim.update(0.02);

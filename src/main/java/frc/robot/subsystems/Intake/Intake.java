@@ -132,7 +132,7 @@ public class Intake extends SubsystemBase{
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motorSimState = motor.getSimState();
-        motorSimState.Orientation =  ChassisReference.Clockwise_Positive;//TODO: Fix, idk what it means
+        motorSimState.Orientation =  ChassisReference.Clockwise_Positive;
 
         double voltage = motorSimState.getMotorVoltage();
         intakeSim.setInputVoltage(voltage);
