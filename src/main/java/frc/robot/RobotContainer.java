@@ -249,12 +249,14 @@ public class RobotContainer {
  * Test empty hopper + fuel exiting current thresholds
  * 
  * #### Priorities
- * Add drivetrain heading ks (idk how tbh)
- *    Fix shooter offset/shooting left on right side
  * Increase SOTM Compensation
  * tune autos / make better ones
  * 
  * #### Maybe
  * shooter turn off delay
  * Increase empty hopper activation delay more?
+ * 
+ * ### Fixed/Done(?)
+ * Fix shooter offset/shooting left on right side
+ *    Add drivetrain heading ks (directly increase applied voltage)
  */

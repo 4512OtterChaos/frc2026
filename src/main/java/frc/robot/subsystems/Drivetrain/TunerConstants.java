@@ -61,7 +61,7 @@ public class TunerConstants {
                     new CurrentLimitsConfigs()
                             .withStatorCurrentLimit(kSlipCurrent)
                             .withStatorCurrentLimitEnable(true)
-                            .withSupplyCurrentLimit(Amps.of(60))); // default 70 amps for 1 second, then 40 amps
+                            .withSupplyCurrentLimit(Amps.of(55))); // default 70 amps for 1 second, then 40 amps
     private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
             .withCurrentLimits(
                     new CurrentLimitsConfigs()
