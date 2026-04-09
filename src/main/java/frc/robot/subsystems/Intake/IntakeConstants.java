@@ -14,6 +14,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
+import frc.robot.util.TunableUnits.TunableAngle;
 import frc.robot.util.TunableUnits.TunableCurrent;
 
 public class IntakeConstants {
@@ -27,6 +28,9 @@ public class IntakeConstants {
 
     public static final Angle kFourBarMinAngle = Degrees.of(16.5); 
     public static final Angle kFourBarMaxAngle = Degrees.of(100.5); 
+    public static final Angle kFourBarAngleTolerance = Degrees.of(7);
+    public static final TunableAngle fourBarAngleTolerance = new TunableAngle("2) Intake/Four Bar/Angle Tolerance", kFourBarAngleTolerance);
+    
 
     // public static final TunableAngle fourBarMinAngle = new TunableAngle("2) Intake/Four Bar/Min Degrees", kFourBarMinAngle);
     // public static final TunableAngle fourBarMaxAngle = new TunableAngle("2) Intake/Four Bar/Max Degrees", kFourBarMaxAngle);

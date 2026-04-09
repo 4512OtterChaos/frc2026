@@ -22,8 +22,8 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class FourBar extends SubsystemBase {
@@ -39,6 +39,7 @@ public class FourBar extends SubsystemBase {
 
     private boolean readyToOscillate = false;
     private boolean doneOscillating = false;
+    private boolean stayRetracted = true;
 
     public FourBar() {
         motor.getConfigurator().apply(kFourBarConfig);
@@ -116,11 +117,17 @@ public class FourBar extends SubsystemBase {
     }
 
     public Command setExtendCurrent1C() {
-        return run(()->setCurrent(extendCurrent1.get()));
+        return run(()->{
+            stayRetracted = false;
+            setCurrent(extendCurrent1.get());
+        });
     }
 
     public Command setExtendCurrent2C() {
-        return run(()->setCurrent(extendCurrent2.get()));
+        return run(()->{
+            stayRetracted = false;
+            setCurrent(extendCurrent2.get());
+        });
     }
 
     public Command extendC() {
@@ -128,6 +135,22 @@ public class FourBar extends SubsystemBase {
             setExtendCurrent1C().withTimeout(0.2),
             setExtendCurrent2C().withTimeout(0.5)
         ).finallyDo(()-> resetDoneOscillating()).withName("Extend Fourbar");
+    }
+
+    public Command retractPermanantC() {
+        return sequence(
+            runOnce(()-> stayRetracted = true),
+            setRetractCurrent1C().withTimeout(0.4),
+            setRetractCurrent2C().withTimeout(0.5)
+        ).withName("Retract Fourbar");
+    }
+
+    public Command stayExtendedC(){
+        return Commands.either(
+            extendC(),
+            runOnce(()->setCurrent(Amps.of(0))),
+            ()-> (! (stayRetracted || readyToOscillate)) &&  !(getAngle().isNear(kFourBarMinAngle, fourBarAngleTolerance.get()))
+        ).repeatedly();
     }
 
     public Command oscillateC() {

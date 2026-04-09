@@ -76,7 +76,7 @@ public class Superstructure extends SubsystemBase{
      */
     public Command fourbarRetractC() {
         return parallel(
-            fourBar.retractC(),
+            fourBar.retractPermanantC(),
             intake.setVoltageInC()
         );
     }
