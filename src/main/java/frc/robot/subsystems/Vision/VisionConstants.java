@@ -16,11 +16,11 @@ public class VisionConstants {
     public static final String kCameraNameRight = "Arducam_5MP";
     // Cam mounting pose
     public static final Transform3d kRobotToCamLeft = new Transform3d(
-        new Translation3d(Units.inchesToMeters(-11.45), Units.inchesToMeters(-10.875), Units.inchesToMeters(12.75)),
+        new Translation3d(Units.inchesToMeters(-11.45), Units.inchesToMeters(10.875), Units.inchesToMeters(12.75)),
         new Rotation3d(0, Math.toRadians(-23), Math.toRadians(-163))
     );
     public static final Transform3d kRobotToCamRight = new Transform3d(
-        new Translation3d(Units.inchesToMeters(-11.45), Units.inchesToMeters(-0.125), Units.inchesToMeters(12.75)), // 9 holes between gusset to mount Z
+        new Translation3d(Units.inchesToMeters(-11.45), Units.inchesToMeters(0.125), Units.inchesToMeters(12.75)), // 9 holes between gusset to mount Z
         new Rotation3d(0, Math.toRadians(-23), Math.toRadians(160))
     );
     

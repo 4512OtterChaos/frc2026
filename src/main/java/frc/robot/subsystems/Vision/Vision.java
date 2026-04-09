@@ -53,6 +53,9 @@ public class Vision {
     private final StructArrayPublisher<Pose3d> rightVisibleTagsPub = NetworkTableInstance.getDefault().getStructArrayTopic("Vision/Right Cam/Visible Tag Poses", Pose3d.struct).publish();
     private final StructPublisher<Pose3d> rightEstimatePosePub = NetworkTableInstance.getDefault().getStructTopic("Vision/Right Cam/Estimated Pose", Pose3d.struct).publish();
     
+    // private final StructPublisher<Transform3d> robotToCamLeftPub = NetworkTableInstance.getDefault().getStructTopic("Vision/Left Cam/robotToCamLeftPub", Transform3d.struct).publish();
+    // private final StructPublisher<Transform3d> robotToCamRightPub = NetworkTableInstance.getDefault().getStructTopic("Vision/Left Cam/robotToCamRightPub", Transform3d.struct).publish();
+
     private final TunableNumber singletagBaseTrustTrlStdDevs = new TunableNumber("6) Vision/singletagBaseTrustTrlStdDevs", kSingletagBaseTrustTrlStdDevs);
     private final TunableNumber singletagBaseTrustRotStdDevs = new TunableNumber("6) Vision/singletagBaseTrustRotStdDevs", kSingletagBaseTrustRotStdDevs);
     private Matrix<N3, N1> singletagBaseTrustStdDevs = VecBuilder.fill(kSingletagBaseTrustTrlStdDevs, kSingletagBaseTrustTrlStdDevs, kSingletagBaseTrustRotStdDevs);
@@ -65,6 +68,7 @@ public class Vision {
     private PhotonCameraSim cameraSimLeft;
     private PhotonCameraSim cameraSimRight;
     private VisionSystemSim visionSim;
+    
     {
         if (Robot.isSimulation()) {
             // Create the vision system simulation which handles cameras and targets on the field.
@@ -100,6 +104,9 @@ public class Vision {
             visionSim.addCamera(cameraSimLeft, kRobotToCamLeft);
             visionSim.addCamera(cameraSimRight, kRobotToCamRight);
         }
+        
+        // robotToCamLeftPub.set(kRobotToCamLeft);
+        // robotToCamRightPub.set(kRobotToCamRight);
     }
 
     public void periodic() {
