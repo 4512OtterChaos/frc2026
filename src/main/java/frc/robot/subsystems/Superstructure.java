@@ -3,7 +3,9 @@ package frc.robot.subsystems;
 import java.util.Optional; 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds; 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -174,9 +176,12 @@ public class Superstructure extends SubsystemBase{
                     Translation2d adjTarget = targetTrl;
                     Shooter.State state = null;
 
+                    Pose2d futurePose = drivetrain.getGlobalPoseEstimate();
+                    futurePose = futurePose.exp(new Twist2d(currSpeeds.vxMetersPerSecond*0.03, currSpeeds.vyMetersPerSecond*0.03, currSpeeds.omegaRadiansPerSecond*0.03));
+
                     // perform TOF recursion for several iterations to account for the change in target position as the robot moves during the shot
                     for (int i = 0; i < 8; i++) {
-                        Distance distance = Shotmap.distanceToTarget(drivetrain.getGlobalPoseEstimate(), adjTarget);
+                        Distance distance = Shotmap.distanceToTarget(futurePose, adjTarget);
                         state = Shotmap.getState(distance);
                         adjTarget = targetTrl.minus(vel.times(state.getTof().times(1).in(Seconds))); //TODO Tune compensation percentage?
                     }
