@@ -391,7 +391,7 @@ public class Shooter extends SubsystemBase {
         TalonFXSimState motorSimState = hMotor.getSimState();
         motorSimState.Orientation = ChassisReference.Clockwise_Positive;
 
-        motorSimState.setSupplyVoltage(hMotor.getSupplyVoltage().getValue());// TODO: Add friction? Also, idk that the voltage should be accessed like this
+        motorSimState.setSupplyVoltage(hMotor.getSupplyVoltage().getValue());
         hoodSim.setInputVoltage(motorSimState.getMotorVoltage());
 
         hoodSim.update(0.02);
@@ -401,11 +401,9 @@ public class Shooter extends SubsystemBase {
 
 
         TalonFXSimState fwMotorSimState = fwLeftMotor.getSimState();
-        fwMotorSimState.Orientation = ChassisReference.Clockwise_Positive;// TODO: Fix, idk what it means
+        fwMotorSimState.Orientation = ChassisReference.Clockwise_Positive;
 
-        fwMotorSimState.setSupplyVoltage(fwLeftMotor.getSupplyVoltage().getValue());// TODO: Add friction? Also, idk that
-                                                                                // the voltage should be accessed like
-                                                                                // this
+        fwMotorSimState.setSupplyVoltage(fwLeftMotor.getSupplyVoltage().getValue());
         fwMotorSim.setInputVoltage(fwMotorSimState.getMotorVoltage());
 
         fwMotorSim.update(0.02);

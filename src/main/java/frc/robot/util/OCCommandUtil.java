@@ -103,7 +103,7 @@ public class OCCommandUtil {
                 }
                 OCPathPlannerAuto.currentOrLastPath = Optional.of(path2);
             } catch (FileVersionException | IOException | ParseException e) {
-                // TODO Auto-generated catch block
+                System.out.println("Failed to save path!");
                 e.printStackTrace();
             }
             }),
