@@ -220,7 +220,7 @@ public class Vision {
                         best,
                         result.getTimestampSeconds(),
                         result.getTargets(),
-                        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR));
+                        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR)).filter((pose)-> pose.estimatedPose.getZ() <= 0.5 && pose.estimatedPose.getZ() >= -0.5);
     }
 
     /**

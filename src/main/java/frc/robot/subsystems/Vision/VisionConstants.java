@@ -13,7 +13,7 @@ import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
     public static final String kCameraNameLeft = "OV9281";
-    public static final String kCameraNameRight = "Arducam_5MP";
+    public static final String kCameraNameRight = "OV9281_2nd";
     // Cam mounting pose
     public static final Transform3d kRobotToCamLeft = new Transform3d(
         new Translation3d(Units.inchesToMeters(-11.45), Units.inchesToMeters(10.875), Units.inchesToMeters(12.75)),
@@ -29,11 +29,11 @@ public class VisionConstants {
     static {
         var originalLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
         List<AprilTag> tags = new ArrayList<>(originalLayout.getTags());
-        // tags.removeIf(tag -> tag.ID <= 5 || (tag.ID >= 12 && tag.ID <= 16)); //TODO: Is something like this necessary
+        tags.removeIf(tag -> tag.ID <= 1 || tag.ID == 6 || tag.ID == 7 || (tag.ID >= 12 && tag.ID <= 17) || tag.ID == 22 || tag.ID == 23 || tag.ID >= 28 );
         kTagLayout = new AprilTagFieldLayout(tags, originalLayout.getFieldLength(), originalLayout.getFieldWidth());
-        // for (var tag : kTagLayout.getTags()) {
-        //     System.err.println("tag id "+tag.ID);
-        // }
+        for (var tag : kTagLayout.getTags()) {
+            System.err.println("tag id "+tag.ID);
+        }
     }
     
     // The standard deviations of our vision estimated poses, which affect correction rate
@@ -42,7 +42,7 @@ public class VisionConstants {
     public static final double kMultitagBaseTrustTrlStdDevs = 0.5;
     public static final double kMultitagBaseTrustRotStdDevs = 2;
     /** Lower values reduce trust when estimate is far from visible tags */
-    public static final double kDistanceTrustScale = 8;
+    public static final double kDistanceTrustScale = 7;
     /** Lower values reduce trust as robot rotates faster */
     public static final double kRotSpeedTrustScale = 0.5;
 }
