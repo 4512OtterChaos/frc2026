@@ -28,7 +28,7 @@ public class IntakeConstants {
 
     public static final Angle kFourBarMinAngle = Degrees.of(16.5); 
     public static final Angle kFourBarMaxAngle = Degrees.of(100.5); 
-    public static final Angle kFourBarAngleTolerance = Degrees.of(7);
+    public static final Angle kFourBarAngleTolerance = Degrees.of(10);
     public static final TunableAngle fourBarAngleTolerance = new TunableAngle("2) Intake/Four Bar/Angle Tolerance", kFourBarAngleTolerance);
     
 
@@ -43,7 +43,7 @@ public class IntakeConstants {
 
     public static final Current kRetractCurrent1 = Amps.of(25);
     public static final Current kRetractCurrent2 = Amps.of(10);
-    public static final Current kExtendCurrent1 = Amps.of(-22);
+    public static final Current kExtendCurrent1 = Amps.of(-25);
     public static final Current kExtendCurrent2 = Amps.of(-7);
 
     public static final TunableCurrent retractCurrent1 = new TunableCurrent("2) Intake/Four Bar/Retract Amps 1", kRetractCurrent1);
