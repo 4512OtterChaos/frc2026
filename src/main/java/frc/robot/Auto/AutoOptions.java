@@ -128,6 +128,8 @@ public class AutoOptions {
                 superstructure.otterShootStationaryC(()->new ChassisSpeeds())
             )
         );
+        autoChooser.addCmd("Left Faster Trench Cycles", ()-> OCPathPlannerAuto.buildAuto("Faster Trench Cycles"));
+        autoChooser.addCmd("Right Faster Trench Cycles", ()-> OCPathPlannerAuto.buildAuto("Faster Trench Cycles", true));
         autoChooser.addCmd("Left 3x Faster Loop Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top 3x Faster Loop Bump Cycles"));
         autoChooser.addCmd("Right 3x Faster Loop Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top 3x Faster Loop Bump Cycles", true));
         autoChooser.addCmd("Left 3x Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top 3x Faster Bump Cycles"));
@@ -136,8 +138,8 @@ public class AutoOptions {
         autoChooser.addCmd("Right Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Faster Bump Cycles", true));
         autoChooser.addCmd("Left Faster Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Faster Faster Bump Cycles"));
         autoChooser.addCmd("Right Faster Faster Bump Cycles", ()-> OCPathPlannerAuto.buildAuto("Top Faster Faster Bump Cycles", true));
-        autoChooser.addCmd("Left Double Cycle", ()-> OCPathPlannerAuto.buildAuto("Top Double Cycle"));
-        autoChooser.addCmd("Right Double Cycle", ()-> OCPathPlannerAuto.buildAuto("Top Double Cycle", true));
+        // autoChooser.addCmd("Left Double Cycle", ()-> OCPathPlannerAuto.buildAuto("Top Double Cycle"));
+        // autoChooser.addCmd("Right Double Cycle", ()-> OCPathPlannerAuto.buildAuto("Top Double Cycle", true));
         autoChooser.addCmd("Middle Depot", ()-> OCPathPlannerAuto.buildAuto("Middle Depot"));
         autoChooser.addCmd("Slower Middle Depot", ()-> OCPathPlannerAuto.buildAuto("Slower Middle Depot"));
     }

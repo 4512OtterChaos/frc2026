@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Faster Trench Cycles 1-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Error Correct Command"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Faster Trench Cycles 2-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Error Correct Command"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Forever"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Double Cycles",
+  "choreoAuto": false
+}
