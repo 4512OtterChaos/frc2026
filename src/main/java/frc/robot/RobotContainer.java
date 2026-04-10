@@ -245,6 +245,20 @@ public class RobotContainer {
 }
 /*
  * TODO:
+ * 
+ * Trench Auto
+ * Rotational ks
+ * FourBar oscillation tuning(?)
+ * spidex slower(?) 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * #### Testing
  * re-add/test auto brake mode
  * Test empty hopper + fuel exiting current thresholds
