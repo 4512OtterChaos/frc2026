@@ -7,6 +7,12 @@
         {
           "type": "path",
           "data": {
+            "pathName": "Trench Spin"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "3x Faster Bump Cycles 1-2"
           }
         },

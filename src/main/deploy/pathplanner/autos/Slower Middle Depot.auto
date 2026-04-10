@@ -25,6 +25,12 @@
         {
           "type": "path",
           "data": {
+            "pathName": "Depot Spin"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
             "pathName": "Slower Middle Depot 2-2"
           }
         },
