@@ -33,15 +33,15 @@ public class DrivetrainConstants {
     // public static final TunableAngularAcceleration angularAccel = new TunableAngularAcceleration("1) Drivetrain/Angular Acceleration", kAngularAccel);
     // public static final TunableAngularAcceleration angularDecel = new TunableAngularAcceleration("1) Drivetrain/Angular Deceleration", kAngularDecel);
 
-    public static final double kSOTMDriveSpeedRatio = 0.2;
+    public static final double kSOTMDriveSpeedRatio = 0.15;
 
     public static final TunableNumber sotmDriveSpeedRatio = new TunableNumber("1) Drivetrain/SOTM/Drive Speed", kSOTMDriveSpeedRatio);
 
     public static final Time kSOTMLatency = Seconds.of(0.1);
     public static final TunableTime SOTMLatency = new TunableTime("1) Drivetrain/SOTM/Latency", kSOTMLatency);    
 
-    public static final LinearAcceleration kSOTMLinearAccel = FeetPerSecondPerSecond.of(15);
-    public static final LinearAcceleration kSOTMLinearDecel = FeetPerSecondPerSecond.of(20);
+    public static final LinearAcceleration kSOTMLinearAccel = FeetPerSecondPerSecond.of(10);
+    public static final LinearAcceleration kSOTMLinearDecel = FeetPerSecondPerSecond.of(15);
 
     public static final TunableLinearAcceleration sotmLinearAccel = new TunableLinearAcceleration("1) Drivetrain/SOTM/Linear Acceleration", kSOTMLinearAccel);
     public static final TunableLinearAcceleration sotmLinearDecel = new TunableLinearAcceleration("1) Drivetrain/SOTM/Linear Deceleration", kSOTMLinearDecel);
