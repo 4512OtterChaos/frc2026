@@ -209,6 +209,19 @@ public class Superstructure extends SubsystemBase{
         ).repeatedly();
     }
 
+    public Command autoIndexNoConstraints(){
+        return sequence(
+            runOnce(()-> isIndexing = true),
+            parallel( // proxy indexing and agitation
+                fourBar.setReadyToOscillateC(true),
+                indexC().asProxy().until(readyToShoot.negate())
+            ).finallyDo(()-> {
+                fourBar.setReadyToOscillate(false);
+                isIndexing = false;
+            })
+        ).repeatedly();
+    }
+
     public void log() {
         var trl = drivetrain.getGlobalPoseEstimate().getTranslation();
         SmartDashboard.putBoolean("1) Drivetrain/In Trench Zone", FieldUtil.isInTrenchZone(trl));
