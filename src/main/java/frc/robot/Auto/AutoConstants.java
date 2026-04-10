@@ -1,10 +1,12 @@
 package frc.robot.Auto;
 
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.util.RobotConstants.*;
 
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 
 // import com.pathplanner.lib.PathConstraints;
 
@@ -25,6 +27,22 @@ public class AutoConstants {
         new PIDConstants(3.5, 0, 0),
         new PIDConstants(4, 0, 0)
     );
+    
+    public static final PathConstraints constraints = new PathConstraints(
+        MetersPerSecond.of(2), 
+        MetersPerSecondPerSecond.of(3), 
+        DegreesPerSecond.of(540), 
+        DegreesPerSecondPerSecond.of(720), 
+        Volts.of(12)
+    );
 
-    RobotConfig robotConfig = new RobotConfig(kRobotWeight, kMOI, kModuleConfig, FL, FR, BL, BR);
+    public static final PathConstraints fastConstraints = new PathConstraints(
+        MetersPerSecond.of(3.5), 
+        MetersPerSecondPerSecond.of(4.5), 
+        DegreesPerSecond.of(540), 
+        DegreesPerSecondPerSecond.of(720), 
+        Volts.of(12)
+    );
+
+    public static final RobotConfig robotConfig = new RobotConfig(kRobotWeight, kMOI, kModuleConfig, FL, FR, BL, BR);
 }

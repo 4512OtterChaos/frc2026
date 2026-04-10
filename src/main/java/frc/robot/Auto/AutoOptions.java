@@ -1,23 +1,14 @@
 package frc.robot.Auto;
 
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
-import static frc.robot.util.RobotConstants.*;
 
 import java.util.Optional;
 import java.util.Set;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.events.EventTrigger;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import choreo.auto.AutoChooser;
@@ -48,21 +39,6 @@ public class AutoOptions {
     private final Superstructure superstructure;
 
     private boolean autosSetup = false;
-    RobotConfig robotConfig = new RobotConfig(kRobotWeight, kMOI, kModuleConfig, FL, FR, BL, BR);
-    PathConstraints constraints = new PathConstraints(
-        MetersPerSecond.of(2), 
-        MetersPerSecondPerSecond.of(3), 
-        DegreesPerSecond.of(540), 
-        DegreesPerSecondPerSecond.of(720), 
-        Volts.of(12)
-    );
-    PathConstraints fastConstraints = new PathConstraints(
-        MetersPerSecond.of(3.5), 
-        MetersPerSecondPerSecond.of(4.5), 
-        DegreesPerSecond.of(540), 
-        DegreesPerSecondPerSecond.of(720), 
-        Volts.of(12)
-    );
 
     // List<PathPlannerPath> currentPaths = new ArrayList<>();
     // int pathNumber = 0;
@@ -85,7 +61,7 @@ public class AutoOptions {
         () -> drivetrain.getState().Speeds,
         (chassisSpeeds) -> drivetrain.driveAutos(chassisSpeeds),
         AutoConstants.kPathConfig,
-        robotConfig,
+        AutoConstants.robotConfig,
         () -> false,
         drivetrain);
 
@@ -145,7 +121,7 @@ public class AutoOptions {
     }
 
     public Command pathfindToPose(Pose2d pose) {
-        return AutoBuilder.pathfindToPose(pose, constraints);
+        return AutoBuilder.pathfindToPose(pose, AutoConstants.constraints);
     }
 
     public Command pathfindToPathEnd() {        
