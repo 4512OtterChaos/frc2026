@@ -23,12 +23,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Spin Faaaast"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Slower Middle Depot 2-2"

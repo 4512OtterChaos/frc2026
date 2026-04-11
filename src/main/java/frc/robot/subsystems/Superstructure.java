@@ -200,10 +200,10 @@ public class Superstructure extends SubsystemBase{
             waitUntil(readyToShoot), // wait for all ready parameters
             runOnce(()-> isIndexing = true),
             parallel( // proxy indexing and agitation
-                // fourBar.setReadyToOscillateC(true),
+                fourBar.setReadyToOscillateC(true),
                 indexC().asProxy().until(readyToShoot.negate())
             ).finallyDo(()-> {
-                // fourBar.setReadyToOscillate(false);
+                fourBar.setReadyToOscillate(false);
                 isIndexing = false;
             })
         ).repeatedly();
@@ -213,10 +213,10 @@ public class Superstructure extends SubsystemBase{
         return sequence(
             runOnce(()-> isIndexing = true),
             parallel( // proxy indexing and agitation
-                // fourBar.setReadyToOscillateC(true),
+                fourBar.setReadyToOscillateC(true),
                 indexC().asProxy().until(readyToShoot.negate())
             ).finallyDo(()-> {
-                // fourBar.setReadyToOscillate(false);
+                fourBar.setReadyToOscillate(false);
                 isIndexing = false;
             })
         ).repeatedly();
