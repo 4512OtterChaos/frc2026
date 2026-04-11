@@ -162,7 +162,7 @@
   "folder": "Middle Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 109.22090729401873
+    "rotation": 128.82982490455734
   },
   "useDefaultConstraints": false
 }

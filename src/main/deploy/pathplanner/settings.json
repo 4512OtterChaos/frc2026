@@ -5,14 +5,17 @@
   "pathFolders": [
     "Faster Faster Top Bump Cycles",
     "Faster Top Bump Cycles",
-    "Middle Depot",
     "Faster Trench Cycles",
+    "Middle Depot",
+    "Middle Sweep",
+    "Spin Paths",
     "Top 3x Faster Bump Cycles",
     "Top Bump Cycles",
     "Top Double Cycle"
   ],
   "autoFolders": [
     "Double Cycles",
+    "Middle Autos",
     "Old Double Cycles"
   ],
   "defaultMaxVel": 3.0,

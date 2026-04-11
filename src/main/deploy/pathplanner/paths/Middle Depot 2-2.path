@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1232433618105344,
+        "x": 1.1232433618105342,
         "y": 7.287346414775597
       },
       "isLocked": false,
@@ -110,7 +110,7 @@
   "folder": "Middle Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 109.22090729401873
+    "rotation": 128.82982490455734
   },
   "useDefaultConstraints": false
 }

@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.933780313834525,
+        "x": 0.9337803138345251,
         "y": 6.680955777460033
       },
       "isLocked": false,
@@ -63,13 +63,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 109.22090729401873
+    "rotation": 128.82982490455734
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Spin Paths",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 109.22090729401873
+    "rotation": 128.82982490455734
   },
   "useDefaultConstraints": true
 }
