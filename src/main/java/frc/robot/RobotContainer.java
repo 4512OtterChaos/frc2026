@@ -50,7 +50,7 @@ public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
 
     private final OCXboxController driver = new OCXboxController(0);
-    private final Supplier<ChassisSpeeds> driverSpeedsSupplier = () -> driver.getSpeeds(DrivetrainConstants.MaxSpeed, DrivetrainConstants.MaxAngularRate);
+    private final Supplier<ChassisSpeeds> driverSpeedsSupplier = () -> driver.getSpeeds(DrivetrainConstants.kMaxLinearSpeed, DrivetrainConstants.kMaxAngularRate);
     // private final OCXboxController operator = new OCXboxController(1);
 
     private final OCDrivetrain drivetrain = TunerConstants.createDrivetrain();

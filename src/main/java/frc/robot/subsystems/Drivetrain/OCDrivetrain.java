@@ -11,6 +11,11 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -37,9 +42,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Robot;
+import frc.robot.Auto.AutoConstants;
 import frc.robot.subsystems.Shooter.Shotmap;
 import frc.robot.util.FieldUtil;
 import frc.robot.util.OCTrigger;
+import frc.robot.util.ProfiledPIDController;
+import frc.robot.util.TrapezoidProfile;
 
 public class OCDrivetrain extends CommandSwerveDrivetrain {
     public final SwerveDriveLimiter kStandardLimiter = new SwerveDriveLimiter(
@@ -64,11 +72,34 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     private final SwerveRequest.RobotCentric driveautos = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.FieldCentricFacingAngle face = new SwerveRequest.FieldCentricFacingAngle()
-            .withRotationalDeadband(MaxAngularRate * 0.001) // Add a 10% deadband
+            .withRotationalDeadband(kMaxAngularRate * 0.001) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
             .withHeadingPID(7.5, 0, 0);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     // private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+
+    private final ProfiledPIDController pathThetaController = new ProfiledPIDController(
+        kPathTurnKP, kPathTurnKI, kPathTurnKD,
+        new TrapezoidProfile.Constraints(getTurnSpeed().in(RadiansPerSecond), kAngularAccel.in(RadiansPerSecondPerSecond))
+    );
+    private TrapezoidProfile.State pathTurnLastState = new TrapezoidProfile.State();
+
+    {
+        pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
+        pathThetaController.setTolerance(kAlignTurnPosTol, kAlignTurnVelTol);
+    }
+
+    Pose2d alignGoal = Pose2d.kZero;
+    boolean aligning = false;
+    public final Trigger isAligning = new Trigger(() -> aligning);
+    boolean finalAlignment = false;
+    public final Trigger isFinalAlignment = new Trigger(() -> finalAlignment);
+    boolean atSetpointVel = false;
+    public final Trigger isAtSetpoint = new Trigger(() -> atSetpointVel);
+    boolean atGoal = false;
+    public final Trigger isAtGoal = new Trigger(() -> atGoal);
+    boolean aligned = false;
+    public final Trigger isAligned = new Trigger(() -> aligned);
 
     public final SwerveDrivePoseEstimator visionEstimator = new SwerveDrivePoseEstimator(
             getKinematics(),
@@ -129,15 +160,15 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public LinearVelocity getDriveSpeed() {
-        return MetersPerSecond.of(kDriveSpeedRatio * MaxSpeed);
+        return MetersPerSecond.of(kDriveSpeedRatio * kMaxLinearSpeed);
     }
 
     public AngularVelocity getTurnSpeed() {
-        return RadiansPerSecond.of(kTurnSpeedRatio * MaxAngularRate);
+        return RadiansPerSecond.of(kTurnSpeedRatio * kMaxAngularRate);
     }
 
     public LinearVelocity getSOTMDriveSpeed() {
-        return MetersPerSecond.of(sotmDriveSpeedRatio.get() * MaxSpeed);
+        return MetersPerSecond.of(sotmDriveSpeedRatio.get() * kMaxLinearSpeed);
     }
 
     public Pose2d getGlobalPoseEstimate() {
@@ -258,6 +289,48 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
             driveFacingOptionalTarget(speeds, target);
         }
     }
+
+    public Command pidToPose(Supplier<Pose2d> goalSupplier, boolean runForever) {
+        var config = new AutoAlignOld.Config();
+        config.alignBackwards = false;
+        config.runForever = runForever;
+        config.referenceLimiter = kStandardLimiter;
+
+        var command = new AutoAlignOld(
+            "Reef",
+            this,
+            goalSupplier,
+            config
+        ).withName("AlignToReef");
+        return command;
+    }
+
+    // public void pidToPose(Pose2d targetPose){
+    //     pidToPose(targetPose, MetersPerSecond.of(0));
+    // }
+
+
+    // public void pidToPose(Pose2d targetPose, ChassisSpeeds endSpeeds){
+    //     var endtrajectory = new PathPlannerTrajectoryState();
+    //     endtrajectory.fieldSpeeds = endSpeeds;
+    //     endtrajectory.pose = targetPose;
+    //     var targetSpeeds = AutoConstants.kPathConfig.calculateRobotRelativeSpeeds(getGlobalPoseEstimate(), )
+    //     setControl(driveautos.wi);
+    // }
+
+
+    // public void pidToPose(Pose2d targetPose, LinearVelocity endSpeed){
+    //     var path = new PathPlannerPath(PathPlannerPath.waypointsFromPoses(getGlobalPoseEstimate(), targetPose), AutoConstants.constraints, new IdealStartingState(endSpeed));
+    //     var optionalTrajectory = path.getIdealTrajectory(AutoConstants.robotConfig);
+    //     if (!optionalTrajectory.isEmpty()){
+    //         var trajectory = optionalTrajectory.get();
+    //         var endtrajectory = trajectory.getEndState();
+    //         endtrajectory.fieldSpeeds = endSpeeds;
+    //         endtrajectory.pose = targetPose;
+    //         var targetSpeeds = AutoConstants.kPathConfig.calculateRobotRelativeSpeeds(getGlobalPoseEstimate(), endtrajectory);
+    //         setControl(driveautos.wi);
+    //     }
+    // }
 
     public Command brakeC(){
         return run(()->brake());

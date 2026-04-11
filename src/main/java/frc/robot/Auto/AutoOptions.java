@@ -95,6 +95,7 @@ public class AutoOptions {
     }
 
     public void addOptions() {
+        autoChooser.addCmd("Test", ()-> drivetrain.pidToPose(()-> new Pose2d(FieldUtil.kHubTrl, Rotation2d.kZero), false));
         autoChooser.addCmd("Shoot Preloads", 
             ()->sequence(
                 runOnce(()-> drivetrain.resetPose(new Pose2d(Meters.of(4.5), FieldUtil.kFieldWidth.div(2), Rotation2d.k180deg)), drivetrain),
