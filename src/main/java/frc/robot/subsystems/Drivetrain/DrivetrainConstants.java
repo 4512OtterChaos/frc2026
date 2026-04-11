@@ -9,6 +9,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.util.TunableNumber;
+import frc.robot.util.TunableUnits.TunableAngularVelocity;
 import frc.robot.util.TunableUnits.TunableLinearAcceleration;
 import frc.robot.util.TunableUnits.TunableTime;
 
@@ -59,8 +60,9 @@ public class DrivetrainConstants {
     // public static final Time kBrakeDebounceTime = Seconds.of(0.2);
     // public static final TunableTime brakeDebounceSeconds = new TunableTime("1) Drivetrain/Brake Debounce", kBrakeDebounceTime);
 
+    public static final AngularVelocity kRotationalKs = DegreesPerSecond.of(0);
+    public static final TunableAngularVelocity rotationalKs = new TunableAngularVelocity("1) Drivetrain/Rotational Ks (DegreesPerSecond)", kRotationalKs);
     
-
     // Path following constants
     public static final double kPathDriveKP = 3;
     public static final double kPathDriveKI = 0;

@@ -256,10 +256,12 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     // }
 
     public void driveFacingGyroAngle(ChassisSpeeds targetSpeeds, Angle target) {
+        var errorDegrees = getGlobalPoseEstimate().getRotation().minus(new Rotation2d(target)).getDegrees();
         setControl(
             face.withVelocityX(targetSpeeds.vxMetersPerSecond)
                     .withVelocityY(targetSpeeds.vyMetersPerSecond)
                     .withTargetDirection(new Rotation2d(target))
+                    .withTargetRateFeedforward(rotationalKs.get().times(Math.copySign(isFacingTarget.getAsBoolean() ? 0 : 1, -errorDegrees)))
         );
     }
 
@@ -291,12 +293,12 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public Command pidToPose(Supplier<Pose2d> goalSupplier, boolean runForever) {
-        var config = new AutoAlignOld.Config();
+        var config = new AutoAlign.Config();
         config.alignBackwards = false;
         config.runForever = runForever;
         config.referenceLimiter = kStandardLimiter;
 
-        var command = new AutoAlignOld(
+        var command = new AutoAlign(
             "Reef",
             this,
             goalSupplier,
@@ -462,6 +464,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         sotmLinearDecel.poll();
         rotationDebounceTime.poll();
         // brakeDebounceSeconds.poll();
+        rotationalKs.poll();
 
         int hash = hashCode();
 
