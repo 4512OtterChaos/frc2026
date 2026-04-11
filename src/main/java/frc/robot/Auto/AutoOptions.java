@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.Drivetrain.DrivetrainConstants;
 import frc.robot.subsystems.Drivetrain.OCDrivetrain;
 import frc.robot.subsystems.Indexer.Feeder;
 import frc.robot.subsystems.Indexer.Spindexer;
@@ -92,6 +93,7 @@ public class AutoOptions {
         NamedCommands.registerCommand("Shoot Forever", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
         // NamedCommands.registerCommand("Lower Fourbar", fourBar.extendC().asProxy());
         NamedCommands.registerCommand("Error Correct Command", none());//pathfindToPathEnd());
+        NamedCommands.registerCommand("Spin Faaaast", drivetrain.driveC(()->new ChassisSpeeds(MetersPerSecond.of(0), MetersPerSecond.of(0), RotationsPerSecond.of(DrivetrainConstants.kMaxAngularRate)), false).withTimeout(2));//pathfindToPathEnd());
     }
 
     public void addOptions() {
