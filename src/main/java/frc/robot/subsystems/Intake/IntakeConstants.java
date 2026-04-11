@@ -14,8 +14,10 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.units.measure.Time;
 import frc.robot.util.TunableUnits.TunableAngle;
 import frc.robot.util.TunableUnits.TunableCurrent;
+import frc.robot.util.TunableUnits.TunableTime;
 
 public class IntakeConstants {
     public static final int kIntakeMotorID = 21;
@@ -45,11 +47,15 @@ public class IntakeConstants {
     public static final Current kRetractCurrent2 = Amps.of(10);
     public static final Current kExtendCurrent1 = Amps.of(-25);
     public static final Current kExtendCurrent2 = Amps.of(-7);
+    public static final Current kStallThreshold = Amps.of(10);
+    public static final Time kStallTime = Seconds.of(0.2);
 
     public static final TunableCurrent retractCurrent1 = new TunableCurrent("2) Intake/Four Bar/Retract Amps 1", kRetractCurrent1);
     public static final TunableCurrent retractCurrent2 = new TunableCurrent("2) Intake/Four Bar/Retract Amps 2", kRetractCurrent2);
     public static final TunableCurrent extendCurrent1 = new TunableCurrent("2) Intake/Four Bar/Extend Amps 1", kExtendCurrent1);
     public static final TunableCurrent extendCurrent2 = new TunableCurrent("2) Intake/Four Bar/Extend Amps 2", kExtendCurrent2);
+    public static final TunableCurrent stallThreshold = new TunableCurrent("2) Intake/Four Bar/Stall Threshold Amps", kStallThreshold);
+    public static final TunableTime stallTime = new TunableTime("2) Intake/Four Bar/Stall Time Seconds,", kStallTime);
 
     // public static final Current kSmallAmpsIn = Amps.of(5); //TODO: Tune
     // public static final Current kSmallCurrentOut = Amps.of(-5); //TODO: Tune

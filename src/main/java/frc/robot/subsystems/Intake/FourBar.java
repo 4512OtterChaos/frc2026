@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.util.OCTrigger;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -36,6 +38,14 @@ public class FourBar extends SubsystemBase {
 
     private Current targetCurrent = Amps.of(0);
     private TorqueCurrentFOC torqueRequest = new TorqueCurrentFOC(0);
+
+    /** Velocity is near 0 */
+    public final Trigger isStationary = new Trigger(() -> getVelocity().isNear(DegreesPerSecond.of(0), DegreesPerSecond.of(3)));
+    /** Current is above stall threshold */
+    public final Trigger isStalled = new Trigger(() -> getCurrent().gt(stallThreshold.get()));
+    /** Stationary and pulling current above threshold for some time */
+    public final Trigger isHomed = OCTrigger.debounce(isStalled.and(isStationary), () -> stallTime.in(Seconds));
+
 
     private boolean readyToOscillate = false;
     private boolean doneOscillating = false;
@@ -154,8 +164,8 @@ public class FourBar extends SubsystemBase {
 
     public Command oscillateC() {
         return repeatingSequence(
-            retractC(),
-            extendC()
+            retractC().until(isHomed),
+            extendC().until(isHomed)
         ).finallyDo(()-> doneOscillating = true).withName("Otterscillate");
     }
 
@@ -198,6 +208,9 @@ public class FourBar extends SubsystemBase {
         SmartDashboard.putNumber("2) Intake/Four Bar/Target Current", targetCurrent.in(Amps));
 
         SmartDashboard.putBoolean("test", doneOscillating);
+        SmartDashboard.putBoolean("2) Intake/Four Bar/Is Stationary", isStationary.getAsBoolean());
+        SmartDashboard.putBoolean("2) Intake/Four Bar/Is Stalled", isStalled.getAsBoolean());
+        SmartDashboard.putBoolean("2) Intake/Four Bar/Is Homed", isHomed.getAsBoolean());
     }
 
     // Simulation
