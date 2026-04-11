@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle Sweep 1-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle Sweep 2-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Fast Middle Depot 2-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Forever"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Middle Autos",
+  "choreoAuto": false
+}
