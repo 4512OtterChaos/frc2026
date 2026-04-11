@@ -93,7 +93,7 @@ public class AutoOptions {
         NamedCommands.registerCommand("Shoot Forever", superstructure.otterShootStationaryC(()-> new ChassisSpeeds()).finallyDo(()->{shooter.setIdle();feeder.setVelocity(RPM.of(0));spindexer.setVoltage(0);}));
         // NamedCommands.registerCommand("Lower Fourbar", fourBar.extendC().asProxy());
         NamedCommands.registerCommand("Error Correct Command", none());//pathfindToPathEnd());
-        NamedCommands.registerCommand("Spin Faaaast", drivetrain.driveC(()->new ChassisSpeeds(MetersPerSecond.of(0), MetersPerSecond.of(0), RotationsPerSecond.of(DrivetrainConstants.kMaxAngularRate)), false).withTimeout(2));//pathfindToPathEnd());
+        NamedCommands.registerCommand("Spin Faaaast", drivetrain.driveC(()->new ChassisSpeeds(0, 0, DrivetrainConstants.kMaxAngularRate), false).withTimeout(2));//pathfindToPathEnd());
     }
 
     public void addOptions() {
