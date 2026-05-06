@@ -18,8 +18,8 @@ public class DrivetrainConstants {
     public static double kMaxAngularRate = RotationsPerSecond.of(2).in(RadiansPerSecond); // max angular velocity
 
     // Normal driving speed at 100% controller input
-    public static final double kDriveSpeedRatio = 0.9;
-    public static final double kTurnSpeedRatio = 0.5;
+    public static final double kDriveSpeedRatio = 0.3;
+    public static final double kTurnSpeedRatio = 0.4;
 
     public static final TunableNumber driveSpeedRatio = new TunableNumber("1) Drivetrain/Standard/Drive Speed", kDriveSpeedRatio);
     public static final TunableNumber turnSpeedRatio = new TunableNumber("1) Drivetrain/Standard/Turn Speed", kTurnSpeedRatio);
@@ -27,8 +27,8 @@ public class DrivetrainConstants {
     // Normal driving acceleration limits
     public static final LinearAcceleration kLinearAccel = FeetPerSecondPerSecond.of(40);
     public static final LinearAcceleration kLinearDecel = FeetPerSecondPerSecond.of(60);
-    public static final AngularAcceleration kAngularAccel = RotationsPerSecondPerSecond.of(6);
-    public static final AngularAcceleration kAngularDecel = RotationsPerSecondPerSecond.of(10);
+    public static final AngularAcceleration kAngularAccel = RotationsPerSecondPerSecond.of(10);
+    public static final AngularAcceleration kAngularDecel = RotationsPerSecondPerSecond.of(6);
 
     // public static final TunableLinearAcceleration linearAccel = new TunableLinearAcceleration("1) Drivetrain/Linear Acceleration", kLinearAccel);
     // public static final TunableLinearAcceleration linearDecel = new TunableLinearAcceleration("1) Drivetrain/Linear Deceleration", kLinearDecel);
