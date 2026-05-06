@@ -143,8 +143,8 @@ public class RobotContainer {
         ));
 
         // #### FourBar Bindings
-        driver.y().whileTrue(superstructure.fourbarRetractC()); 
-        driver.a().whileTrue(fourBar.extendC()); 
+        driver.y().onTrue(superstructure.fourbarRetractC()); 
+        driver.a().onTrue(fourBar.extendC()); 
 
         
         // #### Test Bindings

@@ -44,9 +44,10 @@ public class IntakeConstants {
     // public static final TunableNumber intakeVoltageOut = new TunableNumber("2) Intake/Roller/Voltage Out", kIntakeVoltageOut);
 
     public static final Current kRetractCurrent1 = Amps.of(23);
-    public static final Current kRetractCurrent2 = Amps.of(10);
-    public static final Current kExtendCurrent1 = Amps.of(-20);
-    public static final Current kExtendCurrent2 = Amps.of(-7);
+    public static final Current kRetractCurrent2 = Amps.of(6);
+    public static final Current kExtendCurrent1 = Amps.of(-10);
+    public static final Current kExtendCurrent2 = Amps.of(-6);
+    public static final Current kExtendCurrent3 = Amps.of(3);
     public static final Current kStallThreshold = Amps.of(10);
     public static final Time kStallTime = Seconds.of(0.2);
 

@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.OCTrigger;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class FourBar extends SubsystemBase {
     private TalonFX motor = new TalonFX(kFourBarMotorID);
@@ -112,39 +111,46 @@ public class FourBar extends SubsystemBase {
     }
 
     public Command setRetractCurrent1C() {
-        return run(()->setCurrent(retractCurrent1.get()));
+        return run(()->setCurrent(kRetractCurrent1));
     }
 
     public Command setRetractCurrent2C() {
-        return run(()->setCurrent(retractCurrent2.get()));
+        return run(()->setCurrent(kRetractCurrent2));
     }
 
     public Command retractC() {
         return sequence(
-            setRetractCurrent1C().withTimeout(0.4),
-            setRetractCurrent2C().withTimeout(0.5)
-        ).withName("Retract Fourbar");
+            setRetractCurrent1C().withTimeout(0.3),
+            setRetractCurrent2C().withTimeout(0.2)
+        ).withTimeout(.5).withName("Retract Fourbar");
     }
 
     public Command setExtendCurrent1C() {
         return run(()->{
             stayRetracted = false;
-            setCurrent(extendCurrent1.get());
+            setCurrent(kExtendCurrent1);
         });
     }
 
     public Command setExtendCurrent2C() {
         return run(()->{
             stayRetracted = false;
-            setCurrent(extendCurrent2.get());
+            setCurrent(kExtendCurrent2);
+        });
+    }
+
+    public Command setExtendCurrent3C() {
+        return run(()->{
+            stayRetracted = false;
+            setCurrent(kExtendCurrent3);
         });
     }
 
     public Command extendC() {
         return sequence(
-            setExtendCurrent1C().withTimeout(0.3),
-            setExtendCurrent2C().withTimeout(0.4)
-        ).finallyDo(()-> resetDoneOscillating()).withName("Extend Fourbar");
+            setExtendCurrent1C().withTimeout(0.1),
+            setExtendCurrent2C().withTimeout(0.3)
+        ).withTimeout(0.4).withName("Extend Fourbar");
     }
 
     public Command retractPermanantC() {
@@ -198,6 +204,7 @@ public class FourBar extends SubsystemBase {
         retractCurrent2.poll();
         extendCurrent1.poll();
         extendCurrent2.poll();
+        fourBarAngleTolerance.poll();
         
     }
 
