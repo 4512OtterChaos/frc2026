@@ -285,7 +285,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     public void driveFacingOptionalTargetBrake(ChassisSpeeds speeds, Optional<Translation2d> target) {
         boolean stationary = Math.abs(speeds.vxMetersPerSecond) < 0.01 && Math.abs(speeds.vyMetersPerSecond) < 0.01;
         if (stationary && isFacingTarget.getAsBoolean()) {
-            brake();
+            // brake();
         }
         else {
             driveFacingOptionalTarget(speeds, target);
@@ -335,7 +335,8 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     // }
 
     public Command brakeC(){
-        return run(()->brake());
+        return Commands.none();
+        // run(()->brake());
     }
 
     public void brake() {

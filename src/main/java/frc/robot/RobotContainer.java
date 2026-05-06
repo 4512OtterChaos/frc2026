@@ -121,12 +121,12 @@ public class RobotContainer {
 
         // #### Shooter Bindings
         // superstructure.doneShootingT.whileTrue(superstructure.otterShootEndControllerC(driver));
-        driver.rightTrigger().whileTrue(superstructure.otterShootOnTheSwimC(() -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kSOTMLimiter)));
+        // driver.rightTrigger().whileTrue(superstructure.otterShootOnTheSwimC(() -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kSOTMLimiter)));
         driver.leftBumper().whileTrue(superstructure.otterShootStationaryC(() -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kSOTMLimiter)));
         driver.rightBumper().whileTrue(parallel(
-            run(()-> shooter.setState(Degrees.of(24), RPM.of(2950))), 
+            run(()-> shooter.setState(Degrees.of(23), RPM.of(2500))), 
             sequence(
-                waitSeconds(0.6),
+                waitSeconds(0.3),
                 superstructure.autoIndexNoConstraints()
             )
         ));
@@ -251,7 +251,7 @@ public class RobotContainer {
  * Rotational ks
  * FourBar oscillation tuning(?)
  * spidex slower(?) 
- * 
+ * Tune swerve module PID
  * 
  * 
  * 
