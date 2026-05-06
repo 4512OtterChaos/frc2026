@@ -78,8 +78,8 @@ public class Superstructure extends SubsystemBase{
      */
     public Command fourbarRetractC() {
         return parallel(
-            fourBar.retractPermanantC(),
-            intake.setVoltageInC()
+            fourBar.retractPermanantC()
+            // intake.setVoltageInC()
         );
     }
 
@@ -88,14 +88,15 @@ public class Superstructure extends SubsystemBase{
      * @return An optional translation of the target, empty if there is no valid target
      */
     public Optional<Translation2d> getTarget() {
-        var trl = drivetrain.getGlobalPoseEstimate().getTranslation();
-        if (FieldUtil.isInTrenchZone(trl) /* || FieldUtil.isBehindHub(trl) */) { //TODO: Enable behindHubT
-            return Optional.empty();
-        }
-        if (FieldUtil.isInAllianceZone(trl)) {
-            return Optional.of(FieldUtil.kHubTrl);
-        }
-        return Optional.of(drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
+        // var trl = drivetrain.getGlobalPoseEstimate().getTranslation();
+        // if (FieldUtil.isInTrenchZone(trl) /* || FieldUtil.isBehindHub(trl) */) { //TODO: Enable behindHubT
+        //     return Optional.empty();
+        // }
+        // if (FieldUtil.isInAllianceZone(trl)) {
+        //     return Optional.of(FieldUtil.kHubTrl);
+        // }
+        // return Optional.of(drivetrain.getGlobalPoseEstimate().nearest(FieldUtil.kSetpoints).getTranslation());
+        return Optional.empty();
     }
 
     /**
@@ -214,7 +215,7 @@ public class Superstructure extends SubsystemBase{
             runOnce(()-> isIndexing = true),
             parallel( // proxy indexing and agitation
                 fourBar.setReadyToOscillateC(true),
-                indexC().asProxy().until(readyToShoot.negate())
+                indexC().asProxy()
             ).finallyDo(()-> {
                 fourBar.setReadyToOscillate(false);
                 isIndexing = false;

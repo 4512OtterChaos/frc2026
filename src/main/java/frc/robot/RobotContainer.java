@@ -96,12 +96,12 @@ public class RobotContainer {
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
         //FourBar oscillates when we are ready to as long as we aren't intaking
-        fourBar.readyToOscillateT().and(intake.isIntakingT.negate()).whileTrue(fourBar.oscillateC());
+        // fourBar.readyToOscillateT().and(intake.isIntakingT.negate()).whileTrue(fourBar.oscillateC());
         //Fourbar returns to extended position when not oscillating
-        fourBar.doneOscillatingT().whileTrue(fourBar.extendC().finallyDo(()->fourBar.resetDoneOscillating()).withName("Extend(Done Oscillating)"));
+        // fourBar.doneOscillatingT().whileTrue(fourBar.extendC().finallyDo(()->fourBar.resetDoneOscillating()).withName("Extend(Done Oscillating)"));
 
         //Run intake while intaking and indexing
-        intake.isIntakingT.or(superstructure.isIndexingT).or(fourBar.readyToOscillateT()).whileTrue(intake.setVoltageInC());
+        intake.isIntakingT.or(superstructure.isIndexingT)/*.or(fourBar.readyToOscillateT()*/.whileTrue(intake.setVoltageInC());
         
         // Setup HubShiftUtil
         RobotModeTriggers.teleop().onTrue(runOnce(HubShiftUtil::initialize));

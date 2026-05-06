@@ -163,10 +163,11 @@ public class FourBar extends SubsystemBase {
     }
 
     public Command oscillateC() {
-        return repeatingSequence(
-            retractC(),//.until(isHomed),
-            extendC()//.until(isHomed)
-        ).finallyDo(()-> doneOscillating = true).withName("Otterscillate");
+        // return repeatingSequence(
+        //     retractC(),//.until(isHomed),
+        //     extendC()//.until(isHomed)
+        // ).finallyDo(()-> doneOscillating = true).withName("Otterscillate");
+        return Commands.none();
     }
 
     public void setReadyToOscillate(boolean isTrue) {
