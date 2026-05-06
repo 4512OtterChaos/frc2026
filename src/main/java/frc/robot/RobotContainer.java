@@ -83,7 +83,8 @@ public class RobotContainer {
         fourBar.setDefaultCommand(fourBar.stayExtendedC().withName("Default"));
         spindexer.setDefaultCommand(spindexer.setVoltageC(0).withName("Default"));
         feeder.setDefaultCommand(feeder.setVelocityC(RPM.of(0)).withName("Default"));
-        shooter.setDefaultCommand(shooter.setIdleC(()-> FieldUtil.isInAllianceZone(drivetrain.getGlobalPoseEstimate().getTranslation())));
+        shooter.setDefaultCommand(shooter.setIdleC(()-> false));
+        // shooter.setDefaultCommand(run(()-> shooter.setIdle()).withName("Default"));
     }
 
     private void configureTriggersAndGeneralBindings() {
