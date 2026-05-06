@@ -52,7 +52,7 @@ public class Shooter extends SubsystemBase {
     private AngularVelocity targetVelocity = RPM.of(0); // flywheel
     private Angle targetAngle = kHoodMinAngle; //hood
 
-    public final Trigger isIdle = new Trigger(() -> targetVelocity.isNear(kFlywheelIdleVelocity, 0.01) && targetAngle.isNear(kHoodMinAngle, 0.01));
+    public final Trigger isIdle = new Trigger(() -> targetVelocity.isNear(flywheelIdleVelocity.get(), 0.01) && targetAngle.isNear(kHoodMinAngle, 0.01));
     public final Trigger isUpToSpeed = OCTrigger.debounce(
         OCTrigger.debounce(
             new Trigger(() -> getFlywheelVelocity().isNear(targetVelocity, velocityTolerance.get())).and(isIdle.negate()),
@@ -227,7 +227,7 @@ public class Shooter extends SubsystemBase {
     }
     
     public void setIdle(){
-        setState(kHoodMinAngle, kFlywheelIdleVelocity);
+        setState(kHoodMinAngle, flywheelIdleVelocity.get());
     }
     
     public Command setIdleC(BooleanSupplier inAllianceZone){
@@ -278,7 +278,7 @@ public class Shooter extends SubsystemBase {
         hoodCruiseVelocity.poll();
         hoodAcceleration.poll();
 
-        // flywheelIdleVelocity.poll();
+        flywheelIdleVelocity.poll();
         flywheelDebounceTime.poll();
         velocityTolerance.poll();
         flywheelkP.poll();

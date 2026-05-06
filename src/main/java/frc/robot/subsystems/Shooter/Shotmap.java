@@ -30,7 +30,7 @@ public class Shotmap {
     public static Distance nextToTower = Meters.of(4.716783828);
     public static Distance frontOfTower = Meters.of(3.55593061);
     public static Distance nearHub = Meters.of(2.342913695);
-    public static Shooter.State idleState = new Shooter.State(ShooterConstants.kHoodMinAngle, ShooterConstants.kFlywheelIdleVelocity, null);
+    public static Shooter.State idleState = new Shooter.State(ShooterConstants.kHoodMinAngle, ShooterConstants.flywheelIdleVelocity.get(), null);
 
     private static Time minTof = null;
     private static Time maxTof = null;

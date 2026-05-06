@@ -15,6 +15,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.robot.util.TunableNumber;
+import frc.robot.util.TunableUnits.TunableAngularVelocity;
 
 public class IndexerConstants {
     public static final int kSpindexerID = 31;
@@ -35,7 +36,7 @@ public class IndexerConstants {
 //     public static final TunableNumber spindexerReverseVoltage = new TunableNumber("3) Indexer/Spindexer/Reverse Voltage", kSpindexerReverseVoltage);
 
     public static final AngularVelocity kFeederVelocity = RPM.of(1600);
-//     public static final TunableAngularVelocity feederVelocity = new TunableAngularVelocity("3) Indexer/Feeder/Velocity", kFeederVelocity);
+    public static final TunableAngularVelocity feederVelocity = new TunableAngularVelocity("3) Indexer/Feeder/Velocity", kFeederVelocity);
 
     public static final AngularVelocity kFeederReverseVelocity = RPM.of(-750);
 //     public static final TunableAngularVelocity feederReverseVelocity = new TunableAngularVelocity("3) Indexer/Feeder/Reverse Velocity", kFeederReverseVelocity);

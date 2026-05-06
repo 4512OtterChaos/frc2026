@@ -21,8 +21,8 @@ public class DrivetrainConstants {
     public static final double kDriveSpeedRatio = 0.9;
     public static final double kTurnSpeedRatio = 0.5;
 
-    // public static final TunableNumber driveSpeedRatio = new TunableNumber("1) Drivetrain/Standard/Drive Speed", kDriveSpeedRatio);
-    // public static final TunableNumber turnSpeedRatio = new TunableNumber("1) Drivetrain/Standard/Turn Speed", kTurnSpeedRatio);
+    public static final TunableNumber driveSpeedRatio = new TunableNumber("1) Drivetrain/Standard/Drive Speed", kDriveSpeedRatio);
+    public static final TunableNumber turnSpeedRatio = new TunableNumber("1) Drivetrain/Standard/Turn Speed", kTurnSpeedRatio);
 
     // Normal driving acceleration limits
     public static final LinearAcceleration kLinearAccel = FeetPerSecondPerSecond.of(40);

@@ -97,7 +97,7 @@ public class Feeder extends SubsystemBase{
     }
 
     public void feed() {
-        setVelocity(kFeederVelocity);
+        setVelocity(feederVelocity.get());
     }
 
     private boolean upToSpeed() {
@@ -109,7 +109,7 @@ public class Feeder extends SubsystemBase{
     }
 
     public void changeTunable(){
-        
+        feederVelocity.poll();
     }
         
     public void log(){

@@ -160,7 +160,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
     }
 
     public LinearVelocity getDriveSpeed() {
-        return MetersPerSecond.of(kDriveSpeedRatio * kMaxLinearSpeed);
+        return MetersPerSecond.of(driveSpeedRatio.get() * kMaxLinearSpeed);
     }
 
     public AngularVelocity getTurnSpeed() {

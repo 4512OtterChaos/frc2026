@@ -63,7 +63,7 @@ public final class ShooterConstants {
 
     public static final AngularVelocity kFlywheelIdleVelocity = RPM.of(1000);
 
-//     public static final TunableAngularVelocity flywheelIdleVelocity = new TunableAngularVelocity("4) Shooter/Flywheel/Idle RPM", kFlywheelIdleVelocity);
+    public static final TunableAngularVelocity flywheelIdleVelocity = new TunableAngularVelocity("4) Shooter/Flywheel/Idle RPM", kFlywheelIdleVelocity);
 
     public static final Angle kHoodMinAngle = Degrees.of(21);
     public static final Angle kHoodMaxAngle = Degrees.of(45);
