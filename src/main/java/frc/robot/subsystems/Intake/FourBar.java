@@ -139,18 +139,11 @@ public class FourBar extends SubsystemBase {
         });
     }
 
-    public Command setExtendCurrent3C() {
-        return run(()->{
-            stayRetracted = false;
-            setCurrent(kExtendCurrent3);
-        });
-    }
-
     public Command extendC() {
         return sequence(
             setExtendCurrent1C().withTimeout(0.1),
             setExtendCurrent2C().withTimeout(0.3)
-        ).withTimeout(0.4).withName("Extend Fourbar");
+        ).withName("Extend Fourbar");
     }
 
     public Command retractPermanantC() {
