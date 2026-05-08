@@ -77,9 +77,12 @@ public class Superstructure extends SubsystemBase{
      * @return A command that retracts the fourBar while running the intake
      */
     public Command fourbarRetractC() {
-        return parallel(
-            fourBar.retractPermanantC()
-            // intake.setVoltageInC()
+        return race(
+            waitSeconds(0.4),
+            parallel(
+                fourBar.retractPermanantC(),
+                intake.setVoltageInC()
+            )
         );
     }
 
