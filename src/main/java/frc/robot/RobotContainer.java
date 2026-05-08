@@ -276,8 +276,8 @@ public class RobotContainer {
  * Rotational ks
  * FourBar oscillation tuning(?)
  * spidex slower(?) 
- * Tune swerve module PID
- * 
+ * Make drive kP 0.1
+ * Test lowering steep kP and inc kD
  * 
  * 
  * 
