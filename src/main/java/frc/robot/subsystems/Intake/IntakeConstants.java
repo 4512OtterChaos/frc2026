@@ -30,24 +30,23 @@ public class IntakeConstants {
 
     public static final Angle kFourBarMinAngle = Degrees.of(16.5); 
     public static final Angle kFourBarMaxAngle = Degrees.of(100.5); 
-    public static final Angle kFourBarAngleTolerance = Degrees.of(10);
+    public static final Angle kFourBarAngleTolerance = Degrees.of(20);
     public static final TunableAngle fourBarAngleTolerance = new TunableAngle("2) Intake/Four Bar/Angle Tolerance", kFourBarAngleTolerance);
     
 
     // public static final TunableAngle fourBarMinAngle = new TunableAngle("2) Intake/Four Bar/Min Degrees", kFourBarMinAngle);
     // public static final TunableAngle fourBarMaxAngle = new TunableAngle("2) Intake/Four Bar/Max Degrees", kFourBarMaxAngle);
 
-    public static final double kIntakeVoltageIn = 9; 
+    public static final double kIntakeVoltageIn = 7; 
     public static final double kIntakeVoltageOut = -6;
 
     // public static final TunableNumber intakeVoltageIn = new TunableNumber("2) Intake/Roller/Voltage In", kIntakeVoltageIn);
     // public static final TunableNumber intakeVoltageOut = new TunableNumber("2) Intake/Roller/Voltage Out", kIntakeVoltageOut);
 
-    public static final Current kRetractCurrent1 = Amps.of(23);
-    public static final Current kRetractCurrent2 = Amps.of(6);
-    public static final Current kExtendCurrent1 = Amps.of(-10);
-    public static final Current kExtendCurrent2 = Amps.of(-6);
-    public static final Current kExtendCurrent3 = Amps.of(3);
+    public static final Current kRetractCurrent1 = Amps.of(21);
+    public static final Current kRetractCurrent2 = Amps.of(2);
+    public static final Current kExtendCurrent1 = Amps.of(-13);
+    public static final Current kExtendCurrent2 = Amps.of(-3);
     public static final Current kStallThreshold = Amps.of(10);
     public static final Time kStallTime = Seconds.of(0.2);
 
