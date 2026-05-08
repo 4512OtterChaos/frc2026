@@ -76,7 +76,7 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
             .withRotationalDeadband(kMaxAngularRate * 0.001) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage) // Use open-loop control for drive motors
             .withHeadingPID(8.5, 0, 0);
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    // private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     // private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final ProfiledPIDController pathThetaController = new ProfiledPIDController(
@@ -340,10 +340,10 @@ public class OCDrivetrain extends CommandSwerveDrivetrain {
         // run(()->brake());
     }
 
-    public void brake() {
-        lastBrakeTime = Timer.getFPGATimestamp();
-        setControl(brake);
-    }
+    // public void brake() {
+    //     lastBrakeTime = Timer.getFPGATimestamp();
+    //     setControl(brake);
+    // }
 
     private Angle offsetTargetAngle(Angle target){
         var adjAngle = target;
