@@ -24,11 +24,11 @@ public class IntakeConstants {
     public static final int kFourBarMotorID = 22;
 
     public static final double kIntakeGearRatio = 2; 
-    public static final double kFourBarGearRatio = (38.0/8.0) * (38.0/20.0) * (26.0/12.0); 
+    public static final double kFourBarGearRatio = (46.0/8.0) * (52.0/20.0) * (26.0/12.0); 
 
     public static final Distance kFourBarArmLength = Feet.of(2);
 
-    public static final Angle kFourBarMinAngle = Degrees.of(16.5); 
+    public static final Angle kFourBarMinAngle = Degrees.of(21.7); 
     public static final Angle kFourBarMaxAngle = Degrees.of(100.5); 
     public static final Angle kFourBarAngleTolerance = Degrees.of(20);
     public static final TunableAngle fourBarAngleTolerance = new TunableAngle("2) Intake/Four Bar/Angle Tolerance", kFourBarAngleTolerance);
