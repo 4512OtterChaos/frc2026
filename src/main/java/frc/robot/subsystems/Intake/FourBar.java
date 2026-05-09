@@ -120,8 +120,8 @@ public class FourBar extends SubsystemBase {
 
     public Command retractC() {
         return sequence(
-            setRetractCurrent1C().withTimeout(0.3),
-            setRetractCurrent2C().withTimeout(0.2)
+            setRetractCurrent1C().withTimeout(0.5),
+            setRetractCurrent2C().withTimeout(0.3)
         ).withTimeout(.5).withName("Retract Fourbar");
     }
 
@@ -141,7 +141,7 @@ public class FourBar extends SubsystemBase {
 
     public Command extendC() {
         return sequence(
-            setExtendCurrent1C().withTimeout(0.1),
+            setExtendCurrent1C().withTimeout(0.2),
             setExtendCurrent2C().withTimeout(0.3)
         ).withName("Extend Fourbar");
     }

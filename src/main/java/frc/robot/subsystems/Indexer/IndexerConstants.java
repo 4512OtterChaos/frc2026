@@ -27,7 +27,7 @@ public class IndexerConstants {
     public static final double kSpindexerGearRatio = 3.0;
     public static final double kFeederGearRatio = 32.0 / 12.0;
     
-    public static final double kSpindexerVoltage = 7;
+    public static final double kSpindexerVoltage = 1.5;
 
     public static final TunableNumber spindexerVoltage = new TunableNumber("3) Indexer/Spindexer/Voltage", kSpindexerVoltage);
     
@@ -35,7 +35,7 @@ public class IndexerConstants {
 
 //     public static final TunableNumber spindexerReverseVoltage = new TunableNumber("3) Indexer/Spindexer/Reverse Voltage", kSpindexerReverseVoltage);
 
-    public static final AngularVelocity kFeederVelocity = RPM.of(1600);
+    public static final AngularVelocity kFeederVelocity = RPM.of(1100);
     public static final TunableAngularVelocity feederVelocity = new TunableAngularVelocity("3) Indexer/Feeder/Velocity", kFeederVelocity);
 
     public static final AngularVelocity kFeederReverseVelocity = RPM.of(-750);
