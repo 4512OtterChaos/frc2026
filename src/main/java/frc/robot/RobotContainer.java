@@ -80,7 +80,7 @@ public class RobotContainer {
 
     public void configureDefaultCommands() {
         intake.setDefaultCommand(intake.setVoltageC(0).withName("Default"));
-        fourBar.setDefaultCommand(fourBar.stayExtendedC().withName("Default"));
+        fourBar.setDefaultCommand(fourBar.setCurrentC(Amps.of(0)).withName("Default"));
         spindexer.setDefaultCommand(spindexer.setVoltageC(0).withName("Default"));
         feeder.setDefaultCommand(feeder.setVelocityC(RPM.of(0)).withName("Default"));
         shooter.setDefaultCommand(shooter.setIdleC(()-> FieldUtil.isInAllianceZone(drivetrain.getGlobalPoseEstimate().getTranslation())));
@@ -113,7 +113,7 @@ public class RobotContainer {
         // #### Drivetrain Bindings
         drivetrain.setDefaultCommand(drivetrain.driveC(
             () -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kStandardLimiter),
-            true // rotation lock
+            false // rotation lock
         ));
         driver.back().onTrue(runOnce(() -> drivetrain.resetRotation(Rotation2d.kZero)));
         driver.b().whileTrue(drivetrain.brakeC());
