@@ -3,6 +3,7 @@ package frc.robot.subsystems.Intake;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -44,6 +45,12 @@ public class FourBar extends SubsystemBase {
     public final Trigger isStalled = new Trigger(() -> getCurrent().gt(stallThreshold.get()));
     /** Stationary and pulling current above threshold for some time */
     public final Trigger isHomed = OCTrigger.debounce(isStalled.and(isStationary), () -> stallTime.in(Seconds));
+
+    public final Trigger extended1 = new Trigger(()-> getAngle().in(Degrees) >= kFourBarMidAngle.in(Degrees));
+    public final Trigger extended2 = new Trigger(()-> getAngle().isNear(kFourBarMinAngle, Degrees.of(10))).debounce(0.2);
+
+    public final Trigger retracted1 = new Trigger(()-> getAngle().in(Degrees) >= kFourBarMidAngle.in(Degrees));
+    public final Trigger retracted2 = new Trigger(()-> getAngle().isNear(kFourBarMaxAngle, Degrees.of(10)));
 
 
     private boolean readyToOscillate = false;
@@ -122,7 +129,14 @@ public class FourBar extends SubsystemBase {
         return sequence(
             setRetractCurrent1C().withTimeout(0.5),
             setRetractCurrent2C().withTimeout(0.3)
-        ).withTimeout(.5).withName("Retract Fourbar");
+        ).withName("Retract Fourbar");
+    }
+
+    public Command retractPositionC() {
+        return sequence(
+            setRetractCurrent1C().until(retracted1),
+            setRetractCurrent2C().until(retracted2)
+        ).withName("Retract Fourbar");
     }
 
     public Command setExtendCurrent1C() {
@@ -146,10 +160,17 @@ public class FourBar extends SubsystemBase {
         ).withName("Extend Fourbar");
     }
 
+    public Command extendPositionC() {
+        return sequence(
+            setExtendCurrent1C().until(extended2),
+            setExtendCurrent2C().until(extended1)
+        ).withName("Extend Fourbar");
+    }
+
     public Command retractPermanantC() {
         return sequence(
             runOnce(()-> stayRetracted = true),
-            retractC()
+            retractPositionC()
         ).withName("Retract Fourbar");
     }
 
@@ -162,11 +183,11 @@ public class FourBar extends SubsystemBase {
     }
 
     public Command oscillateC() {
-        // return repeatingSequence(
-        //     retractC(),//.until(isHomed),
-        //     extendC()//.until(isHomed)
-        // ).finallyDo(()-> doneOscillating = true).withName("Otterscillate");
-        return Commands.none();
+        return repeatingSequence(
+            retractPositionC(),//.until(isHomed),
+            extendC()//.until(isHomed)
+        ).finallyDo(()-> doneOscillating = true).withName("Otterscillate");
+        // return Commands.none();
     }
 
     public void setReadyToOscillate(boolean isTrue) {

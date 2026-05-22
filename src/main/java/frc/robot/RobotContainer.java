@@ -49,7 +49,7 @@ import frc.robot.util.RobotConstants;
 import frc.robot.util.TunableNumber;
 
 public class RobotContainer {
-    private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    private double MaxSpeed = 0.4 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
 
     private final OCXboxController driver = new OCXboxController(0);
     private final Supplier<ChassisSpeeds> driverSpeedsSupplier = () -> driver.getSpeeds(DrivetrainConstants.kMaxLinearSpeed, DrivetrainConstants.kMaxAngularRate);
@@ -138,7 +138,11 @@ public class RobotContainer {
             run(()-> shooter.setState(Degrees.of(26), RPM.of(1900))), 
             sequence(
                 waitSeconds(0.3),
-                superstructure.autoIndexNoConstraints()
+                parallel(
+                superstructure.autoIndexNoConstraints(),
+                fourBar.oscillateC()
+                )
+
             )
         ));
         driver.leftBumper().whileTrue(parallel(
@@ -148,12 +152,21 @@ public class RobotContainer {
                 superstructure.autoIndexNoConstraints()
             )
         ));
-        driver.povUp().whileTrue(parallel(
-            run(()-> shooter.setState(Degrees.of(21), RPM.of(3000))), 
-            sequence(
-                waitSeconds(0.3),
-                superstructure.autoIndexNoConstraints()
-            )
+        driver.povUp().whileTrue(
+            parallel(
+                run(()-> shooter.setState(Degrees.of(21), RPM.of(3000))), 
+                sequence(
+                    waitSeconds(0.3),
+                    superstructure.autoIndexNoConstraints()
+                )
+        ));
+        driver.b().whileTrue(
+            parallel(
+                run(()-> shooter.setState(Degrees.of(21), RPM.of(900))), 
+                sequence(
+                    waitSeconds(0.3),
+                    superstructure.autoIndexNoConstraints()
+                )
         ));
 
         // #### Intake/Indexer Bindings
