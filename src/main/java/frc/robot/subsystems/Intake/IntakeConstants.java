@@ -29,7 +29,7 @@ public class IntakeConstants {
     public static final Distance kFourBarArmLength = Feet.of(2);
 
     public static final Angle kFourBarMinAngle = Degrees.of(21.7); 
-    public static final Angle kFourBarMidAngle = Degrees.of(65); 
+    public static final Angle kFourBarMidAngle = Degrees.of(60); 
     public static final Angle kFourBarMaxAngle = Degrees.of(100.5); 
     public static final Angle kFourBarAngleTolerance = Degrees.of(20);
     public static final TunableAngle fourBarAngleTolerance = new TunableAngle("2) Intake/Four Bar/Angle Tolerance", kFourBarAngleTolerance);
@@ -44,8 +44,8 @@ public class IntakeConstants {
     // public static final TunableNumber intakeVoltageIn = new TunableNumber("2) Intake/Roller/Voltage In", kIntakeVoltageIn);
     // public static final TunableNumber intakeVoltageOut = new TunableNumber("2) Intake/Roller/Voltage Out", kIntakeVoltageOut);
 
-    public static final Current kRetractCurrent1 = Amps.of(20);
-    public static final Current kRetractCurrent2 = Amps.of(3);
+    public static final Current kRetractCurrent1 = Amps.of(22);
+    public static final Current kRetractCurrent2 = Amps.of(2);
     public static final Current kExtendCurrent1 = Amps.of(-13);
     public static final Current kExtendCurrent2 = Amps.of(-1.5);
 
@@ -75,6 +75,7 @@ public class IntakeConstants {
     public static final Distance kFourBar2Length = Inches.of(11.617010);
 
     public static final TalonFXConfiguration kIntakeConfig = new TalonFXConfiguration();
+
     static { 
         FeedbackConfigs feedback = kIntakeConfig.Feedback;
         feedback.SensorToMechanismRatio = kIntakeGearRatio;
