@@ -247,6 +247,10 @@ public class Shooter extends SubsystemBase {
         return getFlywheelCurrent().in(Amps) > 70; // TODO: tune
     }
 
+    public Command reverseC() {
+        return setStateC(Degrees.of(21), RPM.of(-900));
+    }
+
     /** positive angular velocity = backspin */
     public Pair<LinearVelocity, AngularVelocity> getFuelExitVelSpin() {
         double flywheelRPS = getFlywheelVelocity().in(RotationsPerSecond);
