@@ -177,12 +177,15 @@ public class RobotContainer {
         driver.povLeft().whileTrue(
             parallel(
                 spindexer.reverseC(),
-                feeder.reverseC()
+                feeder.reverseC(),
+                shooter.reverseC()
         ));
 
         // #### FourBar Bindings
         driver.y().onTrue(superstructure.fourbarRetractC()); 
         driver.a().onTrue(fourBar.extendC()); 
+
+        driver.povDown().whileTrue(fourBar.oscillateC());
 
         
         // #### Test Bindings
