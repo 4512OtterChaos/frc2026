@@ -3,6 +3,7 @@ package frc.robot.subsystems.Intake;
 import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.repeatingSequence;
 import static edu.wpi.first.wpilibj2.command.Commands.sequence;
+import static edu.wpi.first.wpilibj2.command.Commands.waitSeconds;
 import static edu.wpi.first.wpilibj2.command.Commands.waitUntil;
 import static frc.robot.subsystems.Intake.IntakeConstants.*;
 
@@ -47,10 +48,10 @@ public class FourBar extends SubsystemBase {
     public final Trigger isHomed = OCTrigger.debounce(isStalled.and(isStationary), () -> stallTime.in(Seconds));
 
     public final Trigger extended1 = new Trigger(()-> getAngle().in(Degrees) >= kFourBarMidAngle.in(Degrees));
-    public final Trigger extended2 = new Trigger(()-> getAngle().isNear(kFourBarMinAngle, Degrees.of(10))).debounce(0.2);
+    public final Trigger extended2 = new Trigger(()-> getAngle().isNear(kFourBarMinAngle, Degrees.of(15)));
 
     public final Trigger retracted1 = new Trigger(()-> getAngle().in(Degrees) >= kFourBarMidAngle.in(Degrees));
-    public final Trigger retracted2 = new Trigger(()-> getAngle().isNear(kFourBarMaxAngle, Degrees.of(10)));
+    public final Trigger retracted2 = new Trigger(()-> getAngle().isNear(kFourBarMaxAngle, Degrees.of(15)));
 
 
     private boolean readyToOscillate = false;
@@ -185,7 +186,9 @@ public class FourBar extends SubsystemBase {
     public Command oscillateC() {
         return repeatingSequence(
             retractPositionC(),//.until(isHomed),
-            extendC()//.until(isHomed)
+            waitSeconds(1),
+            extendC(),//.until(isHomed)
+            waitSeconds(1)
         ).finallyDo(()-> doneOscillating = true).withName("Otterscillate");
         // return Commands.none();
     }
