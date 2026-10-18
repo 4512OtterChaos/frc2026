@@ -180,11 +180,11 @@ public class RobotContainer {
             Shooter.setOperatorState(nextToTower);
             Shooter.currentOperatorState = "Next To Tower";
         }));
-        operator.y().whileTrue(run(() -> {
+        operator.a().whileTrue(run(() -> {
             Shooter.setOperatorState(frontOfTower);
             Shooter.currentOperatorState = "Front Of Tower";
         }));
-        operator.a().whileTrue(run(() -> {
+        operator.y().whileTrue(run(() -> {
             Shooter.setOperatorState(nearHub);
             Shooter.currentOperatorState = "Near Hub";
         }));
