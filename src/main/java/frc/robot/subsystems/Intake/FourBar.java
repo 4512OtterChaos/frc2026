@@ -201,16 +201,16 @@ public class FourBar extends SubsystemBase {
     }
 
     public void log() {
-        SmartDashboard.putNumber("2) Intake/Four Bar/Angle Degrees", getAngle().in(Degrees));
+        // SmartDashboard.putNumber("2) Intake/Four Bar/Angle Degrees", getAngle().in(Degrees));
         // SmartDashboard.putNumber("2) Intake/Four Bar/RPM", getVelocity().in(RPM));
-        SmartDashboard.putNumber("2) Intake/Four Bar/Voltage", getVoltage().in(Volts));
+        // SmartDashboard.putNumber("2) Intake/Four Bar/Voltage", getVoltage().in(Volts));
         SmartDashboard.putNumber("2) Intake/Four Bar/Current", getCurrent().in(Amps));
         SmartDashboard.putNumber("2) Intake/Four Bar/Target Current", targetCurrent.in(Amps));
 
         SmartDashboard.putBoolean("test", doneOscillating);
-        SmartDashboard.putBoolean("2) Intake/Four Bar/Is Stationary", isStationary.getAsBoolean());
-        SmartDashboard.putBoolean("2) Intake/Four Bar/Is Stalled", isStalled.getAsBoolean());
-        SmartDashboard.putBoolean("2) Intake/Four Bar/Is Homed", isHomed.getAsBoolean());
+        // SmartDashboard.putBoolean("2) Intake/Four Bar/Is Stationary", isStationary.getAsBoolean());
+        // SmartDashboard.putBoolean("2) Intake/Four Bar/Is Stalled", isStalled.getAsBoolean());
+        // SmartDashboard.putBoolean("2) Intake/Four Bar/Is Homed", isHomed.getAsBoolean());
     }
 
     // Simulation

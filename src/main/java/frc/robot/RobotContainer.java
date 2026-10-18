@@ -195,7 +195,7 @@ public class RobotContainer {
     }
 
     public void periodic() {
-        vision.periodic();
+        // vision.periodic();
         autos.periodic();
         log();
         changeTunable();

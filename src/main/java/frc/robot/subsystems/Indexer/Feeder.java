@@ -114,9 +114,9 @@ public class Feeder extends SubsystemBase{
         
     public void log(){
         // SmartDashboard.putNumber("3) Indexer/Feeder/Angle Degrees", getAngle().in(Degrees));
-        SmartDashboard.putNumber("3) Indexer/Feeder/RPM", getVelocity().in(RPM));
+        // SmartDashboard.putNumber("3) Indexer/Feeder/RPM", getVelocity().in(RPM));
         SmartDashboard.putNumber("3) Indexer/Feeder/Voltage", getVoltage().in(Volts));
-        SmartDashboard.putNumber("3) Indexer/Feeder/Current", getCurrent().in(Amps));
+        // SmartDashboard.putNumber("3) Indexer/Feeder/Current", getCurrent().in(Amps));
     }
     
     // Simulation
