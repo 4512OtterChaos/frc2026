@@ -154,6 +154,7 @@ public class RobotContainer {
                 spindexer.reverseC(),
                 feeder.reverseC()
         ));
+
         // #### FourBar Bindings
         driver.y().whileTrue(superstructure.fourbarRetractC()); 
         driver.a().whileTrue(fourBar.extendC()); 
@@ -170,10 +171,10 @@ public class RobotContainer {
     }
 
     private void configureOperatorBindings(OCXboxController operator) {
-        Distance trench = Meters.of(5.24860998);
-        Distance nextToTower = Meters.of(4.716783828);
-        Distance frontOfTower = Meters.of(3.55593061);
-        Distance nearHub = Meters.of(2.342913695);
+        Distance trench = Meters.of(5);
+        Distance nextToTower = Meters.of(4);
+        Distance frontOfTower = Meters.of(3);
+        Distance nearHub = Meters.of(2);
         Distance ferry = Meters.of(9);
         
         operator.x().whileTrue(run(() -> {
@@ -203,7 +204,7 @@ public class RobotContainer {
     }
 
     public void periodic() {
-        // vision.periodic();
+        vision.periodic();
         autos.periodic();
         log();
         // changeTunable();
@@ -212,11 +213,11 @@ public class RobotContainer {
         Utils.getCurrentTimeSeconds();
         
         var swerveState = drivetrain.getState();
-        // vision.update( 
-        //     drivetrain.visionEstimator,
-        //     swerveState.Pose.getRotation(),
-        //     RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
-        //     swerveState.Timestamp + phoenixTimeOffset);
+        vision.update( 
+            drivetrain.visionEstimator,
+            swerveState.Pose.getRotation(),
+            RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
+            swerveState.Timestamp + phoenixTimeOffset);
     }    
 
     public void AutonomousInit() {
