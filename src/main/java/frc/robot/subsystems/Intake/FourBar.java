@@ -55,8 +55,8 @@ public class FourBar extends SubsystemBase {
         motor.getConfigurator().apply(kFourBarConfig);
         
         positionStatus.setUpdateFrequency(100);
-        velocityStatus.setUpdateFrequency(100);
-        voltageStatus.setUpdateFrequency(100);
+        velocityStatus.setUpdateFrequency(500);
+        voltageStatus.setUpdateFrequency(500);
         statorStatus.setUpdateFrequency(50);
 
         ParentDevice.optimizeBusUtilizationForAll(motor);
@@ -76,7 +76,7 @@ public class FourBar extends SubsystemBase {
                 velocityStatus,
                 voltageStatus,
                 statorStatus);
-        changeTunable();
+        // changeTunable();
 
         motor.setControl(torqueRequest.withOutput(targetCurrent));
         log();

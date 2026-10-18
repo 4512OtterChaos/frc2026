@@ -50,7 +50,7 @@ public class Spindexer extends SubsystemBase {
             voltageStatus,
             statorStatus
         );
-        changeTunable();
+        // changeTunable();
         log();
     }
 

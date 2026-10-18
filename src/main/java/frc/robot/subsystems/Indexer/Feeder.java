@@ -39,10 +39,10 @@ public class Feeder extends SubsystemBase{
     public Feeder(){
         motor.getConfigurator().apply(kFeederConfig);
         
-        positionStatus.setUpdateFrequency(100);
-        velocityStatus.setUpdateFrequency(100);
-        voltageStatus.setUpdateFrequency(100);
-        statorStatus.setUpdateFrequency(50);
+        positionStatus.setUpdateFrequency(400);
+        velocityStatus.setUpdateFrequency(400);
+        voltageStatus.setUpdateFrequency(400);
+        statorStatus.setUpdateFrequency(90);
 
         ParentDevice.optimizeBusUtilizationForAll(motor);
 
@@ -57,7 +57,7 @@ public class Feeder extends SubsystemBase{
             voltageStatus,
             statorStatus
         );
-        changeTunable();
+        // changeTunable();
 
         motor.setControl(velocityrequest.withVelocity(targetVelocity));
         

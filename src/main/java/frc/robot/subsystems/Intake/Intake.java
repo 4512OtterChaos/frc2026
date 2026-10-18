@@ -38,7 +38,7 @@ public class Intake extends SubsystemBase{
     public Intake(){
         motor.getConfigurator().apply(kIntakeConfig);
         
-        positionStatus.setUpdateFrequency(100);
+        positionStatus.setUpdateFrequency(200);
         velocityStatus.setUpdateFrequency(100);
         voltageStatus.setUpdateFrequency(100);
         statorStatus.setUpdateFrequency(50);

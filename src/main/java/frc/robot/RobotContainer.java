@@ -198,17 +198,17 @@ public class RobotContainer {
         // vision.periodic();
         autos.periodic();
         log();
-        changeTunable();
+        // changeTunable();
 
         double phoenixTimeOffset = Timer.getFPGATimestamp() -
         Utils.getCurrentTimeSeconds();
         
         var swerveState = drivetrain.getState();
-        vision.update( 
-            drivetrain.visionEstimator,
-            swerveState.Pose.getRotation(),
-            RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
-            swerveState.Timestamp + phoenixTimeOffset);
+        // vision.update( 
+        //     drivetrain.visionEstimator,
+        //     swerveState.Pose.getRotation(),
+        //     RadiansPerSecond.of(swerveState.Speeds.omegaRadiansPerSecond),
+        //     swerveState.Timestamp + phoenixTimeOffset);
     }    
 
     public void AutonomousInit() {
