@@ -63,7 +63,7 @@ public class IndexerConstants {
         current.StatorCurrentLimitEnable = true;
         current.StatorCurrentLimit = 60;
         current.SupplyCurrentLimitEnable = true;
-        current.SupplyCurrentLimit = 50;
+        current.SupplyCurrentLimit = 30;
     }
 
     public static final TalonFXConfiguration kFeederConfig = new TalonFXConfiguration();
@@ -79,7 +79,7 @@ public class IndexerConstants {
         current.StatorCurrentLimitEnable = true;
         current.StatorCurrentLimit = 70;
         current.SupplyCurrentLimitEnable = true;
-        current.SupplyCurrentLimit = 55;
+        current.SupplyCurrentLimit = 30;
 
         Slot0Configs control = kFeederConfig.Slot0;
         control.kP = 0;

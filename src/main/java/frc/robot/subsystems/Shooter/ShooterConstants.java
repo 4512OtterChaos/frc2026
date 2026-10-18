@@ -141,7 +141,7 @@ public final class ShooterConstants {
 
         CurrentLimitsConfigs current = kHoodConfig.CurrentLimits;
         current.StatorCurrentLimitEnable = true;
-        current.StatorCurrentLimit = 40;
+        current.StatorCurrentLimit = 30; //40
 
         Slot0Configs control = kHoodConfig.Slot0;
         control.kP = 250; 

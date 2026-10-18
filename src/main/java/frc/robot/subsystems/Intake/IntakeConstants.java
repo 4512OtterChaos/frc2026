@@ -85,7 +85,7 @@ public class IntakeConstants {
         current.StatorCurrentLimitEnable = true;
         current.StatorCurrentLimit = 70;
         current.SupplyCurrentLimitEnable = true;
-        current.SupplyCurrentLimit = 55;
+        current.SupplyCurrentLimit = 20; //55
     }
 
     public static final TalonFXConfiguration kFourBarConfig = new TalonFXConfiguration();

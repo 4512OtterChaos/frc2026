@@ -131,15 +131,18 @@ public class RobotContainer {
         // superstructure.doneShootingT.whileTrue(superstructure.otterShootEndControllerC(driver));
         driver.rightTrigger().whileTrue(superstructure.otterShootOnTheSwimC(() -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kSOTMLimiter)));
         driver.leftBumper().whileTrue(superstructure.otterShootStationaryC(() -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kSOTMLimiter)));
-        // driver.rightBumper().whileTrue(parallel(
-        //     run(()-> shooter.setState(Degrees.of(24), RPM.of(2700))), //2950 rpn was original value
-        //     sequence(
-        //         waitSeconds(0.4),
-        //         superstructure.indexNoContraintsC()
-        //     )
-        // ));
+        driver.rightBumper().whileTrue(parallel(
+            run(()-> shooter.setState(Shooter.operatorState.getAngle(), Shooter.operatorState.getVelocity())), //2950 rpn was original value
+            sequence(
+                waitSeconds(0.4),
+                superstructure.indexNoContraintsC()
+            )
+        ));
 
-        driver.rightBumper().whileTrue(run(()-> shooter.setState(Shooter.operatorState)));
+        // driver.rightBumper().whileTrue(parallel(
+        //     run(()-> shooter.setState(Shooter.operatorState)),
+        //     superstructure.indexNoContraintsC()
+        //     ));
 
         // #### Intake/Indexer Bindings
         driver.leftTrigger()
@@ -171,6 +174,7 @@ public class RobotContainer {
         Distance nextToTower = Meters.of(4.716783828);
         Distance frontOfTower = Meters.of(3.55593061);
         Distance nearHub = Meters.of(2.342913695);
+        Distance ferry = Meters.of(9);
         
         operator.x().whileTrue(run(() -> {
             Shooter.setOperatorState(trench);
@@ -187,6 +191,10 @@ public class RobotContainer {
         operator.y().whileTrue(run(() -> {
             Shooter.setOperatorState(nearHub);
             Shooter.currentOperatorState = "Near Hub";
+        }));
+        operator.povLeft().whileTrue(run(() -> {
+            Shooter.setOperatorState(ferry);
+            Shooter.currentOperatorState = "Frrying";
         }));
     }
 
