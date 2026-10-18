@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import java.util.function.Supplier;
+import java.util.logging.LogManager;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -17,6 +18,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -50,6 +52,7 @@ public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
 
     private final OCXboxController driver = new OCXboxController(0);
+    private final OCXboxController operator = new OCXboxController(1);
     private final Supplier<ChassisSpeeds> driverSpeedsSupplier = () -> driver.getSpeeds(DrivetrainConstants.kMaxLinearSpeed, DrivetrainConstants.kMaxAngularRate);
     // private final OCXboxController operator = new OCXboxController(1);
 
@@ -70,10 +73,16 @@ public class RobotContainer {
     TunableNumber flywheelVelocity = new TunableNumber("test/flywheelVelocity", 3200);
     TunableNumber hoodAngle = new TunableNumber("test/hoodAngle", 24);
 
+    Distance nearHub = Meters.of(234543); // TODO: tune all of these
+    Distance trench = Meters.of(236);
+    Distance frontOfTower = Meters.of(2236);
+    Distance nextToTower = Meters.of(233565677);
+
     public RobotContainer() {
         configureDefaultCommands();
         configureTriggersAndGeneralBindings();
-        configureDriverBindings();
+        configureDriverBindings(driver);
+        configureOperatorBindings(operator);
 
         DataLogManager.start();
     }
@@ -109,7 +118,7 @@ public class RobotContainer {
     }
 
 
-    private void configureDriverBindings() {
+    private void configureDriverBindings(OCXboxController driver) {
         // #### Drivetrain Bindings
         drivetrain.setDefaultCommand(drivetrain.driveC(
             () -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kStandardLimiter),
@@ -122,13 +131,15 @@ public class RobotContainer {
         // superstructure.doneShootingT.whileTrue(superstructure.otterShootEndControllerC(driver));
         driver.rightTrigger().whileTrue(superstructure.otterShootOnTheSwimC(() -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kSOTMLimiter)));
         driver.leftBumper().whileTrue(superstructure.otterShootStationaryC(() -> drivetrain.limitTargetSpeeds(driverSpeedsSupplier.get(), drivetrain.kSOTMLimiter)));
-        driver.rightBumper().whileTrue(parallel(
-            run(()-> shooter.setState(Degrees.of(24), RPM.of(2950))), 
-            sequence(
-                waitSeconds(0.6),
-                superstructure.autoIndexNoConstraints()
-            )
-        ));
+        // driver.rightBumper().whileTrue(parallel(
+        //     run(()-> shooter.setState(Degrees.of(24), RPM.of(2700))), //2950 rpn was original value
+        //     sequence(
+        //         waitSeconds(0.4),
+        //         superstructure.indexNoContraintsC()
+        //     )
+        // ));
+
+        driver.rightBumper().whileTrue(run(()-> shooter.setState(Shooter.operatorState)));
 
         // #### Intake/Indexer Bindings
         driver.leftTrigger()
@@ -140,7 +151,6 @@ public class RobotContainer {
                 spindexer.reverseC(),
                 feeder.reverseC()
         ));
-
         // #### FourBar Bindings
         driver.y().whileTrue(superstructure.fourbarRetractC()); 
         driver.a().whileTrue(fourBar.extendC()); 
@@ -154,6 +164,30 @@ public class RobotContainer {
                 superstructure.indexC()
             )
         ));
+    }
+
+    private void configureOperatorBindings(OCXboxController operator) {
+        Distance trench = Meters.of(5.24860998);
+        Distance nextToTower = Meters.of(4.716783828);
+        Distance frontOfTower = Meters.of(3.55593061);
+        Distance nearHub = Meters.of(2.342913695);
+        
+        operator.x().whileTrue(run(() -> {
+            Shooter.setOperatorState(trench);
+            Shooter.currentOperatorState = "Near Trench";
+        }));
+        operator.b().whileTrue(run(() -> {
+            Shooter.setOperatorState(nextToTower);
+            Shooter.currentOperatorState = "Next To Tower";
+        }));
+        operator.y().whileTrue(run(() -> {
+            Shooter.setOperatorState(frontOfTower);
+            Shooter.currentOperatorState = "Front Of Tower";
+        }));
+        operator.a().whileTrue(run(() -> {
+            Shooter.setOperatorState(nearHub);
+            Shooter.currentOperatorState = "Near Hub";
+        }));
     }
 
     public Command getAutonomousCommand() {

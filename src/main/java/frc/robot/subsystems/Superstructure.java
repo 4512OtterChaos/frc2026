@@ -13,7 +13,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj2.command.Commands.*; 
+import static edu.wpi.first.wpilibj2.command.Commands.*;
+import static frc.robot.subsystems.Indexer.IndexerConstants.kFeederVelocity;
+import static frc.robot.subsystems.Indexer.IndexerConstants.kFeederVelocityTolerance;
+import static frc.robot.subsystems.Indexer.IndexerConstants.kSpindexerID;
+import static frc.robot.subsystems.Indexer.IndexerConstants.kSpindexerVoltage;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -216,6 +220,20 @@ public class Superstructure extends SubsystemBase{
                 fourBar.setReadyToOscillateC(true),
                 indexC().asProxy().until(readyToShoot.negate())
             ).finallyDo(()-> {
+                fourBar.setReadyToOscillate(false);
+                isIndexing = false;
+            })
+        ).repeatedly();
+    }
+
+    public Command indexNoContraintsC() {
+        return sequence(
+            runOnce(() -> isIndexing = true),
+            parallel(
+                fourBar.setReadyToOscillateC(true),
+                spindexer.setVoltageC(kSpindexerVoltage),
+                feeder.setVelocityC(kFeederVelocity)
+            ).finallyDo(() -> {
                 fourBar.setReadyToOscillate(false);
                 isIndexing = false;
             })
