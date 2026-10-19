@@ -68,6 +68,12 @@ public class Vision {
     private PhotonCameraSim cameraSimLeft;
     private PhotonCameraSim cameraSimRight;
     private VisionSystemSim visionSim;
+
+    //DEBUG
+    public double estimateLoggerX = 0;
+    public double estimateLoggerY = 0;
+
+    public String estimateLogger = "X = " + estimateLoggerX + ", Y = " + estimateLoggerY;
     
     {
         if (Robot.isSimulation()) {
@@ -199,6 +205,9 @@ public class Vision {
             latestCamEstimate = Optional.of(estimate.estimatedPose);
             var stdDevs = getEstimationStdDevs(result, rotSpeed, false);
             estimator.addVisionMeasurement(estimate.estimatedPose.toPose2d(), estimate.timestampSeconds, stdDevs);
+            //DEBUG
+            estimateLoggerX = estimate.estimatedPose.toPose2d().getX();
+            estimateLoggerY = estimate.estimatedPose.toPose2d().getY();
         }
 
         return latestCamEstimate;
@@ -239,7 +248,7 @@ public class Vision {
          */
         // First, discard any visible tags we aren't tracking in our tag layout
         var visibleTags = result.getTargets();
-        visibleTags.removeIf(target -> kTagLayout.getTagPose(target.fiducialId).isEmpty());
+        visibleTags.removeIf(target -> kTagLayout.getTagPose(target.fiducialId).isEmpty()); //todo: TRY COMMENTING
         if (visibleTags.isEmpty()) return Optional.empty();
 
         var target = visibleTags.get(0);
@@ -327,12 +336,15 @@ public class Vision {
     public void log() {
         SmartDashboard.putBoolean("photonvision/Left Camera Status", cameraLeft.isConnected());
         SmartDashboard.putBoolean("photonvision/Right Camera Status", cameraRight.isConnected());
+
+        SmartDashboard.putString("photonvision/Unpublished Pose Est", estimateLogger);
     }
 
     // ----- Simulation
 
     public void simulationPeriodic(Pose2d robotSimPose) {
         visionSim.update(robotSimPose.relativeTo(kTagLayout.getOrigin().toPose2d()));
+        log();
     }
 
     /** Reset pose history of the robot in the vision system simulation. */

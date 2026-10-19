@@ -29,7 +29,7 @@ public class VisionConstants {
     static {
         var originalLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
         List<AprilTag> tags = new ArrayList<>(originalLayout.getTags());
-        tags.removeIf(tag -> tag.ID <= 1 || tag.ID == 6 || tag.ID == 7 || (tag.ID >= 12 && tag.ID <= 17) || tag.ID == 22 || tag.ID == 23 || tag.ID >= 28 );
+        tags.removeIf(tag -> tag.ID <= 1 || tag.ID == 6 || tag.ID == 7 || (tag.ID >= 12 && tag.ID <= 17) || tag.ID == 22 || tag.ID == 23 || tag.ID >= 28 ); //todo: TRY COMMENTING
         kTagLayout = new AprilTagFieldLayout(tags, originalLayout.getFieldLength(), originalLayout.getFieldWidth());
         for (var tag : kTagLayout.getTags()) {
             System.err.println("tag id "+tag.ID);
